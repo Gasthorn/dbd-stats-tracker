@@ -3,7 +3,7 @@ import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 import { AuthGate, useAuthStore } from "./features/auth";
 import { CharacterUnlockPage } from "./features/characters";
-import { MatchTrackerPage } from "./features/match-tracker";
+import { MatchHistoryPage, MatchTrackerPage } from "./features/match-tracker";
 import "./App.css";
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
   );
 }
 
-type DashboardView = "home" | "characters" | "matches";
+type DashboardView = "home" | "characters" | "matches" | "history";
 
 function Dashboard() {
   const user = useAuthStore((state) => state.user);
@@ -31,6 +31,9 @@ function Dashboard() {
           <button type="button" onClick={() => setView("matches")}>
             Parties
           </button>
+          <button type="button" onClick={() => setView("history")}>
+            Historique
+          </button>
           <button type="button" onClick={() => setView("characters")}>
             Personnages
           </button>
@@ -43,6 +46,7 @@ function Dashboard() {
 
       {view === "characters" && <CharacterUnlockPage />}
       {view === "matches" && <MatchTrackerPage />}
+      {view === "history" && <MatchHistoryPage />}
       {view === "home" && <Home />}
     </main>
   );

@@ -16,9 +16,11 @@ function summarize(match: Match): string {
 
 interface MatchHistoryListProps {
   matches: Match[];
+  onEdit?: (match: Match) => void;
+  onDelete?: (match: Match) => void;
 }
 
-export function MatchHistoryList({ matches }: MatchHistoryListProps) {
+export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryListProps) {
   if (matches.length === 0) {
     return <p>Aucune partie enregistrée pour le moment.</p>;
   }
@@ -33,6 +35,20 @@ export function MatchHistoryList({ matches }: MatchHistoryListProps) {
           <span>{summarize(match)}</span>
           <span>{match.bloodpoints} PS</span>
           <span>{new Date(match.playedAt).toLocaleString()}</span>
+          {(onEdit || onDelete) && (
+            <span className="match-history-actions">
+              {onEdit && (
+                <button type="button" onClick={() => onEdit(match)}>
+                  Modifier
+                </button>
+              )}
+              {onDelete && (
+                <button type="button" onClick={() => onDelete(match)}>
+                  Supprimer
+                </button>
+              )}
+            </span>
+          )}
         </li>
       ))}
     </ul>

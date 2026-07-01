@@ -70,8 +70,35 @@
 .match-history-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 0.5rem;
   padding: 0.5em 0;
   border-bottom: 1px solid rgba(127, 127, 127, 0.2);
   font-size: 0.9em;
+}
+
+.match-history-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.match-history-actions button {
+  font-size: 0.8em;
+  padding: 0.3em 0.7em;
+}
+
+.match-role-label {
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.match-history-page {
+  text-align: left;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.match-history-filter {
+  margin-bottom: 1rem;
 }

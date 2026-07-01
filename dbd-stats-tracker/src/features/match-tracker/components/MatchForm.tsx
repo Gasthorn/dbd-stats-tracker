@@ -4,7 +4,7 @@ import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import { useCharactersStore } from "../../characters/stores/characters.store";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
-import type { CreateMatchInput, EscapeResult, MatchRole } from "../types/match.types";
+import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/match.types";
 
 const ESCAPE_RESULT_OPTIONS: { value: EscapeResult; label: string }[] = [
   { value: "escaped_door", label: "Évadé par la porte" },
@@ -20,20 +20,48 @@ function emptyEquipment(role: MatchRole): string[] {
   return role === "killer" ? ["", ""] : ["", "", ""];
 }
 
-export function AddMatchForm() {
+function toPerksTuple(perks: string[]): [string, string, string, string] {
+  const padded = [...perks, "", "", "", ""].slice(0, 4);
+  return padded as [string, string, string, string];
+}
+
+function toEquipmentArray(equipment: string[], role: MatchRole): string[] {
+  const size = role === "killer" ? 2 : 3;
+  const padded = [...equipment, "", "", ""].slice(0, size);
+  return padded;
+}
+
+interface MatchFormProps {
+  /** When provided, the form edits this match instead of creating a new one. */
+  match?: Match;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+}
+
+export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
+  const isEditing = match !== undefined;
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
   const unlockedSurvivors = useCharactersStore((state) => state.unlockedSurvivors);
   const createMatch = useMatchTrackerStore((state) => state.createMatch);
+  const updateMatch = useMatchTrackerStore((state) => state.updateMatch);
 
-  const [role, setRole] = useState<MatchRole>("killer");
-  const [characterName, setCharacterName] = useState("");
-  const [opponentName, setOpponentName] = useState("");
-  const [perks, setPerks] = useState<[string, string, string, string]>(EMPTY_PERKS);
-  const [equipment, setEquipment] = useState<string[]>(emptyEquipment("killer"));
-  const [bloodpoints, setBloodpoints] = useState("");
-  const [kills, setKills] = useState("0");
-  const [generatorsCompleted, setGeneratorsCompleted] = useState("0");
-  const [escapeResult, setEscapeResult] = useState<EscapeResult>("escaped_door");
+  const [role, setRole] = useState<MatchRole>(match?.role ?? "killer");
+  const [characterName, setCharacterName] = useState(match?.characterName ?? "");
+  const [opponentName, setOpponentName] = useState(match?.opponentName ?? "");
+  const [perks, setPerks] = useState<[string, string, string, string]>(
+    match ? toPerksTuple(match.perks) : EMPTY_PERKS,
+  );
+  const [equipment, setEquipment] = useState<string[]>(
+    match ? toEquipmentArray(match.equipment, match.role) : emptyEquipment("killer"),
+  );
+  const [bloodpoints, setBloodpoints] = useState(match ? String(match.bloodpoints) : "");
+  const [kills, setKills] = useState(match?.kills !== undefined && match?.kills !== null ? String(match.kills) : "0");
+  const [generatorsCompleted, setGeneratorsCompleted] = useState(
+    match ? String(match.generatorsCompleted) : "0",
+  );
+  const [escapeResult, setEscapeResult] = useState<EscapeResult>(
+    match?.escapeResult ?? "escaped_door",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -137,16 +165,21 @@ export function AddMatchForm() {
 
     setIsSubmitting(true);
     try {
-      await createMatch(input);
-      setSuccessMessage("Partie enregistrée !");
-      setCharacterName("");
-      setOpponentName("");
-      setPerks(EMPTY_PERKS);
-      setEquipment(emptyEquipment(role));
-      setBloodpoints("");
-      setKills("0");
-      setGeneratorsCompleted("0");
-      setEscapeResult("escaped_door");
+      if (isEditing && match) {
+        await updateMatch({ ...input, id: match.id });
+        onSuccess?.();
+      } else {
+        await createMatch(input);
+        setSuccessMessage("Partie enregistrée !");
+        setCharacterName("");
+        setOpponentName("");
+        setPerks(EMPTY_PERKS);
+        setEquipment(emptyEquipment(role));
+        setBloodpoints("");
+        setKills("0");
+        setGeneratorsCompleted("0");
+        setEscapeResult("escaped_door");
+      }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Impossible d'enregistrer la partie.");
     } finally {
@@ -156,24 +189,28 @@ export function AddMatchForm() {
 
   return (
     <form className="match-form" onSubmit={handleSubmit}>
-      <h2>Ajouter une partie</h2>
+      <h2>{isEditing ? "Modifier la partie" : "Ajouter une partie"}</h2>
 
-      <div className="match-role-toggle">
-        <button
-          type="button"
-          className={role === "killer" ? "is-active" : ""}
-          onClick={() => switchRole("killer")}
-        >
-          Tueur
-        </button>
-        <button
-          type="button"
-          className={role === "survivor" ? "is-active" : ""}
-          onClick={() => switchRole("survivor")}
-        >
-          Survivant
-        </button>
-      </div>
+      {isEditing ? (
+        <p className="match-role-label">{role === "killer" ? "Tueur" : "Survivant"}</p>
+      ) : (
+        <div className="match-role-toggle">
+          <button
+            type="button"
+            className={role === "killer" ? "is-active" : ""}
+            onClick={() => switchRole("killer")}
+          >
+            Tueur
+          </button>
+          <button
+            type="button"
+            className={role === "survivor" ? "is-active" : ""}
+            onClick={() => switchRole("survivor")}
+          >
+            Survivant
+          </button>
+        </div>
+      )}
 
       <label htmlFor="match-character">Personnage</label>
       <select
@@ -331,9 +368,20 @@ export function AddMatchForm() {
       {formError && <p className="match-error">{formError}</p>}
       {successMessage && <p className="match-success">{successMessage}</p>}
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Enregistrement..." : "Enregistrer la partie"}
-      </button>
+      <div className="match-form-row">
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting
+            ? "Enregistrement..."
+            : isEditing
+              ? "Enregistrer les modifications"
+              : "Enregistrer la partie"}
+        </button>
+        {isEditing && (
+          <button type="button" onClick={onCancel} disabled={isSubmitting}>
+            Annuler
+          </button>
+        )}
+      </div>
     </form>
   );
 }

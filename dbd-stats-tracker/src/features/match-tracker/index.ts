@@ -8,3 +8,4 @@ export type { MatchService } from "./services/match.service.types";
 export { useMatchTrackerStore } from "./stores/match-tracker.store";
 export { matchService } from "./services/match.service";
 export { MatchTrackerPage } from "./components/MatchTrackerPage";
+export { MatchHistoryPage } from "./components/MatchHistoryPage";

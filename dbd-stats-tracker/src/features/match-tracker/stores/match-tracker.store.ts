@@ -18,7 +18,7 @@ export const useMatchTrackerStore = create<MatchTrackerStore>((set, get) => ({
     try {
       const result = await matchService.listMatches(filters ?? get().filters, {
         page: 1,
-        pageSize: 20,
+        pageSize: 50,
       });
       set({ matches: result.items, status: "success" });
     } catch (err) {
