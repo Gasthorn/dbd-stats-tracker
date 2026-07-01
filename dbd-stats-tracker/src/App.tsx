@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AuthGate, useAuthStore } from "./features/auth";
 import { CharacterUnlockPage } from "./features/characters";
 import { MatchHistoryPage, MatchTrackerPage } from "./features/match-tracker";
+import { IconsIndexPage } from "./features/settings";
 import { HomePage } from "./components/HomePage";
 import "./App.css";
 
@@ -13,7 +14,7 @@ function App() {
   );
 }
 
-type DashboardView = "home" | "characters" | "matches" | "history";
+type DashboardView = "home" | "characters" | "matches" | "history" | "icons-index";
 
 function Dashboard() {
   const user = useAuthStore((state) => state.user);
@@ -36,6 +37,9 @@ function Dashboard() {
           <button type="button" onClick={() => setView("characters")}>
             Personnages
           </button>
+          <button type="button" onClick={() => setView("icons-index")}>
+            Index des icônes
+          </button>
         </nav>
         <p>Connecté en tant que {user?.username}</p>
         <button type="button" onClick={() => signOut()}>
@@ -46,6 +50,7 @@ function Dashboard() {
       {view === "characters" && <CharacterUnlockPage />}
       {view === "matches" && <MatchTrackerPage />}
       {view === "history" && <MatchHistoryPage />}
+      {view === "icons-index" && <IconsIndexPage />}
       {view === "home" && <HomePage />}
     </main>
   );

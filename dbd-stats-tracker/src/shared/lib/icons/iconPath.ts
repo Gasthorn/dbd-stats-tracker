@@ -433,7 +433,7 @@ const KILLER_ADDON_FILE_MAPPING: Record<string, string> = {
 KILLER_ADDON_FILE_MAPPING["Begrimed Chains"] = KILLER_ADDON_FILE_MAPPING["Begrimed Chains "];
 delete KILLER_ADDON_FILE_MAPPING["Begrimed Chains "];
 
-function emptyIconPath(category: IconCategory): string {
+export function emptyIconPath(category: IconCategory): string {
   if (category === "Characters") return "CharPortraits/empty.png";
   if (category === "Addons") return "ItemAddons/empty.png";
   return `${category}/empty.png`;
