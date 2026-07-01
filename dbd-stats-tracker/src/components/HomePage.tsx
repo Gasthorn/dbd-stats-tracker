@@ -15,16 +15,16 @@ const MODULES: { title: string; description: string }[] = [
     description: "Gère la liste des tueurs et survivants que tu possèdes, pour filtrer le reste de l'app.",
   },
   {
-    title: "Builds",
-    description: "Sauvegarde tes loadouts favoris pour les réappliquer rapidement (à venir).",
+    title: "Hardcore Mode",
+    description: "Suivi d'une saison à la die permanente par personnage : pips, rangs, éliminations.",
   },
   {
     title: "Survivor Gauntlet",
-    description: "Défi consistant à réussir un run avec chaque survivant débloqué (à venir).",
+    description: "Défi consistant à réussir un run avec chaque personnage débloqué, tueur ou survivant.",
   },
   {
-    title: "Hardcore Mode",
-    description: "Suivi d'une saison à la die permanente par personnage (à venir).",
+    title: "Builds",
+    description: "Sauvegarde tes loadouts favoris pour les réappliquer rapidement (à venir).",
   },
   {
     title: "Statistiques",

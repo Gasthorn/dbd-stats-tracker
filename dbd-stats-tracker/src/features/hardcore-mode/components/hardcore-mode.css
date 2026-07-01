@@ -1,0 +1,137 @@
+.hardcore-page {
+  text-align: left;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.hardcore-page h1 {
+  text-align: center;
+}
+
+.hardcore-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hardcore-season-info {
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+.hardcore-rules {
+  background: rgba(169, 29, 29, 0.05);
+  border: 1px solid rgba(169, 29, 29, 0.3);
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.hardcore-rules h3 {
+  margin-top: 0;
+}
+
+.hardcore-rules ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  opacity: 0.85;
+  font-size: 0.9em;
+}
+
+.hardcore-rank-row {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.hardcore-rank-card {
+  flex: 1;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.hardcore-rank-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.hardcore-rank-name {
+  font-size: 1.4em;
+  font-weight: bold;
+  margin: 0.25rem 0;
+}
+
+.hardcore-pip-count {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
+.hardcore-rank-progress-bar {
+  width: 100%;
+  max-width: 200px;
+  height: 8px;
+  margin: 0.6rem auto 0;
+  border-radius: 4px;
+  background-color: rgba(127, 127, 127, 0.25);
+  overflow: hidden;
+}
+
+.hardcore-rank-progress-fill {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.hardcore-selected-char {
+  text-align: center;
+  opacity: 0.6;
+  font-size: 0.9em;
+}
+
+.hardcore-char-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.hardcore-char-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  width: 88px;
+  padding: 0.5em;
+  border-radius: 8px;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.hardcore-char-item.is-selected {
+  border-color: #a91d1d;
+  box-shadow: 0 0 10px rgba(169, 29, 29, 0.6);
+}
+
+.hardcore-char-item.is-blocked {
+  opacity: 0.5;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+.hardcore-char-item.is-blocked::after {
+  content: "🔒";
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-size: 14px;
+}
+
+.hardcore-match-form {
+  margin-top: 1.5rem;
+}

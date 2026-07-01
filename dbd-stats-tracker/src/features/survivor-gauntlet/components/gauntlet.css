@@ -1,0 +1,186 @@
+.gauntlet-page {
+  text-align: left;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.gauntlet-page h1 {
+  text-align: center;
+}
+
+.gauntlet-header {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.gauntlet-rules {
+  background: rgba(169, 29, 29, 0.05);
+  border: 1px solid rgba(169, 29, 29, 0.3);
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.gauntlet-rules h3 {
+  margin-top: 0;
+}
+
+.gauntlet-rules ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  opacity: 0.85;
+  font-size: 0.9em;
+}
+
+.gauntlet-progress-container {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.gauntlet-tier-name {
+  margin-bottom: 0.25rem;
+}
+
+.gauntlet-perk-restriction {
+  color: var(--color-gold);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.gauntlet-progress-bar {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background-color: rgba(127, 127, 127, 0.25);
+  overflow: hidden;
+  margin: 0.75rem 0;
+}
+
+.gauntlet-progress-fill {
+  height: 100%;
+  background-color: #a91d1d;
+  box-shadow: 0 0 8px rgba(169, 29, 29, 0.8);
+  transition: width 0.4s ease;
+}
+
+.gauntlet-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.gauntlet-marker {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.gauntlet-count {
+  font-weight: bold;
+}
+
+.gauntlet-complete-message {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--color-gold);
+  margin: 2rem 0;
+}
+
+.gauntlet-roll-zone {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 2px dashed #333;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.gauntlet-rolled-char {
+  text-align: center;
+}
+
+.gauntlet-rolled-portrait {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.gauntlet-rolled-name {
+  font-size: 1.6em;
+  margin: 0 0 0.75rem;
+}
+
+.gauntlet-rolled-perks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gauntlet-rolled-perk {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  width: 90px;
+  font-size: 0.75em;
+  opacity: 0.85;
+}
+
+.gauntlet-instructions {
+  text-align: left;
+  padding: 1rem;
+  border: 1px solid #a91d1d;
+  border-radius: 4px;
+  background: rgba(169, 29, 29, 0.1);
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+.gauntlet-instructions-title {
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 0.5rem;
+}
+
+.gauntlet-win-condition {
+  font-weight: bold;
+  color: var(--color-accent-hover);
+}
+
+.gauntlet-match-form {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #333;
+}
+
+.gauntlet-completed-section {
+  margin-top: 2.5rem;
+}
+
+.gauntlet-completed-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 60px;
+}
+
+.gauntlet-completed-empty {
+  opacity: 0.6;
+  font-size: 0.9em;
+}
+
+.gauntlet-completed-item {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.15);
+}

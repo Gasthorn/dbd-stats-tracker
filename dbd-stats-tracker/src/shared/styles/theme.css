@@ -1,0 +1,158 @@
+/**
+ * Global dark theme, styled after Dead by Daylight's UI: near-black
+ * backgrounds, blood-red accents, uppercase headers. Palette lifted
+ * straight from legacy-web-prototype/css/style.css for visual continuity
+ * with the rarity borders and icon slots already ported from it.
+ */
+:root {
+  color-scheme: dark;
+
+  --color-bg: #1a1a1a;
+  --color-bg-elevated: #111111;
+  --color-bg-inset: #0a0a0a;
+  --color-bg-input: #0f0f0f;
+  --color-bg-button: #121212;
+
+  --color-border: #2a2a2a;
+  --color-border-strong: #333333;
+
+  --color-text: #e0e0e0;
+  --color-text-muted: #999999;
+  --color-text-dim: #666666;
+
+  --color-accent: #a91d1d;
+  --color-accent-hover: #ff4d4d;
+  --color-accent-glow: rgba(169, 29, 29, 0.6);
+  --color-gold: #f1c40f;
+  --color-success: #2ecc71;
+
+  --font-family:
+    "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  background-image: radial-gradient(circle at center, #2a2a2a 0%, #1a1a1a 100%);
+  background-attachment: fixed;
+  color: var(--color-text);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 1.5em;
+}
+
+h1 {
+  text-align: center;
+  text-shadow: 2px 2px 10px var(--color-accent-glow);
+  margin-top: 0;
+}
+
+h2,
+h3,
+h4 {
+  border-bottom: 2px solid var(--color-accent);
+  padding-bottom: 0.3em;
+}
+
+a {
+  font-weight: 500;
+  color: var(--color-accent-hover);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-accent);
+}
+
+button {
+  background-color: var(--color-bg-button);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6em 1.2em;
+  font-size: 0.95em;
+  font-weight: bold;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent-hover);
+  box-shadow: 0 0 12px var(--color-accent-glow);
+}
+
+button:disabled {
+  background-color: #222222;
+  color: var(--color-text-dim);
+  border-color: var(--color-border-strong);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+input,
+select,
+textarea {
+  background-color: var(--color-bg-input);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5em 0.7em;
+  font-family: inherit;
+  font-size: 0.95em;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 5px var(--color-accent-glow);
+}
+
+input::placeholder {
+  color: var(--color-text-dim);
+}
+
+select option {
+  background-color: var(--color-bg-input);
+  color: var(--color-text);
+}
+
+input[type="range"] {
+  accent-color: var(--color-accent);
+}
+
+textarea {
+  resize: vertical;
+}

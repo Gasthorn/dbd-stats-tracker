@@ -30,8 +30,8 @@
 }
 
 .match-role-toggle button.is-active {
-  border-color: #396cd8;
-  box-shadow: 0 0 0 1px #396cd8;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
 }
 
 .match-form-row {
@@ -66,12 +66,12 @@
 }
 
 .match-error {
-  color: #ff4d4d;
+  color: var(--color-accent-hover);
   font-size: 0.85em;
 }
 
 .match-success {
-  color: #2ecc71;
+  color: var(--color-success);
   font-size: 0.85em;
 }
 

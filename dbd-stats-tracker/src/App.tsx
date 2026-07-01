@@ -3,6 +3,8 @@ import { AuthGate, useAuthStore } from "./features/auth";
 import { CharacterUnlockPage } from "./features/characters";
 import { MatchHistoryPage, MatchTrackerPage } from "./features/match-tracker";
 import { IconsIndexPage } from "./features/settings";
+import { HardcorePage } from "./features/hardcore-mode";
+import { GauntletPage } from "./features/survivor-gauntlet";
 import { HomePage } from "./components/HomePage";
 import "./App.css";
 
@@ -14,7 +16,24 @@ function App() {
   );
 }
 
-type DashboardView = "home" | "characters" | "matches" | "history" | "icons-index";
+type DashboardView =
+  | "home"
+  | "matches"
+  | "history"
+  | "hardcore"
+  | "gauntlet"
+  | "characters"
+  | "icons-index";
+
+const TABS: { view: DashboardView; label: string }[] = [
+  { view: "home", label: "Accueil" },
+  { view: "matches", label: "Parties" },
+  { view: "history", label: "Historique" },
+  { view: "hardcore", label: "Hardcore" },
+  { view: "gauntlet", label: "Gauntlet" },
+  { view: "characters", label: "Personnages" },
+  { view: "icons-index", label: "Index des icônes" },
+];
 
 function Dashboard() {
   const user = useAuthStore((state) => state.user);
@@ -22,37 +41,38 @@ function Dashboard() {
   const [view, setView] = useState<DashboardView>("home");
 
   return (
-    <main className="container">
-      <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
-        <nav style={{ display: "flex", gap: "0.5rem" }}>
-          <button type="button" onClick={() => setView("home")}>
-            Accueil
-          </button>
-          <button type="button" onClick={() => setView("matches")}>
-            Parties
-          </button>
-          <button type="button" onClick={() => setView("history")}>
-            Historique
-          </button>
-          <button type="button" onClick={() => setView("characters")}>
-            Personnages
-          </button>
-          <button type="button" onClick={() => setView("icons-index")}>
-            Index des icônes
-          </button>
+    <>
+      <header className="app-header">
+        <nav className="app-nav">
+          {TABS.map((tab) => (
+            <button
+              key={tab.view}
+              type="button"
+              className={view === tab.view ? "is-active" : ""}
+              onClick={() => setView(tab.view)}
+            >
+              {tab.label}
+            </button>
+          ))}
         </nav>
-        <p>Connecté en tant que {user?.username}</p>
-        <button type="button" onClick={() => signOut()}>
-          Se déconnecter
-        </button>
-      </div>
+        <div className="app-user">
+          <span>Connecté en tant que {user?.username}</span>
+          <button type="button" onClick={() => signOut()}>
+            Se déconnecter
+          </button>
+        </div>
+      </header>
 
-      {view === "characters" && <CharacterUnlockPage />}
-      {view === "matches" && <MatchTrackerPage />}
-      {view === "history" && <MatchHistoryPage />}
-      {view === "icons-index" && <IconsIndexPage />}
-      {view === "home" && <HomePage />}
-    </main>
+      <main className="app-content">
+        {view === "characters" && <CharacterUnlockPage />}
+        {view === "matches" && <MatchTrackerPage />}
+        {view === "history" && <MatchHistoryPage />}
+        {view === "icons-index" && <IconsIndexPage />}
+        {view === "hardcore" && <HardcorePage />}
+        {view === "gauntlet" && <GauntletPage />}
+        {view === "home" && <HomePage />}
+      </main>
+    </>
   );
 }
 

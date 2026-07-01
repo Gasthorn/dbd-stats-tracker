@@ -6,7 +6,7 @@
 }
 
 .characters-error {
-  color: #ff4d4d;
+  color: var(--color-accent-hover);
 }
 
 .characters-section {
@@ -62,6 +62,6 @@
 
 .character-chip.is-unlocked {
   opacity: 1;
-  border-color: #396cd8;
-  box-shadow: 0 0 0 1px #396cd8;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
 }

@@ -6,7 +6,7 @@
 }
 
 .icon-index-warning {
-  color: #ff4d4d;
+  color: var(--color-accent-hover);
 }
 
 .icon-index-nav {
@@ -70,7 +70,7 @@
 }
 
 .icon-index-icon-box.is-broken {
-  border-color: #ff4d4d;
+  border-color: var(--color-accent-hover);
   background-color: rgba(255, 77, 77, 0.15);
 }
 

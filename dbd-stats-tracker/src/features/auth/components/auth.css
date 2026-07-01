@@ -41,25 +41,27 @@
   background: none;
   box-shadow: none;
   border: none;
-  color: #646cff;
+  color: var(--color-accent-hover);
   font-weight: 500;
   cursor: pointer;
   padding: 0.4em 0;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .auth-link:hover {
   border-color: transparent;
-  color: #535bf2;
+  color: var(--color-accent);
 }
 
 .auth-error {
-  color: #ff4d4d;
+  color: var(--color-accent-hover);
   font-size: 0.85em;
   margin: 0.25rem 0 0;
 }
 
 .auth-info {
-  color: #2ecc71;
+  color: var(--color-success);
   font-size: 0.85em;
   margin: 0.25rem 0 0;
 }
