@@ -1,87 +1,69 @@
-import type {
-  ISODateString,
-  Platform,
-  UUID,
-} from "../../../shared/types/common.types";
-import type { CharacterId } from "../../../shared/types/dbd-entities.types";
+import type { ISODateString, UUID } from "../../../shared/types/common.types";
 
 export type MatchRole = "killer" | "survivor";
+export type MatchMode = "normal" | "hardcore" | "gauntlet";
 
-export type SurvivorMatchOutcome =
-  | "escaped"
+export type EscapeResult =
+  | "escaped_door"
   | "escaped_hatch"
   | "sacrificed"
   | "killed"
-  | "disconnected"
-  | "suicide_on_hook";
-
-export interface SurvivorOutcomeEntry {
-  survivorCharacterId: CharacterId | null;
-  outcome: SurvivorMatchOutcome | null;
-}
-
-export interface MatchLoadout {
-  perkIds: [UUID | null, UUID | null, UUID | null, UUID | null];
-  offeringId: UUID | null;
-  addonIds: UUID[];
-  itemId: UUID | null;
-}
+  | "disconnected";
 
 interface BaseMatch {
   id: UUID;
   userId: UUID;
-  mapId: UUID | null;
-  platform: Platform | null;
+  hardcoreRunId: UUID | null;
+  mode: MatchMode;
+  characterName: string;
+  /** up to 4 perk names */
+  perks: string[];
+  /** up to 3 item/addon names */
+  equipment: string[];
+  bloodpoints: number;
+  generatorsCompleted: number;
+  ignoreChallenge: boolean;
   playedAt: ISODateString;
-  durationSeconds: number | null;
-  loadout: MatchLoadout;
-  pointsEarned: number | null;
-  ratingBefore: number | null;
-  ratingAfter: number | null;
-  disconnected: boolean;
-  notes: string | null;
   createdAt: ISODateString;
   updatedAt: ISODateString;
 }
 
 export interface KillerMatch extends BaseMatch {
   role: "killer";
-  killerCharacterId: CharacterId;
-  /** always 4 entries, one per opposing survivor */
-  survivorOutcomes: SurvivorOutcomeEntry[];
-  totalKills: number;
-  totalEscapes: number;
+  opponentName: null;
+  kills: number;
+  escapeResult: null;
+  hardcorePips: number | null;
+  hardcoreDied: boolean | null;
 }
 
 export interface SurvivorMatch extends BaseMatch {
   role: "survivor";
-  survivorCharacterId: CharacterId;
-  opponentKillerCharacterId: CharacterId | null;
-  outcome: SurvivorMatchOutcome;
-  hooksTaken: number | null;
-  unhooksPerformed: number | null;
-  healsPerformed: number | null;
-  generatorsRepaired: number | null;
+  opponentName: string | null;
+  kills: null;
+  escapeResult: EscapeResult;
+  hardcorePips: number | null;
+  hardcoreDied: boolean | null;
 }
 
 export type Match = KillerMatch | SurvivorMatch;
 
 export interface MatchFilters {
   role?: MatchRole;
-  characterId?: CharacterId;
-  mapId?: UUID;
+  mode?: MatchMode;
+  characterName?: string;
   dateFrom?: ISODateString;
   dateTo?: ISODateString;
-  outcome?: SurvivorMatchOutcome;
 }
 
 export type CreateKillerMatchInput = Omit<
   KillerMatch,
-  "id" | "userId" | "createdAt" | "updatedAt"
->;
+  "id" | "userId" | "createdAt" | "updatedAt" | "playedAt"
+> & { playedAt?: ISODateString };
 export type CreateSurvivorMatchInput = Omit<
   SurvivorMatch,
-  "id" | "userId" | "createdAt" | "updatedAt"
->;
+  "id" | "userId" | "createdAt" | "updatedAt" | "playedAt"
+> & { playedAt?: ISODateString };
 export type CreateMatchInput = CreateKillerMatchInput | CreateSurvivorMatchInput;
+
 export type UpdateMatchInput = Partial<CreateMatchInput> & { id: UUID };
