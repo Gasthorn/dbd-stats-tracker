@@ -1,3 +1,5 @@
+import { Icon } from "../../settings";
+
 interface CharacterSectionProps {
   title: string;
   allNames: readonly string[];
@@ -46,7 +48,8 @@ export function CharacterSection({
               disabled={disabled}
               onClick={() => onToggle(name)}
             >
-              {name}
+              <Icon category="Characters" name={name} alt={name} size={40} />
+              <span>{name}</span>
             </button>
           );
         })}

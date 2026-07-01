@@ -49,6 +49,18 @@
   gap: 0.5rem;
 }
 
+.match-field-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.match-field-with-icon input,
+.match-field-with-icon select {
+  flex: 1;
+}
+
 .match-form button[type="submit"] {
   margin-top: 1rem;
 }

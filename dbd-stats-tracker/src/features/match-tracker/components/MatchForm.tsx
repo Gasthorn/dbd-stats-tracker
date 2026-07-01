@@ -3,6 +3,7 @@ import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import { useCharactersStore } from "../../characters/stores/characters.store";
+import { Icon } from "../../settings";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
 import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/match.types";
 
@@ -213,47 +214,55 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       )}
 
       <label htmlFor="match-character">Personnage</label>
-      <select
-        id="match-character"
-        value={characterName}
-        onChange={(e) => setCharacterName(e.target.value)}
-      >
-        <option value="">-- Sélectionner --</option>
-        {unlockedCharacters.map((name) => (
-          <option key={name} value={name}>
-            {name}
-          </option>
-        ))}
-      </select>
+      <div className="match-field-with-icon">
+        <select
+          id="match-character"
+          value={characterName}
+          onChange={(e) => setCharacterName(e.target.value)}
+        >
+          <option value="">-- Sélectionner --</option>
+          {unlockedCharacters.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <Icon category="Characters" name={characterName} alt={characterName} />
+      </div>
 
       {role === "survivor" && (
         <>
           <label htmlFor="match-opponent">Tueur adverse</label>
-          <select
-            id="match-opponent"
-            value={opponentName}
-            onChange={(e) => setOpponentName(e.target.value)}
-          >
-            <option value="">-- Sélectionner --</option>
-            {KILLERS.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <div className="match-field-with-icon">
+            <select
+              id="match-opponent"
+              value={opponentName}
+              onChange={(e) => setOpponentName(e.target.value)}
+            >
+              <option value="">-- Sélectionner --</option>
+              {KILLERS.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            <Icon category="Characters" name={opponentName} alt={opponentName} />
+          </div>
         </>
       )}
 
       <label>Perks</label>
       <div className="match-perks-grid">
         {perks.map((perk, index) => (
-          <input
-            key={index}
-            list={`match-perks-options-${index}`}
-            value={perk}
-            placeholder={`Perk ${index + 1}`}
-            onChange={(e) => updatePerk(index, e.target.value)}
-          />
+          <div className="match-field-with-icon" key={index}>
+            <input
+              list={`match-perks-options-${index}`}
+              value={perk}
+              placeholder={`Perk ${index + 1}`}
+              onChange={(e) => updatePerk(index, e.target.value)}
+            />
+            <Icon category="Perks" name={perk} alt={perk} />
+          </div>
         ))}
       </div>
       {perks.map((_, index) => (
@@ -267,27 +276,36 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       <label>Équipement</label>
       {role === "survivor" ? (
         <>
-          <select value={equipment[0]} onChange={(e) => updateEquipment(0, e.target.value)}>
-            <option value="">-- Objet --</option>
-            {SURVIVOR_ITEMS.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
+          <div className="match-field-with-icon">
+            <select value={equipment[0]} onChange={(e) => updateEquipment(0, e.target.value)}>
+              <option value="">-- Objet --</option>
+              {SURVIVOR_ITEMS.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <Icon category="Items" name={equipment[0]} alt={equipment[0]} />
+          </div>
           <div className="match-form-row">
-            <input
-              list="match-survivor-addon-options"
-              value={equipment[1]}
-              placeholder="Accessoire 1"
-              onChange={(e) => updateEquipment(1, e.target.value)}
-            />
-            <input
-              list="match-survivor-addon-options"
-              value={equipment[2]}
-              placeholder="Accessoire 2"
-              onChange={(e) => updateEquipment(2, e.target.value)}
-            />
+            <div className="match-field-with-icon">
+              <input
+                list="match-survivor-addon-options"
+                value={equipment[1]}
+                placeholder="Accessoire 1"
+                onChange={(e) => updateEquipment(1, e.target.value)}
+              />
+              <Icon category="Addons" name={equipment[1]} alt={equipment[1]} />
+            </div>
+            <div className="match-field-with-icon">
+              <input
+                list="match-survivor-addon-options"
+                value={equipment[2]}
+                placeholder="Accessoire 2"
+                onChange={(e) => updateEquipment(2, e.target.value)}
+              />
+              <Icon category="Addons" name={equipment[2]} alt={equipment[2]} />
+            </div>
           </div>
           <datalist id="match-survivor-addon-options">
             {survivorAddonOptions.map((addon) => (
@@ -297,18 +315,24 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         </>
       ) : (
         <div className="match-form-row">
-          <input
-            list="match-killer-addon-options"
-            value={equipment[0]}
-            placeholder="Accessoire 1"
-            onChange={(e) => updateEquipment(0, e.target.value)}
-          />
-          <input
-            list="match-killer-addon-options"
-            value={equipment[1]}
-            placeholder="Accessoire 2"
-            onChange={(e) => updateEquipment(1, e.target.value)}
-          />
+          <div className="match-field-with-icon">
+            <input
+              list="match-killer-addon-options"
+              value={equipment[0]}
+              placeholder="Accessoire 1"
+              onChange={(e) => updateEquipment(0, e.target.value)}
+            />
+            <Icon category="Addons" name={equipment[0]} manualOwner={characterName} alt={equipment[0]} />
+          </div>
+          <div className="match-field-with-icon">
+            <input
+              list="match-killer-addon-options"
+              value={equipment[1]}
+              placeholder="Accessoire 2"
+              onChange={(e) => updateEquipment(1, e.target.value)}
+            />
+            <Icon category="Addons" name={equipment[1]} manualOwner={characterName} alt={equipment[1]} />
+          </div>
           <datalist id="match-killer-addon-options">
             {killerAddonOptions.map((addon) => (
               <option key={addon} value={addon} />

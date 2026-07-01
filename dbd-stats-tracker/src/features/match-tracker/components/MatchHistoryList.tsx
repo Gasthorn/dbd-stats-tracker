@@ -1,3 +1,4 @@
+import { Icon } from "../../settings";
 import type { Match } from "../types/match.types";
 
 function summarize(match: Match): string {
@@ -29,7 +30,8 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
     <ul style={{ listStyle: "none", padding: 0 }}>
       {matches.map((match) => (
         <li key={match.id} className="match-history-item">
-          <span>
+          <span className="match-field-with-icon">
+            <Icon category="Characters" name={match.characterName} alt={match.characterName} size={24} />
             [{match.role === "killer" ? "Tueur" : "Survivant"}] {match.characterName}
           </span>
           <span>{summarize(match)}</span>
