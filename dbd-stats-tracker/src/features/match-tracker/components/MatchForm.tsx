@@ -3,7 +3,9 @@ import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import { useCharactersStore } from "../../characters/stores/characters.store";
-import { Icon } from "../../settings";
+import { IconSelectionSlot } from "../../settings";
+import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons/rarity";
+import "../../../shared/styles/rarity.css";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
 import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/match.types";
 
@@ -214,55 +216,56 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       )}
 
       <label htmlFor="match-character">Personnage</label>
-      <div className="match-field-with-icon">
-        <select
-          id="match-character"
-          value={characterName}
-          onChange={(e) => setCharacterName(e.target.value)}
-        >
-          <option value="">-- Sélectionner --</option>
-          {unlockedCharacters.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
-        <Icon category="Characters" name={characterName} alt={characterName} />
-      </div>
+      <IconSelectionSlot
+        as="select"
+        id="match-character"
+        category="Characters"
+        value={characterName}
+        onChange={setCharacterName}
+        size={80}
+      >
+        <option value="">-- Sélectionner --</option>
+        {unlockedCharacters.map((name) => (
+          <option key={name} value={name}>
+            {name}
+          </option>
+        ))}
+      </IconSelectionSlot>
 
       {role === "survivor" && (
         <>
           <label htmlFor="match-opponent">Tueur adverse</label>
-          <div className="match-field-with-icon">
-            <select
-              id="match-opponent"
-              value={opponentName}
-              onChange={(e) => setOpponentName(e.target.value)}
-            >
-              <option value="">-- Sélectionner --</option>
-              {KILLERS.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-            <Icon category="Characters" name={opponentName} alt={opponentName} />
-          </div>
+          <IconSelectionSlot
+            as="select"
+            id="match-opponent"
+            category="Characters"
+            value={opponentName}
+            onChange={setOpponentName}
+            size={80}
+          >
+            <option value="">-- Sélectionner --</option>
+            {KILLERS.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </IconSelectionSlot>
         </>
       )}
 
       <label>Perks</label>
       <div className="match-perks-grid">
         {perks.map((perk, index) => (
-          <div className="match-field-with-icon" key={index}>
-            <input
-              list={`match-perks-options-${index}`}
-              value={perk}
-              placeholder={`Perk ${index + 1}`}
-              onChange={(e) => updatePerk(index, e.target.value)}
-            />
-            <Icon category="Perks" name={perk} alt={perk} />
-          </div>
+          <IconSelectionSlot
+            key={index}
+            category="Perks"
+            value={perk}
+            onChange={(value) => updatePerk(index, value)}
+            listId={`match-perks-options-${index}`}
+            placeholder={`Perk ${index + 1}`}
+            diamond
+            size={56}
+          />
         ))}
       </div>
       {perks.map((_, index) => (
@@ -276,36 +279,37 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       <label>Équipement</label>
       {role === "survivor" ? (
         <>
-          <div className="match-field-with-icon">
-            <select value={equipment[0]} onChange={(e) => updateEquipment(0, e.target.value)}>
-              <option value="">-- Objet --</option>
-              {SURVIVOR_ITEMS.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-            <Icon category="Items" name={equipment[0]} alt={equipment[0]} />
-          </div>
+          <IconSelectionSlot
+            as="select"
+            category="Items"
+            value={equipment[0]}
+            onChange={(value) => updateEquipment(0, value)}
+            size={72}
+          >
+            <option value="">-- Objet --</option>
+            {SURVIVOR_ITEMS.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </IconSelectionSlot>
           <div className="match-form-row">
-            <div className="match-field-with-icon">
-              <input
-                list="match-survivor-addon-options"
-                value={equipment[1]}
-                placeholder="Accessoire 1"
-                onChange={(e) => updateEquipment(1, e.target.value)}
-              />
-              <Icon category="Addons" name={equipment[1]} alt={equipment[1]} />
-            </div>
-            <div className="match-field-with-icon">
-              <input
-                list="match-survivor-addon-options"
-                value={equipment[2]}
-                placeholder="Accessoire 2"
-                onChange={(e) => updateEquipment(2, e.target.value)}
-              />
-              <Icon category="Addons" name={equipment[2]} alt={equipment[2]} />
-            </div>
+            <IconSelectionSlot
+              category="Addons"
+              value={equipment[1]}
+              onChange={(value) => updateEquipment(1, value)}
+              listId="match-survivor-addon-options"
+              placeholder="Accessoire 1"
+              size={72}
+            />
+            <IconSelectionSlot
+              category="Addons"
+              value={equipment[2]}
+              onChange={(value) => updateEquipment(2, value)}
+              listId="match-survivor-addon-options"
+              placeholder="Accessoire 2"
+              size={72}
+            />
           </div>
           <datalist id="match-survivor-addon-options">
             {survivorAddonOptions.map((addon) => (
@@ -315,24 +319,26 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         </>
       ) : (
         <div className="match-form-row">
-          <div className="match-field-with-icon">
-            <input
-              list="match-killer-addon-options"
-              value={equipment[0]}
-              placeholder="Accessoire 1"
-              onChange={(e) => updateEquipment(0, e.target.value)}
-            />
-            <Icon category="Addons" name={equipment[0]} manualOwner={characterName} alt={equipment[0]} />
-          </div>
-          <div className="match-field-with-icon">
-            <input
-              list="match-killer-addon-options"
-              value={equipment[1]}
-              placeholder="Accessoire 2"
-              onChange={(e) => updateEquipment(1, e.target.value)}
-            />
-            <Icon category="Addons" name={equipment[1]} manualOwner={characterName} alt={equipment[1]} />
-          </div>
+          <IconSelectionSlot
+            category="Addons"
+            value={equipment[0]}
+            onChange={(value) => updateEquipment(0, value)}
+            manualOwner={characterName}
+            listId="match-killer-addon-options"
+            placeholder="Accessoire 1"
+            size={72}
+            className={rarityClassName(getKillerAddonRarity(characterName, equipment[0]))}
+          />
+          <IconSelectionSlot
+            category="Addons"
+            value={equipment[1]}
+            onChange={(value) => updateEquipment(1, value)}
+            manualOwner={characterName}
+            listId="match-killer-addon-options"
+            placeholder="Accessoire 2"
+            size={72}
+            className={rarityClassName(getKillerAddonRarity(characterName, equipment[1]))}
+          />
           <datalist id="match-killer-addon-options">
             {killerAddonOptions.map((addon) => (
               <option key={addon} value={addon} />

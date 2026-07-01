@@ -1,0 +1,16 @@
+/* Killer addon rarity border colors, ported from legacy-web-prototype/css/style.css */
+.rarity-common {
+  border-color: #b38e6d !important;
+}
+.rarity-uncommon {
+  border-color: #235c24 !important;
+}
+.rarity-rare {
+  border-color: #1c4562 !important;
+}
+.rarity-very-rare {
+  border-color: #661e68 !important;
+}
+.rarity-iridescent {
+  border-color: #a91d1d !important;
+}

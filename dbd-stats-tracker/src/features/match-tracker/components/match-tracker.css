@@ -36,16 +36,13 @@
 
 .match-form-row {
   display: flex;
-  gap: 0.5rem;
-}
-
-.match-form-row > * {
-  flex: 1;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .match-perks-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -54,6 +51,9 @@
   align-items: center;
   gap: 0.5rem;
   flex: 1;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 2px;
 }
 
 .match-field-with-icon input,
