@@ -1,0 +1,63 @@
+.characters-page {
+  text-align: left;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.characters-error {
+  color: #ff4d4d;
+}
+
+.characters-section {
+  margin-bottom: 2rem;
+}
+
+.characters-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.characters-section-header h2 {
+  margin: 0;
+}
+
+.characters-count {
+  opacity: 0.7;
+  font-size: 0.9em;
+}
+
+.characters-section-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.characters-section-actions button {
+  font-size: 0.85em;
+  padding: 0.4em 0.8em;
+}
+
+.characters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.character-chip {
+  padding: 0.5em 0.9em;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 500;
+  opacity: 0.45;
+  box-shadow: none;
+}
+
+.character-chip.is-unlocked {
+  opacity: 1;
+  border-color: #396cd8;
+  box-shadow: 0 0 0 1px #396cd8;
+}
