@@ -17,7 +17,7 @@ export type EscapeResultEnum =
   | "killed"
   | "disconnected";
 
-export interface UserRow {
+export type UserRow = {
   id: string;
   username: string;
   avatar_url: string | null;
@@ -25,12 +25,12 @@ export interface UserRow {
   unlocked_survivors: string[];
   created_at: string;
   updated_at: string;
-}
+};
 export type UserInsert = Pick<UserRow, "id" | "username"> &
   Partial<Omit<UserRow, "id" | "username">>;
 export type UserUpdate = Partial<UserInsert>;
 
-export interface HardcoreRunRow {
+export type HardcoreRunRow = {
   id: string;
   user_id: string;
   season_id: string;
@@ -41,12 +41,12 @@ export interface HardcoreRunRow {
   started_at: string;
   ended_at: string | null;
   updated_at: string;
-}
+};
 export type HardcoreRunInsert = Pick<HardcoreRunRow, "user_id" | "season_id"> &
   Partial<Omit<HardcoreRunRow, "id" | "user_id" | "season_id">>;
 export type HardcoreRunUpdate = Partial<HardcoreRunInsert>;
 
-export interface GauntletProgressRow {
+export type GauntletProgressRow = {
   id: string;
   user_id: string;
   role: MatchRoleEnum;
@@ -54,12 +54,12 @@ export interface GauntletProgressRow {
   current_character: string | null;
   character_queue: string[];
   updated_at: string;
-}
+};
 export type GauntletProgressInsert = Pick<GauntletProgressRow, "user_id" | "role"> &
   Partial<Omit<GauntletProgressRow, "id" | "user_id" | "role">>;
 export type GauntletProgressUpdate = Partial<GauntletProgressInsert>;
 
-export interface BuildRow {
+export type BuildRow = {
   id: string;
   user_id: string;
   name: string;
@@ -69,12 +69,12 @@ export interface BuildRow {
   equipment: string[];
   created_at: string;
   updated_at: string;
-}
+};
 export type BuildInsert = Pick<BuildRow, "user_id" | "name" | "role" | "character_name"> &
   Partial<Omit<BuildRow, "id" | "user_id" | "name" | "role" | "character_name">>;
 export type BuildUpdate = Partial<BuildInsert>;
 
-export interface MatchRow {
+export type MatchRow = {
   id: string;
   user_id: string;
   hardcore_run_id: string | null;
@@ -94,7 +94,7 @@ export interface MatchRow {
   played_at: string;
   created_at: string;
   updated_at: string;
-}
+};
 export type MatchInsert = Pick<MatchRow, "user_id" | "role" | "character_name"> &
   Partial<Omit<MatchRow, "id" | "user_id" | "role" | "character_name">>;
 export type MatchUpdate = Partial<MatchInsert>;
@@ -102,24 +102,83 @@ export type MatchUpdate = Partial<MatchInsert>;
 export interface Database {
   public: {
     Tables: {
-      users: { Row: UserRow; Insert: UserInsert; Update: UserUpdate };
+      users: {
+        Row: UserRow;
+        Insert: UserInsert;
+        Update: UserUpdate;
+        Relationships: [];
+      };
       hardcore_runs: {
         Row: HardcoreRunRow;
         Insert: HardcoreRunInsert;
         Update: HardcoreRunUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "hardcore_runs_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       gauntlet_progress: {
         Row: GauntletProgressRow;
         Insert: GauntletProgressInsert;
         Update: GauntletProgressUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "gauntlet_progress_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
       };
-      builds: { Row: BuildRow; Insert: BuildInsert; Update: BuildUpdate };
-      matches: { Row: MatchRow; Insert: MatchInsert; Update: MatchUpdate };
+      builds: {
+        Row: BuildRow;
+        Insert: BuildInsert;
+        Update: BuildUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "builds_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      matches: {
+        Row: MatchRow;
+        Insert: MatchInsert;
+        Update: MatchUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "matches_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "matches_hardcore_run_id_fkey";
+            columns: ["hardcore_run_id"];
+            isOneToOne: false;
+            referencedRelation: "hardcore_runs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
     Enums: {
       match_role: MatchRoleEnum;
       match_mode: MatchModeEnum;
       escape_result: EscapeResultEnum;
     };
+    CompositeTypes: Record<string, never>;
   };
 }

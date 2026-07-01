@@ -46,4 +46,16 @@ export interface AuthState {
   session: AuthSession | null;
   status: AuthStatus;
   error: string | null;
+  /** True until the initial session restore (app boot) has settled. Distinct from `status`
+   *  so that a sign-in/sign-up submission (which also sets status to "loading") doesn't
+   *  make the gate unmount the auth form in favor of a full-page spinner. */
+  isInitializing: boolean;
+}
+
+/** Thrown by signUp when Supabase requires email confirmation before a session is issued. */
+export class EmailConfirmationRequiredError extends Error {
+  constructor() {
+    super("Veuillez confirmer votre adresse email avant de vous connecter.");
+    this.name = "EmailConfirmationRequiredError";
+  }
 }

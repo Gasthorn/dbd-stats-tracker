@@ -1,9 +1,20 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
+import { AuthGate, useAuthStore } from "./features/auth";
 import "./App.css";
 
 function App() {
+  return (
+    <AuthGate>
+      <Dashboard />
+    </AuthGate>
+  );
+}
+
+function Dashboard() {
+  const user = useAuthStore((state) => state.user);
+  const signOut = useAuthStore((state) => state.signOut);
   const [greetMsg, setGreetMsg] = useState("");
   const [name, setName] = useState("");
 
@@ -14,6 +25,13 @@ function App() {
 
   return (
     <main className="container">
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+        <p>Connecté en tant que {user?.username}</p>
+        <button type="button" onClick={() => signOut()}>
+          Se déconnecter
+        </button>
+      </div>
+
       <h1>Welcome to Tauri + React</h1>
 
       <div className="row">
