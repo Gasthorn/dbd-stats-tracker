@@ -1,5 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { KILLERS } from "../../../shared/data/characters";
+import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import { useCharactersStore } from "../../characters/stores/characters.store";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
@@ -45,6 +46,17 @@ export function AddMatchForm() {
       (perk) => perk.owner === "Base Kit" || unlockedCharacters.includes(perk.owner),
     );
   }, [role, unlockedCharacters]);
+
+  const killerAddonOptions = useMemo(
+    () => (role === "killer" ? (KILLER_ADDONS[characterName] ?? []) : []),
+    [role, characterName],
+  );
+
+  const survivorAddonOptions = useMemo(() => {
+    if (role !== "survivor") return [];
+    const group = SURVIVOR_ADDONS.find((entry) => entry.itemType === equipment[0]);
+    return group ? group.addons : [];
+  }, [role, equipment]);
 
   function switchRole(nextRole: MatchRole) {
     setRole(nextRole);
@@ -216,44 +228,76 @@ export function AddMatchForm() {
       ))}
 
       <label>Équipement</label>
-      <div className="match-form-row">
-        {equipment.map((item, index) => (
+      {role === "survivor" ? (
+        <>
+          <select value={equipment[0]} onChange={(e) => updateEquipment(0, e.target.value)}>
+            <option value="">-- Objet --</option>
+            {SURVIVOR_ITEMS.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+          <div className="match-form-row">
+            <input
+              list="match-survivor-addon-options"
+              value={equipment[1]}
+              placeholder="Accessoire 1"
+              onChange={(e) => updateEquipment(1, e.target.value)}
+            />
+            <input
+              list="match-survivor-addon-options"
+              value={equipment[2]}
+              placeholder="Accessoire 2"
+              onChange={(e) => updateEquipment(2, e.target.value)}
+            />
+          </div>
+          <datalist id="match-survivor-addon-options">
+            {survivorAddonOptions.map((addon) => (
+              <option key={addon} value={addon} />
+            ))}
+          </datalist>
+        </>
+      ) : (
+        <div className="match-form-row">
           <input
-            key={index}
-            value={item}
-            placeholder={
-              role === "survivor" && index === 0
-                ? "Objet"
-                : `Accessoire ${role === "survivor" ? index : index + 1}`
-            }
-            onChange={(e) => updateEquipment(index, e.target.value)}
+            list="match-killer-addon-options"
+            value={equipment[0]}
+            placeholder="Accessoire 1"
+            onChange={(e) => updateEquipment(0, e.target.value)}
           />
-        ))}
-      </div>
+          <input
+            list="match-killer-addon-options"
+            value={equipment[1]}
+            placeholder="Accessoire 2"
+            onChange={(e) => updateEquipment(1, e.target.value)}
+          />
+          <datalist id="match-killer-addon-options">
+            {killerAddonOptions.map((addon) => (
+              <option key={addon} value={addon} />
+            ))}
+          </datalist>
+        </div>
+      )}
 
-      <div className="match-form-row">
-        <div>
-          <label htmlFor="match-bloodpoints">Points de sang</label>
-          <input
-            id="match-bloodpoints"
-            type="number"
-            min={0}
-            value={bloodpoints}
-            onChange={(e) => setBloodpoints(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="match-gens">Générateurs terminés</label>
-          <input
-            id="match-gens"
-            type="number"
-            min={0}
-            max={5}
-            value={generatorsCompleted}
-            onChange={(e) => setGeneratorsCompleted(e.target.value)}
-          />
-        </div>
-      </div>
+      <label htmlFor="match-bloodpoints">Points de sang</label>
+      <input
+        id="match-bloodpoints"
+        type="number"
+        min={0}
+        value={bloodpoints}
+        onChange={(e) => setBloodpoints(e.target.value)}
+      />
+
+      <label htmlFor="match-gens">Générateurs terminés ({generatorsCompleted})</label>
+      <input
+        id="match-gens"
+        type="range"
+        min={0}
+        max={5}
+        value={generatorsCompleted}
+        onChange={(e) => setGeneratorsCompleted(e.target.value)}
+      />
 
       {role === "killer" ? (
         <>
