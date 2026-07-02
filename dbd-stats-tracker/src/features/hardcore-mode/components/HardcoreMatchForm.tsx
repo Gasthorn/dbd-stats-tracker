@@ -119,6 +119,7 @@ export function HardcoreMatchForm({
                 equipment: cleanedEquipment,
                 bloodpoints: Number(bloodpoints) || 0,
                 kills: 0,
+                hooks: null,
                 generatorsCompleted: Number(generatorsCompleted),
                 escapeResult: null,
               }
@@ -130,6 +131,7 @@ export function HardcoreMatchForm({
                 equipment: cleanedEquipment,
                 bloodpoints: Number(bloodpoints) || 0,
                 kills: null,
+                hooks: null,
                 generatorsCompleted: Number(generatorsCompleted),
                 escapeResult: died ? "sacrificed" : "escaped_door",
               },

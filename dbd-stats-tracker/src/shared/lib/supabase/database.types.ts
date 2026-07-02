@@ -9,13 +9,22 @@
  * shapes in the service layer.
  */
 export type MatchRoleEnum = "killer" | "survivor";
-export type MatchModeEnum = "normal" | "hardcore" | "gauntlet";
+export type MatchModeEnum = "normal" | "hardcore" | "gauntlet" | "world_cup";
 export type EscapeResultEnum =
   | "escaped_door"
   | "escaped_hatch"
   | "sacrificed"
   | "killed"
   | "disconnected";
+export type WorldCupStatusEnum = "group_stage" | "knockout" | "completed";
+export type WorldCupRoundEnum =
+  | "group"
+  | "round_of_32"
+  | "round_of_16"
+  | "quarterfinal"
+  | "semifinal"
+  | "final";
+export type WorldCupKnockoutRoundEnum = Exclude<WorldCupRoundEnum, "group">;
 
 export type UserRow = {
   id: string;
@@ -87,6 +96,7 @@ export type MatchRow = {
   equipment: string[];
   bloodpoints: number;
   kills: number | null;
+  hooks: number | null;
   generators_completed: number;
   escape_result: EscapeResultEnum | null;
   hardcore_pips: number | null;
@@ -99,6 +109,54 @@ export type MatchRow = {
 export type MatchInsert = Pick<MatchRow, "user_id" | "role" | "character_name"> &
   Partial<Omit<MatchRow, "id" | "user_id" | "role" | "character_name">>;
 export type MatchUpdate = Partial<MatchInsert>;
+
+export type WorldCupRunRow = {
+  id: string;
+  user_id: string;
+  status: WorldCupStatusEnum;
+  current_round: WorldCupKnockoutRoundEnum | null;
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+};
+export type WorldCupRunInsert = Pick<WorldCupRunRow, "user_id"> &
+  Partial<Omit<WorldCupRunRow, "id" | "user_id">>;
+export type WorldCupRunUpdate = Partial<WorldCupRunInsert>;
+
+export type WorldCupGroupRow = {
+  id: string;
+  run_id: string;
+  user_id: string;
+  group_index: number;
+  killers: string[];
+};
+export type WorldCupGroupInsert = Pick<WorldCupGroupRow, "run_id" | "user_id" | "group_index" | "killers"> &
+  Partial<Omit<WorldCupGroupRow, "id" | "run_id" | "user_id" | "group_index" | "killers">>;
+export type WorldCupGroupUpdate = Partial<WorldCupGroupInsert>;
+
+export type WorldCupFixtureRow = {
+  id: string;
+  run_id: string;
+  user_id: string;
+  group_id: string | null;
+  round: WorldCupRoundEnum;
+  slot_index: number;
+  killer_a: string;
+  killer_b: string;
+  killer_a_match_id: string | null;
+  killer_b_match_id: string | null;
+  winner: "a" | "b" | "draw" | null;
+  created_at: string;
+  updated_at: string;
+};
+export type WorldCupFixtureInsert = Pick<
+  WorldCupFixtureRow,
+  "run_id" | "user_id" | "round" | "slot_index" | "killer_a" | "killer_b"
+> &
+  Partial<
+    Omit<WorldCupFixtureRow, "id" | "run_id" | "user_id" | "round" | "slot_index" | "killer_a" | "killer_b">
+  >;
+export type WorldCupFixtureUpdate = Partial<WorldCupFixtureInsert>;
 
 export interface Database {
   public: {
@@ -168,6 +226,55 @@ export interface Database {
             columns: ["hardcore_run_id"];
             isOneToOne: false;
             referencedRelation: "hardcore_runs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      world_cup_runs: {
+        Row: WorldCupRunRow;
+        Insert: WorldCupRunInsert;
+        Update: WorldCupRunUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "world_cup_runs_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      world_cup_groups: {
+        Row: WorldCupGroupRow;
+        Insert: WorldCupGroupInsert;
+        Update: WorldCupGroupUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "world_cup_groups_run_id_fkey";
+            columns: ["run_id"];
+            isOneToOne: false;
+            referencedRelation: "world_cup_runs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      world_cup_fixtures: {
+        Row: WorldCupFixtureRow;
+        Insert: WorldCupFixtureInsert;
+        Update: WorldCupFixtureUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "world_cup_fixtures_run_id_fkey";
+            columns: ["run_id"];
+            isOneToOne: false;
+            referencedRelation: "world_cup_runs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "world_cup_fixtures_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "world_cup_groups";
             referencedColumns: ["id"];
           },
         ];

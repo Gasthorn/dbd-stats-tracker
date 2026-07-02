@@ -1,7 +1,7 @@
 import type { ISODateString, UUID } from "../../../shared/types/common.types";
 
 export type MatchRole = "killer" | "survivor";
-export type MatchMode = "normal" | "hardcore" | "gauntlet";
+export type MatchMode = "normal" | "hardcore" | "gauntlet" | "world_cup";
 
 export type EscapeResult =
   | "escaped_door"
@@ -32,6 +32,8 @@ export interface KillerMatch extends BaseMatch {
   role: "killer";
   opponentName: null;
   kills: number;
+  /** Hooks landed this match. Optional outside World Cup, where it's the deciding stat. */
+  hooks: number | null;
   escapeResult: null;
   hardcorePips: number | null;
   hardcoreDied: boolean | null;
@@ -41,6 +43,7 @@ export interface SurvivorMatch extends BaseMatch {
   role: "survivor";
   opponentName: string | null;
   kills: null;
+  hooks: null;
   escapeResult: EscapeResult;
   hardcorePips: number | null;
   hardcoreDied: boolean | null;

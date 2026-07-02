@@ -27,6 +27,7 @@ function toMatch(row: MatchRow): Match {
       role: "killer",
       opponentName: null,
       kills: row.kills ?? 0,
+      hooks: row.hooks,
       escapeResult: null,
       hardcorePips: row.hardcore_pips,
       hardcoreDied: row.hardcore_died,
@@ -38,6 +39,7 @@ function toMatch(row: MatchRow): Match {
     role: "survivor",
     opponentName: row.opponent_name,
     kills: null,
+    hooks: null,
     escapeResult: row.escape_result as Exclude<MatchRow["escape_result"], null>,
     hardcorePips: row.hardcore_pips,
     hardcoreDied: row.hardcore_died,
@@ -56,6 +58,7 @@ function toInsertRow(userId: string, input: CreateMatchInput) {
     equipment: input.equipment,
     bloodpoints: input.bloodpoints,
     kills: input.role === "killer" ? input.kills : null,
+    hooks: input.role === "killer" ? input.hooks : null,
     generators_completed: input.generatorsCompleted,
     escape_result: input.role === "survivor" ? input.escapeResult : null,
     hardcore_pips: input.hardcorePips,
@@ -80,6 +83,7 @@ function toUpdateRow(input: UpdateMatchInput) {
     ...(rest.equipment !== undefined ? { equipment: rest.equipment } : {}),
     ...(rest.bloodpoints !== undefined ? { bloodpoints: rest.bloodpoints } : {}),
     ...(rest.role === "killer" && rest.kills !== undefined ? { kills: rest.kills } : {}),
+    ...(rest.role === "killer" && rest.hooks !== undefined ? { hooks: rest.hooks } : {}),
     ...(rest.generatorsCompleted !== undefined
       ? { generators_completed: rest.generatorsCompleted }
       : {}),

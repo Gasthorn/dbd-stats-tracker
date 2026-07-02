@@ -61,6 +61,9 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
   );
   const [bloodpoints, setBloodpoints] = useState(match ? String(match.bloodpoints) : "");
   const [kills, setKills] = useState(match?.kills !== undefined && match?.kills !== null ? String(match.kills) : "0");
+  const [hooks, setHooks] = useState(
+    match?.role === "killer" && match.hooks !== null ? String(match.hooks) : "",
+  );
   const [generatorsCompleted, setGeneratorsCompleted] = useState(
     match ? String(match.generatorsCompleted) : "0",
   );
@@ -156,6 +159,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             equipment: cleanedEquipment,
             bloodpoints: Number(bloodpoints) || 0,
             kills: Number(kills),
+            hooks: hooks === "" ? null : Number(hooks),
             generatorsCompleted: Number(generatorsCompleted),
             escapeResult: null,
             hardcorePips: null,
@@ -172,6 +176,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             equipment: cleanedEquipment,
             bloodpoints: Number(bloodpoints) || 0,
             kills: null,
+            hooks: null,
             generatorsCompleted: Number(generatorsCompleted),
             escapeResult,
             hardcorePips: null,
@@ -193,6 +198,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         setEquipment(emptyEquipment(role));
         setBloodpoints("");
         setKills("0");
+        setHooks("");
         setGeneratorsCompleted("0");
         setEscapeResult("escaped_door");
       }
@@ -399,6 +405,15 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             max={4}
             value={kills}
             onChange={(e) => setKills(e.target.value)}
+          />
+
+          <label htmlFor="match-hooks">Crochets (optionnel)</label>
+          <input
+            id="match-hooks"
+            type="number"
+            min={0}
+            value={hooks}
+            onChange={(e) => setHooks(e.target.value)}
           />
         </>
       ) : (

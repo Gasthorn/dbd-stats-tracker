@@ -1,0 +1,279 @@
+.world-cup-page {
+  text-align: left;
+  max-width: min(1400px, 95vw);
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.world-cup-page h1 {
+  text-align: center;
+}
+
+.world-cup-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---- Seeding setup ---- */
+
+.world-cup-seeding-choice {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.world-cup-seeding-hint {
+  opacity: 0.8;
+  font-size: 0.9em;
+}
+
+.world-cup-seeding-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  max-height: 480px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.world-cup-seeding-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.world-cup-seeding-rank {
+  width: 28px;
+  text-align: right;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.world-cup-seeding-name {
+  flex: 1;
+}
+
+.world-cup-seeding-controls {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.world-cup-seeding-controls button {
+  padding: 0.2em 0.6em;
+  font-size: 0.8em;
+}
+
+/* ---- Current matchday ---- */
+
+.world-cup-matchday-panel {
+  margin-bottom: 1.5rem;
+}
+
+.world-cup-matchday-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.world-cup-matchday-header h2 {
+  margin: 0;
+}
+
+.world-cup-matchday-progress {
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+  text-align: center;
+}
+
+.world-cup-matchday-panel .world-cup-fixture-list {
+  max-width: 680px;
+  margin: 1rem auto 0;
+}
+
+/* ---- Groups ---- */
+
+.world-cup-groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  align-items: start;
+}
+
+.world-cup-group-card {
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+}
+
+.world-cup-group-card.is-current {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+.world-cup-group-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+
+.world-cup-group-header h3 {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.world-cup-group-progress {
+  flex: 1;
+  text-align: right;
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+}
+
+.world-cup-standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.85em;
+}
+
+.world-cup-standings-table th,
+.world-cup-standings-table td {
+  padding: 0.35em 0.5em;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.world-cup-standings-killer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: left !important;
+}
+
+/* ---- Fixtures ---- */
+
+.world-cup-fixture-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.world-cup-fixture {
+  background-color: var(--color-bg-inset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.9rem;
+}
+
+.world-cup-fixture-matchup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.world-cup-fixture-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.world-cup-fixture-side.is-winner {
+  background: rgba(241, 196, 15, 0.12);
+  box-shadow: 0 0 0 1px var(--color-gold);
+}
+
+.world-cup-fixture-killer-name {
+  flex: 1;
+  font-size: 0.9em;
+}
+
+.world-cup-fixture-hooks {
+  font-weight: bold;
+  font-size: 0.9em;
+  color: var(--color-gold);
+  white-space: nowrap;
+}
+
+.world-cup-fixture-vs {
+  opacity: 0.6;
+  font-size: 0.8em;
+  text-transform: uppercase;
+}
+
+.world-cup-fixture-tiebreak {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px dashed var(--color-accent-hover);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 0.85em;
+}
+
+.world-cup-fixture-tiebreak button {
+  margin: 0.3rem;
+}
+
+.world-cup-fixture-form {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- Bracket ---- */
+
+.world-cup-bracket-rounds-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.85em;
+}
+
+.world-cup-bracket-rounds-nav span {
+  padding: 0.3em 0.7em;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-muted);
+}
+
+.world-cup-bracket-rounds-nav span.is-current {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+  background: rgba(169, 29, 29, 0.15);
+}
+
+.world-cup-bracket .world-cup-fixture-list {
+  max-width: 680px;
+  margin: 0 auto 1.5rem;
+}
+
+.world-cup-bracket > button {
+  display: block;
+  margin: 0 auto;
+}
+
+.world-cup-champion {
+  text-align: center;
+  padding: 2rem;
+}
+
+.world-cup-champion h2 {
+  color: var(--color-gold);
+  text-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
+}
