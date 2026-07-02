@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { pickIconsFolder } from "../lib/pickIconsFolder";
-import { useSettingsStore } from "../stores/settings.store";
+import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
 import { Icon } from "./Icon";
 import "./settings.css";
 
 export function IconsFolderSetting() {
   const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
+  const defaultIconsFolderPath = useSettingsStore((state) => state.defaultIconsFolderPath);
+  const effectivePath = useSettingsStore(selectEffectiveIconsFolderPath);
+  const isUsingDefault = !iconsFolderPath && Boolean(defaultIconsFolderPath);
   const storeError = useSettingsStore((state) => state.error);
   const setIconsFolderPath = useSettingsStore((state) => state.setIconsFolderPath);
   const [error, setError] = useState<string | null>(null);
@@ -31,19 +34,22 @@ export function IconsFolderSetting() {
         des tueurs, survivants, perks et objets dans toute l'application.
       </p>
 
-      {iconsFolderPath ? (
-        <p className="icons-folder-path">{iconsFolderPath}</p>
+      {effectivePath ? (
+        <p className="icons-folder-path">
+          {isUsingDefault && <span className="icons-folder-path-badge">Par défaut</span>}
+          {effectivePath}
+        </p>
       ) : (
         <p className="icons-folder-path icons-folder-path-empty">Aucun dossier sélectionné</p>
       )}
 
       <div className="icons-folder-actions">
         <button type="button" onClick={handlePick}>
-          {iconsFolderPath ? "Changer de dossier" : "Choisir un dossier"}
+          {effectivePath ? "Changer de dossier" : "Choisir un dossier"}
         </button>
         {iconsFolderPath && (
           <button type="button" onClick={() => setIconsFolderPath(null)}>
-            Effacer
+            {defaultIconsFolderPath ? "Revenir au dossier par défaut" : "Effacer"}
           </button>
         )}
       </div>
@@ -51,7 +57,7 @@ export function IconsFolderSetting() {
       {error && <p className="match-error">{error}</p>}
       {storeError && <p className="match-error">{storeError}</p>}
 
-      {iconsFolderPath && (
+      {effectivePath && (
         <div className="icons-folder-preview">
           <Icon category="Characters" name="The Trapper" alt="The Trapper" size={64} />
           <Icon category="Perks" name="Agitation" alt="Agitation" size={64} />

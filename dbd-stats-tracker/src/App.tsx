@@ -48,6 +48,7 @@ function Dashboard() {
 
   useEffect(() => {
     useSettingsStore.getState().loadIconsFolderPath();
+    useSettingsStore.getState().loadDefaultIconsFolderPath();
   }, []);
 
   return (

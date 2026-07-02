@@ -3,7 +3,7 @@ import { KILLERS, SURVIVORS } from "../../../shared/data/characters";
 import { SURVIVOR_ADDONS, SURVIVOR_ITEMS, KILLER_ADDONS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
-import { useSettingsStore } from "../stores/settings.store";
+import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
 import { IconIndexTile } from "./IconIndexTile";
 import "./icons-index.css";
 
@@ -25,7 +25,7 @@ function slugify(text: string): string {
 }
 
 export function IconsIndexPage() {
-  const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
+  const iconsFolderPath = useSettingsStore(selectEffectiveIconsFolderPath);
 
   const sections = useMemo<IconIndexSection[]>(() => {
     const result: IconIndexSection[] = [

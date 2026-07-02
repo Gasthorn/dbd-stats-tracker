@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
 import { resolveIconSrc } from "../lib/resolveIconSrc";
-import { useSettingsStore } from "../stores/settings.store";
+import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
 
 interface IconProps {
   category: IconCategory;
@@ -14,7 +14,7 @@ interface IconProps {
 
 /** Renders a game icon from the configured Icons folder. Renders nothing if no folder is set or the file fails to load. */
 export function Icon({ category, name, manualOwner = null, alt, className, size = 40 }: IconProps) {
-  const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
+  const iconsFolderPath = useSettingsStore(selectEffectiveIconsFolderPath);
   const [failed, setFailed] = useState(false);
 
   const src = iconsFolderPath ? resolveIconSrc(category, name, manualOwner) : null;

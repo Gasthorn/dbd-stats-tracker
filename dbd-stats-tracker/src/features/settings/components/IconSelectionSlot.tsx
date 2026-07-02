@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
 import { resolveIconSrc } from "../lib/resolveIconSrc";
-import { useSettingsStore } from "../stores/settings.store";
+import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
 import "./icon-selection-slot.css";
 
 interface BaseProps {
@@ -37,7 +37,7 @@ type IconSelectionSlotProps = InputSlotProps | SelectSlotProps;
  * empty value, or the icon fails to load) so the field never looks blank.
  */
 export function IconSelectionSlot(props: IconSelectionSlotProps) {
-  const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
+  const iconsFolderPath = useSettingsStore(selectEffectiveIconsFolderPath);
   const [isFocused, setIsFocused] = useState(false);
   const [isBroken, setIsBroken] = useState(false);
 

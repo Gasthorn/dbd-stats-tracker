@@ -23,6 +23,20 @@
   font-style: italic;
 }
 
+.icons-folder-path-badge {
+  display: inline-block;
+  font-family: var(--font-family);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85em;
+  color: var(--color-accent-hover);
+  background-color: rgba(169, 29, 29, 0.15);
+  border-radius: 4px;
+  padding: 0.1em 0.5em;
+  margin-right: 0.6em;
+}
+
 .icons-folder-actions {
   display: flex;
   gap: 0.5rem;

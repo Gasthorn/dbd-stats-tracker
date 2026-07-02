@@ -3,7 +3,7 @@ import type { IconCategory } from "../../../shared/lib/icons/iconPath";
 import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons/rarity";
 import "../../../shared/styles/rarity.css";
 import { resolveEmptyIconSrc, resolveIconSrc } from "../lib/resolveIconSrc";
-import { useSettingsStore } from "../stores/settings.store";
+import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
 
 interface IconIndexTileProps {
   category: IconCategory;
@@ -16,7 +16,7 @@ interface IconIndexTileProps {
  *  when that happens so broken icon resolutions are easy to spot in a large grid. Killer addons
  *  also get their rarity-colored border, like the legacy prototype's selection slots. */
 export function IconIndexTile({ category, name, manualOwner = null }: IconIndexTileProps) {
-  const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
+  const iconsFolderPath = useSettingsStore(selectEffectiveIconsFolderPath);
   const [isBroken, setIsBroken] = useState(false);
 
   const primarySrc = iconsFolderPath ? resolveIconSrc(category, name, manualOwner) : null;

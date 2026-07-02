@@ -1,6 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { emptyIconPath, getIconRelativePath, type IconCategory } from "../../../shared/lib/icons/iconPath";
-import { useSettingsStore } from "../stores/settings.store";
+import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
 
 function toSrc(folder: string, relativePath: string): string | null {
   const separator = folder.includes("\\") ? "\\" : "/";
@@ -24,14 +24,14 @@ export function resolveIconSrc(
   name: string | null | undefined,
   manualOwner: string | null = null,
 ): string | null {
-  const folder = useSettingsStore.getState().iconsFolderPath;
+  const folder = selectEffectiveIconsFolderPath(useSettingsStore.getState());
   if (!folder) return null;
   return toSrc(folder, getIconRelativePath(category, name, manualOwner));
 }
 
 /** Src for the category's "empty.png" placeholder, used as the onError fallback (mirrors legacy behavior). */
 export function resolveEmptyIconSrc(category: IconCategory): string | null {
-  const folder = useSettingsStore.getState().iconsFolderPath;
+  const folder = selectEffectiveIconsFolderPath(useSettingsStore.getState());
   if (!folder) return null;
   return toSrc(folder, emptyIconPath(category));
 }
