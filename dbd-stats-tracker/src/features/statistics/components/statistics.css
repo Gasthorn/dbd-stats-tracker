@@ -1,6 +1,6 @@
 .statistics-page {
   text-align: left;
-  max-width: 900px;
+  max-width: min(1500px, 96vw);
   margin: 0 auto;
   padding: 1rem 0 3rem;
   /* Validated categorical pair (dark-surface steps) for the killer/survivor series used
@@ -19,13 +19,29 @@
   margin-top: 2rem;
 }
 
+.statistics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.stats-zone-wide {
+  grid-column: 1 / -1;
+}
+
 .stats-zone {
   background-color: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
   padding: 1.25rem;
-  margin-bottom: 1.5rem;
   border-radius: var(--radius-md);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.performance-charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 1.5rem 2.5rem;
 }
 
 /* ---- Favorites / records ---- */
@@ -89,8 +105,8 @@
 }
 
 .top-build-perk-slot {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   transform: rotate(45deg);
   background-color: var(--color-bg-inset);
   border: 2px solid var(--color-border-strong);

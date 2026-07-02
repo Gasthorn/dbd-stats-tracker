@@ -12,7 +12,7 @@ export function TopCharacterCard({ label, stat }: TopCharacterCardProps) {
       <p>{label}</p>
       {stat ? (
         <>
-          <Icon category="Characters" name={stat.characterName} alt={stat.characterName} size={56} />
+          <Icon category="Characters" name={stat.characterName} alt={stat.characterName} size={72} />
           <b>{stat.characterName}</b> <span className="top-stat-count">({stat.count})</span>
         </>
       ) : (

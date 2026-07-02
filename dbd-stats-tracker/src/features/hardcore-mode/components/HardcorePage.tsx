@@ -111,7 +111,7 @@ export function HardcorePage() {
       {role && selectedCharacter && currentRun && (
         <>
           <div className="hardcore-selected-character-bar">
-            <Icon category="Characters" name={selectedCharacter} alt={selectedCharacter} size={56} />
+            <Icon category="Characters" name={selectedCharacter} alt={selectedCharacter} size={64} />
             <span>{selectedCharacter}</span>
             <button type="button" onClick={() => setSelectedCharacter(null)}>
               Changer de personnage

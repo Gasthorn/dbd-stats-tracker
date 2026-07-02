@@ -13,7 +13,7 @@ interface IconProps {
 }
 
 /** Renders a game icon from the configured Icons folder. Renders nothing if no folder is set or the file fails to load. */
-export function Icon({ category, name, manualOwner = null, alt, className, size = 32 }: IconProps) {
+export function Icon({ category, name, manualOwner = null, alt, className, size = 40 }: IconProps) {
   const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
   const [failed, setFailed] = useState(false);
 

@@ -222,7 +222,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         category="Characters"
         value={characterName}
         onChange={setCharacterName}
-        size={80}
+        size={96}
       >
         <option value="">-- Sélectionner --</option>
         {unlockedCharacters.map((name) => (
@@ -241,7 +241,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             category="Characters"
             value={opponentName}
             onChange={setOpponentName}
-            size={80}
+            size={96}
           >
             <option value="">-- Sélectionner --</option>
             {KILLERS.map((name) => (
@@ -264,7 +264,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             listId={`match-perks-options-${index}`}
             placeholder={`Perk ${index + 1}`}
             diamond
-            size={56}
+            size={68}
           />
         ))}
       </div>
@@ -284,7 +284,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             category="Items"
             value={equipment[0]}
             onChange={(value) => updateEquipment(0, value)}
-            size={72}
+            size={84}
           >
             <option value="">-- Objet --</option>
             {SURVIVOR_ITEMS.map((item) => (
@@ -300,7 +300,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
               onChange={(value) => updateEquipment(1, value)}
               listId="match-survivor-addon-options"
               placeholder="Accessoire 1"
-              size={72}
+              size={84}
             />
             <IconSelectionSlot
               category="Addons"
@@ -308,7 +308,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
               onChange={(value) => updateEquipment(2, value)}
               listId="match-survivor-addon-options"
               placeholder="Accessoire 2"
-              size={72}
+              size={84}
             />
           </div>
           <datalist id="match-survivor-addon-options">
@@ -326,7 +326,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             manualOwner={characterName}
             listId="match-killer-addon-options"
             placeholder="Accessoire 1"
-            size={72}
+            size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[0]))}
           />
           <IconSelectionSlot
@@ -336,7 +336,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             manualOwner={characterName}
             listId="match-killer-addon-options"
             placeholder="Accessoire 2"
-            size={72}
+            size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[1]))}
           />
           <datalist id="match-killer-addon-options">

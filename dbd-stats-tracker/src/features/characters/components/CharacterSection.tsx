@@ -48,7 +48,7 @@ export function CharacterSection({
               disabled={disabled}
               onClick={() => onToggle(name)}
             >
-              <Icon category="Characters" name={name} alt={name} size={40} />
+              <Icon category="Characters" name={name} alt={name} size={56} />
               <span>{name}</span>
             </button>
           );

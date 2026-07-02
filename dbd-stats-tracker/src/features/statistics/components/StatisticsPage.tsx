@@ -45,8 +45,8 @@ export function StatisticsPage() {
       )}
 
       {matches.length > 0 && (
-        <>
-          <div className="stats-zone">
+        <div className="statistics-grid">
+          <div className="stats-zone stats-zone-wide">
             <h2>Favoris & Records</h2>
             <div className="top-stats-row">
               <TopCharacterCard label="Survivant le plus joué" stat={summary.topSurvivor} />
@@ -92,22 +92,24 @@ export function StatisticsPage() {
             />
           </div>
 
-          <div className="stats-zone">
+          <div className="stats-zone stats-zone-wide">
             <h2>Performances (Taux de réussite %)</h2>
-            <PerformanceBarChart
-              title="Tueur — Kill Rate"
-              labels={performance.labels}
-              values={performance.killRate}
-              seriesClassName="is-killer"
-            />
-            <PerformanceBarChart
-              title="Survivant — Escape Rate"
-              labels={performance.labels}
-              values={performance.escapeRate}
-              seriesClassName="is-survivor"
-            />
+            <div className="performance-charts-row">
+              <PerformanceBarChart
+                title="Tueur — Kill Rate"
+                labels={performance.labels}
+                values={performance.killRate}
+                seriesClassName="is-killer"
+              />
+              <PerformanceBarChart
+                title="Survivant — Escape Rate"
+                labels={performance.labels}
+                values={performance.escapeRate}
+                seriesClassName="is-survivor"
+              />
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

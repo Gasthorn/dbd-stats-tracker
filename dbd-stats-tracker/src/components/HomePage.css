@@ -1,11 +1,12 @@
 .home-page {
   text-align: left;
-  max-width: 720px;
+  max-width: min(1200px, 94vw);
   margin: 0 auto;
   padding: 1rem 0 3rem;
 }
 
 .home-tagline {
+  max-width: 800px;
   opacity: 0.8;
 }
 
@@ -14,9 +15,25 @@
 }
 
 .home-modules-list {
-  padding-left: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .home-modules-list li {
-  margin-bottom: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+}
+
+.home-modules-list li span {
+  font-size: 0.9em;
+  color: var(--color-text-muted);
 }

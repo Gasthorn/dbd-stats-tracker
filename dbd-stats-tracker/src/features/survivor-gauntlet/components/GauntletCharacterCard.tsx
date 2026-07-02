@@ -17,14 +17,14 @@ export function GauntletCharacterCard({ role, characterName }: GauntletCharacter
   return (
     <div className="gauntlet-rolled-char">
       <div className="gauntlet-rolled-portrait">
-        <Icon category="Characters" name={characterName} alt={characterName} size={140} />
+        <Icon category="Characters" name={characterName} alt={characterName} size={170} />
       </div>
       <h3 className="gauntlet-rolled-name">{characterName}</h3>
 
       <div className="gauntlet-rolled-perks">
         {uniquePerkNames.map((perkName) => (
           <div key={perkName} className="gauntlet-rolled-perk">
-            <Icon category="Perks" name={perkName} alt={perkName} size={56} />
+            <Icon category="Perks" name={perkName} alt={perkName} size={68} />
             <span>{perkName}</span>
           </div>
         ))}

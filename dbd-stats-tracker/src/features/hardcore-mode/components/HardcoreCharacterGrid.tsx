@@ -26,7 +26,7 @@ export function HardcoreCharacterGrid({
             title={isDead ? `${name} (éliminé cette saison)` : name}
             onClick={() => onSelect(name)}
           >
-            <Icon category="Characters" name={name} alt={name} size={64} />
+            <Icon category="Characters" name={name} alt={name} size={80} />
             <span>{name}</span>
           </button>
         );

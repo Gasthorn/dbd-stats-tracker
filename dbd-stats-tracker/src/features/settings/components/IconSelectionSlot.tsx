@@ -51,7 +51,7 @@ export function IconSelectionSlot(props: IconSelectionSlotProps) {
   }, [src]);
 
   const hasIcon = Boolean(src);
-  const size = props.size ?? 64;
+  const size = props.size ?? 80;
 
   const boxClassName = [
     "icon-selection-slot",

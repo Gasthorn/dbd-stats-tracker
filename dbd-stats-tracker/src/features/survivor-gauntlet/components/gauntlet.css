@@ -1,6 +1,6 @@
 .gauntlet-page {
   text-align: left;
-  max-width: 720px;
+  max-width: min(1100px, 94vw);
   margin: 0 auto;
   padding: 1rem 0 3rem;
 }
@@ -16,11 +16,12 @@
 }
 
 .gauntlet-rules {
+  max-width: 680px;
   background: rgba(169, 29, 29, 0.05);
   border: 1px solid rgba(169, 29, 29, 0.3);
   border-radius: 6px;
   padding: 1rem;
-  margin: 1rem 0;
+  margin: 1rem auto;
 }
 
 .gauntlet-rules h3 {
@@ -100,6 +101,23 @@
   background: rgba(0, 0, 0, 0.15);
 }
 
+@media (min-width: 900px) {
+  .gauntlet-roll-zone {
+    display: grid;
+    grid-template-columns: minmax(260px, 360px) 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .gauntlet-match-form {
+    margin-top: 0;
+    padding-top: 0;
+    padding-left: 2rem;
+    border-top: none;
+    border-left: 1px solid #333;
+  }
+}
+
 .gauntlet-rolled-char {
   text-align: center;
 }
@@ -128,8 +146,8 @@
   flex-direction: column;
   align-items: center;
   gap: 0.3rem;
-  width: 90px;
-  font-size: 0.75em;
+  width: 100px;
+  font-size: 0.78em;
   opacity: 0.85;
 }
 
@@ -178,8 +196,8 @@
 }
 
 .gauntlet-completed-item {
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
   border-radius: 8px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.15);

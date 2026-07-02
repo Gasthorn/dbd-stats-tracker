@@ -53,9 +53,9 @@ export function IconsFolderSetting() {
 
       {iconsFolderPath && (
         <div className="icons-folder-preview">
-          <Icon category="Characters" name="The Trapper" alt="The Trapper" size={48} />
-          <Icon category="Perks" name="Agitation" alt="Agitation" size={48} />
-          <Icon category="Characters" name="Dwight Fairfield" alt="Dwight Fairfield" size={48} />
+          <Icon category="Characters" name="The Trapper" alt="The Trapper" size={64} />
+          <Icon category="Perks" name="Agitation" alt="Agitation" size={64} />
+          <Icon category="Characters" name="Dwight Fairfield" alt="Dwight Fairfield" size={64} />
         </div>
       )}
     </div>

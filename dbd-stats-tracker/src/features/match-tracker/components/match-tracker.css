@@ -1,11 +1,26 @@
 .match-tracker-page {
   text-align: left;
-  max-width: 640px;
+  max-width: min(1300px, 95vw);
   margin: 0 auto;
   padding: 1rem 0 3rem;
 }
 
+@media (min-width: 900px) {
+  .match-tracker-page {
+    display: grid;
+    grid-template-columns: minmax(360px, 480px) 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  .match-tracker-page .match-history {
+    margin-top: 0;
+  }
+}
+
 .match-form {
+  max-width: 680px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -26,7 +41,8 @@
 .match-role-toggle {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  max-width: 680px;
+  margin: 0 auto 0.5rem;
 }
 
 .match-role-toggle button.is-active {
@@ -79,19 +95,31 @@
   margin-top: 2.5rem;
 }
 
+.match-history-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .match-history-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5em 0;
-  border-bottom: 1px solid rgba(127, 127, 127, 0.2);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-elevated);
   font-size: 0.9em;
 }
 
 .match-history-actions {
   display: flex;
   gap: 0.4rem;
+  margin-top: 0.25rem;
 }
 
 .match-history-actions button {
@@ -106,7 +134,7 @@
 
 .match-history-page {
   text-align: left;
-  max-width: 720px;
+  max-width: min(1300px, 95vw);
   margin: 0 auto;
   padding: 1rem 0 3rem;
 }

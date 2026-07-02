@@ -46,8 +46,8 @@ export function IconIndexTile({ category, name, manualOwner = null }: IconIndexT
           <img
             src={src}
             alt={name}
-            width={48}
-            height={48}
+            width={60}
+            height={60}
             style={{ objectFit: "contain" }}
             onError={() => setIsBroken(true)}
           />

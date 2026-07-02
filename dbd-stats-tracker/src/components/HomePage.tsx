@@ -46,7 +46,8 @@ export function HomePage() {
         <ul className="home-modules-list">
           {MODULES.map((module) => (
             <li key={module.title}>
-              <strong>{module.title}</strong> — {module.description}
+              <strong>{module.title}</strong>
+              <span>{module.description}</span>
             </li>
           ))}
         </ul>

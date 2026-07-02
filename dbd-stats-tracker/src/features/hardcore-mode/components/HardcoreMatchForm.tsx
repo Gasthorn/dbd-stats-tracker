@@ -137,7 +137,7 @@ export function HardcoreMatchForm({
             category="Characters"
             value={opponentName}
             onChange={setOpponentName}
-            size={80}
+            size={96}
           >
             <option value="">-- Sélectionner --</option>
             {KILLERS.map((name) => (
@@ -160,7 +160,7 @@ export function HardcoreMatchForm({
             listId={`hc-perks-options-${index}`}
             placeholder={`Perk ${index + 1}`}
             diamond
-            size={56}
+            size={68}
           />
         ))}
       </div>
@@ -180,7 +180,7 @@ export function HardcoreMatchForm({
             category="Items"
             value={equipment[0]}
             onChange={(value) => updateEquipment(0, value)}
-            size={72}
+            size={84}
           >
             <option value="">-- Objet --</option>
             {SURVIVOR_ITEMS.map((item) => (
@@ -196,7 +196,7 @@ export function HardcoreMatchForm({
               onChange={(value) => updateEquipment(1, value)}
               listId="hc-survivor-addon-options"
               placeholder="Accessoire 1"
-              size={72}
+              size={84}
             />
             <IconSelectionSlot
               category="Addons"
@@ -204,7 +204,7 @@ export function HardcoreMatchForm({
               onChange={(value) => updateEquipment(2, value)}
               listId="hc-survivor-addon-options"
               placeholder="Accessoire 2"
-              size={72}
+              size={84}
             />
           </div>
           <datalist id="hc-survivor-addon-options">
@@ -222,7 +222,7 @@ export function HardcoreMatchForm({
             manualOwner={characterName}
             listId="hc-killer-addon-options"
             placeholder="Accessoire 1"
-            size={72}
+            size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[0]))}
           />
           <IconSelectionSlot
@@ -232,7 +232,7 @@ export function HardcoreMatchForm({
             manualOwner={characterName}
             listId="hc-killer-addon-options"
             placeholder="Accessoire 2"
-            size={72}
+            size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[1]))}
           />
           <datalist id="hc-killer-addon-options">

@@ -15,7 +15,7 @@ export function TopBuildCard({ label, stat }: TopBuildCardProps) {
           <div className="top-build-icons">
             {stat.perks.map((perk, i) => (
               <div key={`${perk}-${i}`} className="top-build-perk-slot">
-                <Icon category="Perks" name={perk} alt={perk} size={40} />
+                <Icon category="Perks" name={perk} alt={perk} size={52} />
               </div>
             ))}
           </div>

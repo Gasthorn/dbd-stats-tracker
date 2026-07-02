@@ -14,7 +14,7 @@ export function GauntletCompletedGrid({ characters }: GauntletCompletedGridProps
         ) : (
           characters.map((name) => (
             <div key={name} className="gauntlet-completed-item" title={name}>
-              <Icon category="Characters" name={name} alt={name} size={48} />
+              <Icon category="Characters" name={name} alt={name} size={64} />
             </div>
           ))
         )}

@@ -27,11 +27,11 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
   }
 
   return (
-    <ul style={{ listStyle: "none", padding: 0 }}>
+    <ul className="match-history-list">
       {matches.map((match) => (
         <li key={match.id} className="match-history-item">
           <span className="match-field-with-icon">
-            <Icon category="Characters" name={match.characterName} alt={match.characterName} size={24} />
+            <Icon category="Characters" name={match.characterName} alt={match.characterName} size={32} />
             [{match.role === "killer" ? "Tueur" : "Survivant"}] {match.characterName}
           </span>
           <span>{summarize(match)}</span>
