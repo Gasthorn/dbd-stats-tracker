@@ -6,6 +6,8 @@ import { useCharactersStore } from "../../characters/stores/characters.store";
 import { IconSelectionSlot } from "../../settings";
 import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons/rarity";
 import "../../../shared/styles/rarity.css";
+import { BuildManagerPanel } from "../../builds";
+import type { Build } from "../../builds";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
 import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/match.types";
 
@@ -114,6 +116,17 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
     });
   }
 
+  function handleApplyBuild(build: Build) {
+    setCharacterName(build.characterName);
+    setPerks(toPerksTuple(build.perks));
+    setEquipment(toEquipmentArray(build.equipment, role));
+  }
+
+  function handleResetBuild() {
+    setPerks(EMPTY_PERKS);
+    setEquipment(emptyEquipment(role));
+  }
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setFormError(null);
@@ -214,6 +227,16 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
           </button>
         </div>
       )}
+
+      <BuildManagerPanel
+        idPrefix="match"
+        role={role}
+        characterName={characterName}
+        perks={perks}
+        equipment={equipment}
+        onApply={handleApplyBuild}
+        onReset={handleResetBuild}
+      />
 
       <label htmlFor="match-character">Personnage</label>
       <IconSelectionSlot

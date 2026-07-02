@@ -24,11 +24,11 @@ const MODULES: { title: string; description: string }[] = [
   },
   {
     title: "Builds",
-    description: "Sauvegarde tes loadouts favoris pour les réappliquer rapidement (à venir).",
+    description: "Sauvegarde tes loadouts favoris (perks et équipement) pour les réappliquer rapidement.",
   },
   {
     title: "Statistiques",
-    description: "Analyse tes performances globales, par tueur et par survivant (à venir).",
+    description: "Analyse tes performances globales, par tueur et par survivant.",
   },
 ];
 

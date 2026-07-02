@@ -5,6 +5,8 @@ import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import { getAvailableHardcorePerks } from "../../../shared/lib/hardcore/rank";
 import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons/rarity";
 import "../../../shared/styles/rarity.css";
+import { BuildManagerPanel } from "../../builds";
+import type { Build } from "../../builds";
 import { IconSelectionSlot } from "../../settings";
 import type { MatchRole } from "../../match-tracker/types/match.types";
 import { useHardcoreStore } from "../stores/hardcore.store";
@@ -13,6 +15,17 @@ const EMPTY_PERKS: [string, string, string, string] = ["", "", "", ""];
 
 function emptyEquipment(role: MatchRole): string[] {
   return role === "killer" ? ["", ""] : ["", "", ""];
+}
+
+function toPerksTuple(perks: string[]): [string, string, string, string] {
+  const padded = [...perks, "", "", "", ""].slice(0, 4);
+  return padded as [string, string, string, string];
+}
+
+function toEquipmentArray(equipment: string[], role: MatchRole): string[] {
+  const size = role === "killer" ? 2 : 3;
+  const padded = [...equipment, "", "", ""].slice(0, size);
+  return padded;
 }
 
 interface HardcoreMatchFormProps {
@@ -72,6 +85,16 @@ export function HardcoreMatchForm({
     });
   }
 
+  function handleApplyBuild(build: Build) {
+    setPerks(toPerksTuple(build.perks));
+    setEquipment(toEquipmentArray(build.equipment, role));
+  }
+
+  function handleResetBuild() {
+    setPerks(EMPTY_PERKS);
+    setEquipment(emptyEquipment(role));
+  }
+
   async function submit(ignoreChallenge: boolean, event?: FormEvent) {
     event?.preventDefault();
     if (role === "survivor" && !opponentName) {
@@ -127,6 +150,16 @@ export function HardcoreMatchForm({
   return (
     <form className="match-form hardcore-match-form" onSubmit={(e) => submit(false, e)}>
       <h3>{characterName}</h3>
+
+      <BuildManagerPanel
+        idPrefix="hc"
+        role={role}
+        characterName={characterName}
+        perks={perks}
+        equipment={equipment}
+        onApply={handleApplyBuild}
+        onReset={handleResetBuild}
+      />
 
       {role === "survivor" && (
         <>

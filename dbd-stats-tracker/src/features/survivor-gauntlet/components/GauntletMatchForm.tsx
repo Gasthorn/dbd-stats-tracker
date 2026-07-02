@@ -9,6 +9,8 @@ import {
 } from "../../../shared/lib/gauntlet/tier";
 import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons/rarity";
 import "../../../shared/styles/rarity.css";
+import { BuildManagerPanel } from "../../builds";
+import type { Build } from "../../builds";
 import { IconSelectionSlot } from "../../settings";
 import type { EscapeResult, MatchRole } from "../../match-tracker/types/match.types";
 import { useGauntletStore } from "../stores/gauntlet.store";
@@ -24,6 +26,17 @@ const EMPTY_PERKS: [string, string, string, string] = ["", "", "", ""];
 
 function emptyEquipment(role: MatchRole): string[] {
   return role === "killer" ? ["", ""] : ["", "", ""];
+}
+
+function toPerksTuple(perks: string[]): [string, string, string, string] {
+  const padded = [...perks, "", "", "", ""].slice(0, 4);
+  return padded as [string, string, string, string];
+}
+
+function toEquipmentArray(equipment: string[], role: MatchRole): string[] {
+  const size = role === "killer" ? 2 : 3;
+  const padded = [...equipment, "", "", ""].slice(0, size);
+  return padded;
 }
 
 interface GauntletMatchFormProps {
@@ -92,6 +105,16 @@ export function GauntletMatchForm({
       next[index] = value;
       return next;
     });
+  }
+
+  function handleApplyBuild(build: Build) {
+    setPerks(toPerksTuple(build.perks));
+    setEquipment(toEquipmentArray(build.equipment, role));
+  }
+
+  function handleResetBuild() {
+    setPerks(EMPTY_PERKS);
+    setEquipment(emptyEquipment(role));
   }
 
   async function submit(ignoreChallenge: boolean, event?: FormEvent) {
@@ -165,6 +188,16 @@ export function GauntletMatchForm({
   return (
     <form className="match-form gauntlet-match-form" onSubmit={(e) => submit(false, e)}>
       <h4>Enregistrer le résultat</h4>
+
+      <BuildManagerPanel
+        idPrefix="gauntlet"
+        role={role}
+        characterName={characterName}
+        perks={perks}
+        equipment={equipment}
+        onApply={handleApplyBuild}
+        onReset={handleResetBuild}
+      />
 
       {role === "survivor" && (
         <>

@@ -1,36 +1,18 @@
 import type { ISODateString, UUID } from "../../../shared/types/common.types";
-import type {
-  CharacterId,
-  CharacterRole,
-} from "../../../shared/types/dbd-entities.types";
+import type { MatchRole } from "../../match-tracker/types/match.types";
 
 export interface Build {
   id: UUID;
   userId: UUID;
   name: string;
-  role: CharacterRole;
-  characterId: CharacterId;
-  perkIds: [UUID | null, UUID | null, UUID | null, UUID | null];
-  itemId: UUID | null;
-  addonIds: UUID[];
-  offeringId: UUID | null;
-  description: string | null;
-  tags: string[];
-  isFavorite: boolean;
+  role: MatchRole;
+  characterName: string;
+  /** Up to 4 perk names. */
+  perks: string[];
+  /** Up to 3 item/addon names (2 for killer, 3 for survivor). */
+  equipment: string[];
   createdAt: ISODateString;
   updatedAt: ISODateString;
 }
 
-export interface BuildFilters {
-  role?: CharacterRole;
-  characterId?: CharacterId;
-  tag?: string;
-  isFavorite?: boolean;
-  search?: string;
-}
-
-export type CreateBuildInput = Omit<
-  Build,
-  "id" | "userId" | "createdAt" | "updatedAt"
->;
-export type UpdateBuildInput = Partial<CreateBuildInput> & { id: UUID };
+export type CreateBuildInput = Omit<Build, "id" | "userId" | "createdAt" | "updatedAt">;
