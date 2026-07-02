@@ -23,6 +23,7 @@ export type UserRow = {
   avatar_url: string | null;
   unlocked_killers: string[];
   unlocked_survivors: string[];
+  icons_folder_path: string | null;
   created_at: string;
   updated_at: string;
 };

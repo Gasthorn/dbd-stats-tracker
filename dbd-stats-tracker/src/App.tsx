@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthGate, useAuthStore } from "./features/auth";
 import { CharacterUnlockPage } from "./features/characters";
 import { MatchHistoryPage, MatchTrackerPage } from "./features/match-tracker";
-import { IconsIndexPage } from "./features/settings";
+import { IconsIndexPage, useSettingsStore } from "./features/settings";
 import { HardcorePage } from "./features/hardcore-mode";
 import { GauntletPage } from "./features/survivor-gauntlet";
 import { HomePage } from "./components/HomePage";
@@ -39,6 +39,10 @@ function Dashboard() {
   const user = useAuthStore((state) => state.user);
   const signOut = useAuthStore((state) => state.signOut);
   const [view, setView] = useState<DashboardView>("home");
+
+  useEffect(() => {
+    useSettingsStore.getState().loadIconsFolderPath();
+  }, []);
 
   return (
     <>

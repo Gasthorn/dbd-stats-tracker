@@ -6,6 +6,7 @@ import "./settings.css";
 
 export function IconsFolderSetting() {
   const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
+  const storeError = useSettingsStore((state) => state.error);
   const setIconsFolderPath = useSettingsStore((state) => state.setIconsFolderPath);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,7 +14,7 @@ export function IconsFolderSetting() {
     setError(null);
     try {
       const path = await pickIconsFolder();
-      if (path) setIconsFolderPath(path);
+      if (path) await setIconsFolderPath(path);
     } catch {
       setError(
         "Sélection de dossier indisponible : cette fonctionnalité nécessite l'application de bureau.",
@@ -48,6 +49,7 @@ export function IconsFolderSetting() {
       </div>
 
       {error && <p className="match-error">{error}</p>}
+      {storeError && <p className="match-error">{storeError}</p>}
 
       {iconsFolderPath && (
         <div className="icons-folder-preview">

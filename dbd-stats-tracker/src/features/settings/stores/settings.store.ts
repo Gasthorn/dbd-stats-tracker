@@ -1,39 +1,54 @@
 import { create } from "zustand";
+import type { AsyncStatus } from "../../../shared/types/common.types";
+import { useAuthStore } from "../../auth/stores/auth.store";
+import { settingsService } from "../services/settings.service";
 
-const ICONS_FOLDER_STORAGE_KEY = "dbd_settings_icons_folder_path";
+function toErrorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
+}
 
-function readStoredIconsFolderPath(): string | null {
-  try {
-    return localStorage.getItem(ICONS_FOLDER_STORAGE_KEY);
-  } catch {
-    return null;
-  }
+function requireUserId(): string {
+  const userId = useAuthStore.getState().user?.id;
+  if (!userId) throw new Error("Utilisateur non connecté.");
+  return userId;
 }
 
 export interface SettingsState {
-  /** Absolute path to the local "Icons" folder (CharPortraits/Perks/ItemAddons/Items), device-specific. */
+  /** Absolute path to the local "Icons" folder (CharPortraits/Perks/ItemAddons/Items), persisted per account. */
   iconsFolderPath: string | null;
+  status: AsyncStatus;
+  error: string | null;
 }
 
 export interface SettingsActions {
-  setIconsFolderPath: (path: string | null) => void;
+  loadIconsFolderPath: () => Promise<void>;
+  setIconsFolderPath: (path: string | null) => Promise<void>;
 }
 
 export type SettingsStore = SettingsState & SettingsActions;
 
-export const useSettingsStore = create<SettingsStore>((set) => ({
-  iconsFolderPath: readStoredIconsFolderPath(),
+export const useSettingsStore = create<SettingsStore>((set, get) => ({
+  iconsFolderPath: null,
+  status: "idle",
+  error: null,
 
-  setIconsFolderPath: (path) => {
+  loadIconsFolderPath: async () => {
+    set({ status: "loading", error: null });
     try {
-      if (path) {
-        localStorage.setItem(ICONS_FOLDER_STORAGE_KEY, path);
-      } else {
-        localStorage.removeItem(ICONS_FOLDER_STORAGE_KEY);
-      }
-    } catch {
-      // localStorage unavailable (e.g. private browsing) - state still updates for this session.
+      const path = await settingsService.getIconsFolderPath(requireUserId());
+      set({ iconsFolderPath: path, status: "success" });
+    } catch (err) {
+      set({ status: "error", error: toErrorMessage(err) });
     }
-    set({ iconsFolderPath: path });
+  },
+
+  setIconsFolderPath: async (path) => {
+    const previous = get().iconsFolderPath;
+    set({ iconsFolderPath: path, error: null });
+    try {
+      await settingsService.updateIconsFolderPath(requireUserId(), path);
+    } catch (err) {
+      set({ iconsFolderPath: previous, error: toErrorMessage(err) });
+    }
   },
 }));

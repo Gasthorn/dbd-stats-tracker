@@ -1,5 +1,7 @@
 export type { SettingsActions, SettingsState, SettingsStore } from "./stores/settings.store";
 export { useSettingsStore } from "./stores/settings.store";
+export type { SettingsService } from "./services/settings.service.types";
+export { settingsService } from "./services/settings.service";
 export { pickIconsFolder } from "./lib/pickIconsFolder";
 export { resolveIconSrc, resolveEmptyIconSrc } from "./lib/resolveIconSrc";
 export { Icon } from "./components/Icon";
