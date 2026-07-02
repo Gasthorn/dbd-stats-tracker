@@ -7,14 +7,18 @@ import { HardcorePage } from "./features/hardcore-mode";
 import { GauntletPage } from "./features/survivor-gauntlet";
 import { StatisticsPage } from "./features/statistics";
 import { WorldCupPage } from "./features/world-cup";
+import { UpdateBanner } from "./features/updater";
 import { HomePage } from "./components/HomePage";
 import "./App.css";
 
 function App() {
   return (
-    <AuthGate>
-      <Dashboard />
-    </AuthGate>
+    <>
+      <UpdateBanner />
+      <AuthGate>
+        <Dashboard />
+      </AuthGate>
+    </>
   );
 }
 

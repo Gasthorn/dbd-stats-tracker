@@ -1,0 +1,31 @@
+.update-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.6rem 1.5rem;
+  background: rgba(169, 29, 29, 0.15);
+  border-bottom: 1px solid var(--color-accent);
+  font-size: 0.9em;
+  text-align: center;
+}
+
+.update-banner-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.update-banner-actions button {
+  padding: 0.4em 0.9em;
+  font-size: 0.9em;
+}
+
+.update-banner .btn-secondary {
+  background-color: transparent;
+  border-color: var(--color-border-strong);
+}
+
+.update-banner-error {
+  color: var(--color-accent-hover);
+}

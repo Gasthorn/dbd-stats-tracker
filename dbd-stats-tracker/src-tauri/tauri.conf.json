@@ -35,6 +35,19 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["resources/Icons"]
+    "resources": ["resources/Icons"],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://github.com/Gasthorn/dbd-stats-tracker/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc5QUM1Q0JFNzBDNkZFMApSV1RnYnd6bnk4V2FCd1V0Q0JCMFpvV1Rza2RKdmZTTUFyNElDQzdRd1drczI4eUZqYXBoS3Uvego=",
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }
