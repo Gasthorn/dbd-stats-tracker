@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useCharactersStore } from "../../characters/stores/characters.store";
+import { Icon } from "../../settings";
 import type { MatchRole } from "../../match-tracker/types/match.types";
 import { useHardcoreStore } from "../stores/hardcore.store";
 import { HardcoreCharacterGrid } from "./HardcoreCharacterGrid";
@@ -108,14 +109,23 @@ export function HardcorePage() {
       )}
 
       {role && selectedCharacter && currentRun && (
-        <HardcoreMatchForm
-          role={role}
-          characterName={selectedCharacter}
-          unlockedCharacters={unlockedCharacters}
-          deadCharacters={deadCharacters}
-          onDone={() => setSelectedCharacter(null)}
-          onCancel={() => setSelectedCharacter(null)}
-        />
+        <>
+          <div className="hardcore-selected-character-bar">
+            <Icon category="Characters" name={selectedCharacter} alt={selectedCharacter} size={56} />
+            <span>{selectedCharacter}</span>
+            <button type="button" onClick={() => setSelectedCharacter(null)}>
+              Changer de personnage
+            </button>
+          </div>
+          <HardcoreMatchForm
+            role={role}
+            characterName={selectedCharacter}
+            unlockedCharacters={unlockedCharacters}
+            deadCharacters={deadCharacters}
+            onDone={() => setSelectedCharacter(null)}
+            onCancel={() => setSelectedCharacter(null)}
+          />
+        </>
       )}
     </div>
   );
