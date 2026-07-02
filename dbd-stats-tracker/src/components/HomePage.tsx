@@ -11,24 +11,29 @@ const MODULES: { title: string; description: string }[] = [
     description: "Consulte, modifie ou supprime les parties déjà enregistrées.",
   },
   {
-    title: "Personnages",
-    description: "Gère la liste des tueurs et survivants que tu possèdes, pour filtrer le reste de l'app.",
+    title: "Statistiques",
+    description: "Analyse tes performances globales, par tueur et par survivant.",
   },
   {
     title: "Hardcore Mode",
-    description: "Suivi d'une saison à la die permanente par personnage : pips, rangs, éliminations.",
+    description: "Suivi d'une saison à la mort permanente par personnage : pips, rangs, éliminations.",
   },
   {
     title: "Survivor Gauntlet",
-    description: "Défi consistant à réussir un run avec chaque personnage débloqué, tueur ou survivant.",
+    description: "Défi consistant à gagner une partie avec chaque personnage débloqué, tueur ou survivant.",
+  },
+  {
+    title: "World Cup",
+    description:
+      "Tournoi entre tueurs : poules façon Coupe du Monde départagées aux crochets, puis phase finale à élimination directe.",
   },
   {
     title: "Builds",
     description: "Sauvegarde tes loadouts favoris (perks et équipement) pour les réappliquer rapidement.",
   },
   {
-    title: "Statistiques",
-    description: "Analyse tes performances globales, par tueur et par survivant.",
+    title: "Personnages",
+    description: "Gère la liste des tueurs et survivants que tu possèdes, pour filtrer le reste de l'app.",
   },
 ];
 
@@ -37,8 +42,8 @@ export function HomePage() {
     <div className="home-page">
       <h1>DbD Stats Tracker</h1>
       <p className="home-tagline">
-        Application de suivi de statistiques pour Dead by Daylight : parties, builds, défis et
-        progression, le tout enregistré dans ton compte.
+        Application de suivi de statistiques pour Dead by Daylight : parties, builds, défis,
+        tournois et progression, le tout enregistré dans ton compte.
       </p>
 
       <section className="home-modules">

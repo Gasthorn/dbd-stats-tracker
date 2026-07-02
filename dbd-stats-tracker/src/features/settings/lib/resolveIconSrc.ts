@@ -1,6 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { emptyIconPath, getIconRelativePath, type IconCategory } from "../../../shared/lib/icons/iconPath";
-import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
+import { useSettingsStore } from "../stores/settings.store";
 
 function toSrc(folder: string, relativePath: string): string | null {
   const separator = folder.includes("\\") ? "\\" : "/";
@@ -18,20 +18,41 @@ function toSrc(folder: string, relativePath: string): string | null {
   }
 }
 
-/** Joins the configured Icons folder root with a relative icon path, then converts it to a webview-loadable src. */
-export function resolveIconSrc(
+/** The player's explicit folder (if set), then the bundled default, deduped and without nulls. */
+function candidateFolders(): string[] {
+  const state = useSettingsStore.getState();
+  const seen = new Set<string>();
+  const folders: string[] = [];
+  for (const folder of [state.iconsFolderPath, state.defaultIconsFolderPath]) {
+    if (folder && !seen.has(folder)) {
+      seen.add(folder);
+      folders.push(folder);
+    }
+  }
+  return folders;
+}
+
+/**
+ * Every src worth trying for this icon, in priority order: the player's explicitly-chosen
+ * folder first (if set), then the bundled default folder - so an icon missing from their
+ * custom folder (e.g. a DLC not yet present in their own game files) still resolves instead
+ * of rendering blank.
+ */
+export function resolveIconSrcCandidates(
   category: IconCategory,
   name: string | null | undefined,
   manualOwner: string | null = null,
-): string | null {
-  const folder = selectEffectiveIconsFolderPath(useSettingsStore.getState());
-  if (!folder) return null;
-  return toSrc(folder, getIconRelativePath(category, name, manualOwner));
+): string[] {
+  const relativePath = getIconRelativePath(category, name, manualOwner);
+  return candidateFolders()
+    .map((folder) => toSrc(folder, relativePath))
+    .filter((src): src is string => src !== null);
 }
 
-/** Src for the category's "empty.png" placeholder, used as the onError fallback (mirrors legacy behavior). */
-export function resolveEmptyIconSrc(category: IconCategory): string | null {
-  const folder = selectEffectiveIconsFolderPath(useSettingsStore.getState());
-  if (!folder) return null;
-  return toSrc(folder, emptyIconPath(category));
+/** Same priority order as resolveIconSrcCandidates, for the category's "empty.png" placeholder. */
+export function resolveEmptyIconSrcCandidates(category: IconCategory): string[] {
+  const relativePath = emptyIconPath(category);
+  return candidateFolders()
+    .map((folder) => toSrc(folder, relativePath))
+    .filter((src): src is string => src !== null);
 }

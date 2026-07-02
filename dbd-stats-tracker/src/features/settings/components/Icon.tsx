@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
-import { resolveIconSrc } from "../lib/resolveIconSrc";
-import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
+import { resolveIconSrcCandidates } from "../lib/resolveIconSrc";
+import { useIconCandidateSrc } from "../lib/useIconCandidateSrc";
+import { useSettingsStore } from "../stores/settings.store";
 
 interface IconProps {
   category: IconCategory;
@@ -12,18 +12,25 @@ interface IconProps {
   size?: number;
 }
 
-/** Renders a game icon from the configured Icons folder. Renders nothing if no folder is set or the file fails to load. */
+/**
+ * Renders a game icon. Tries the player's custom Icons folder first, then falls back to the
+ * bundled default folder if that specific file is missing there; renders nothing if no folder
+ * is configured at all or the icon can't be found in either.
+ */
 export function Icon({ category, name, manualOwner = null, alt, className, size = 40 }: IconProps) {
-  const iconsFolderPath = useSettingsStore(selectEffectiveIconsFolderPath);
-  const [failed, setFailed] = useState(false);
+  const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
+  const defaultIconsFolderPath = useSettingsStore((state) => state.defaultIconsFolderPath);
 
-  const src = iconsFolderPath ? resolveIconSrc(category, name, manualOwner) : null;
+  const candidates = resolveIconSrcCandidates(category, name, manualOwner);
+  const { src, onError } = useIconCandidateSrc(candidates, [
+    category,
+    name,
+    manualOwner,
+    iconsFolderPath,
+    defaultIconsFolderPath,
+  ]);
 
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
-
-  if (!src || failed) return null;
+  if (!src) return null;
 
   return (
     <img
@@ -33,7 +40,7 @@ export function Icon({ category, name, manualOwner = null, alt, className, size 
       width={size}
       height={size}
       style={{ objectFit: "contain" }}
-      onError={() => setFailed(true)}
+      onError={onError}
     />
   );
 }

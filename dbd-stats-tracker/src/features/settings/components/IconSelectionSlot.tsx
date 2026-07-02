@@ -1,7 +1,8 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
-import { resolveIconSrc } from "../lib/resolveIconSrc";
-import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
+import { resolveIconSrcCandidates } from "../lib/resolveIconSrc";
+import { useIconCandidateSrc } from "../lib/useIconCandidateSrc";
+import { useSettingsStore } from "../stores/settings.store";
 import "./icon-selection-slot.css";
 
 interface BaseProps {
@@ -34,21 +35,24 @@ type IconSelectionSlotProps = InputSlotProps | SelectSlotProps;
  * whole box. While the value isn't focused, the text is hidden so the icon reads as the primary
  * visual (matching legacy-web-prototype's ".selection-slot" pattern); focusing it to edit reveals
  * the text again. Falls back to showing the text when no icon resolves (no folder configured,
- * empty value, or the icon fails to load) so the field never looks blank.
+ * empty value, or the icon fails to load in both the player's custom folder and the bundled
+ * default) so the field never looks blank.
  */
 export function IconSelectionSlot(props: IconSelectionSlotProps) {
-  const iconsFolderPath = useSettingsStore(selectEffectiveIconsFolderPath);
+  const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
+  const defaultIconsFolderPath = useSettingsStore((state) => state.defaultIconsFolderPath);
   const [isFocused, setIsFocused] = useState(false);
-  const [isBroken, setIsBroken] = useState(false);
 
-  const src =
-    iconsFolderPath && props.value && !isBroken
-      ? resolveIconSrc(props.category, props.value, props.manualOwner ?? null)
-      : null;
-
-  useEffect(() => {
-    setIsBroken(false);
-  }, [src]);
+  const candidates = props.value
+    ? resolveIconSrcCandidates(props.category, props.value, props.manualOwner ?? null)
+    : [];
+  const { src, onError } = useIconCandidateSrc(candidates, [
+    props.category,
+    props.value,
+    props.manualOwner,
+    iconsFolderPath,
+    defaultIconsFolderPath,
+  ]);
 
   const hasIcon = Boolean(src);
   const size = props.size ?? 80;
@@ -64,7 +68,7 @@ export function IconSelectionSlot(props: IconSelectionSlotProps) {
 
   return (
     <div className={boxClassName} style={{ width: size, height: size }}>
-      {src && <img src={src} alt={props.value} onError={() => setIsBroken(true)} />}
+      {src && <img src={src} alt={props.value} onError={onError} />}
       {props.as === "select" ? (
         <select
           id={props.id}
