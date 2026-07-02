@@ -102,6 +102,7 @@ export const SURVIVORS: readonly string[] = [
   "Dustin Henderson",
   "Eleven",
   "Kwon Tae Young",
+  "Shane Wiigwaas",
 ];
 
 /** Killers available to every player without any DLC. */

@@ -91,6 +91,7 @@ const CHARACTER_FOLDER_MAP: Record<string, string> = {
   "Thalita Lyra": "Saturn",
   "Renato Lyra": "Saturn",
   "The Slasher": "Sushi",
+  "Shane Wiigwaas": "Sushi",
   "The Oni": "Sweden",
   "Yui Kimura": "Sweden",
   "The Deathslinger": "Ukraine",
@@ -209,6 +210,8 @@ const PERK_NAME_MAPPING: Record<string, string> = {
   "Scourge Hook: Pain Resonance": "PainResonance",
   Thanatophobia: "Thatanophobia",
   "Shattered Hope": "BoonDestroyer",
+  "Cross-Examination": "CrossExamination",
+  "Lend a Hand": "LendaHand",
 };
 
 const PERK_SPECIAL_PREFIX_OWNERS = [
@@ -223,6 +226,7 @@ const PERK_SPECIAL_PREFIX_OWNERS = [
   "Kwon Tae Young",
   "Alan Wake",
   "The Slasher",
+  "Shane Wiigwaas",
 ];
 
 const SURVIVOR_ADDON_FILE_MAPPING: Record<string, string> = {
@@ -491,7 +495,12 @@ export function getIconRelativePath(
       owner && PERK_SPECIAL_PREFIX_OWNERS.includes(owner) ? "iconsPerks_" : "iconPerks_";
 
     let perkFileName = normalizeForPerks(officialName);
-    if (officialName === "Self-Preservation" || officialName === "twoCanPlay") {
+    if (
+      officialName === "Self-Preservation" ||
+      officialName === "twoCanPlay" ||
+      officialName === "CrossExamination" ||
+      officialName === "LendaHand"
+    ) {
       perkFileName = officialName;
     }
 
