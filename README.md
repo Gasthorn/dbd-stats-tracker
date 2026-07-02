@@ -1,6 +1,6 @@
 # DbD Stats Tracker
 
-Une application de bureau moderne et immersive pour **Dead by Daylight**, conçue pour permettre aux joueurs de suivre leurs performances, gérer leurs builds et relever des défis communautaires populaires tels que le **Hardcore Mode** et le **Survivor Gauntlet**.
+Une application de bureau moderne et immersive pour **Dead by Daylight**, conçue pour permettre aux joueurs de suivre leurs performances, gérer leurs builds et relever des défis communautaires populaires tels que le **Hardcore Mode**, le **Survivor Gauntlet** et la **World Cup des Tueurs**.
 
 ## 🚀 Fonctionnalités principales
 
@@ -25,13 +25,19 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 * Gestion automatique des checkpoints et des échecs.
 * Validation automatique des objectifs lors de l'enregistrement des parties.
 
+#### World Cup des Tueurs
+
+* Tournoi entre tueurs débloqués, organisé en poules façon Coupe du Monde (chapeaux répartis un par poule pour équilibrer le tirage).
+* Phase de poules jouée journée par journée (un tueur, un match par journée), départagée au nombre de crochets.
+* Qualification des 32 meilleurs tueurs (toutes poules confondues) pour une phase à élimination directe à seeding serpent, jusqu'à la finale.
+* Le tirage du World Cup suivant se base automatiquement sur le classement final du précédent.
+
 ### 📈 Statistiques & Historique
 
 * Heatmap d'activité des sessions de jeu.
-* Graphiques de performance détaillés.
+* Graphiques de performance (taux de réussite tueur/survivant) et répartition des rôles.
 * Analyse des personnages et builds favoris.
-* Historique complet des parties.
-* Export et import des données utilisateur.
+* Historique complet des parties, modifiable et filtrable.
 
 ### 🛠️ Gestion des Builds
 
@@ -50,8 +56,8 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 
 ### Utilisateur final
 
-1. Téléchargez la dernière version depuis la page Releases.
-2. Exécutez le fichier `DbDStatsTracker.exe`.
+1. Téléchargez la dernière version (installeur `dbd-stats-tracker`) depuis la page Releases.
+2. Lancez l'installeur puis l'application.
 3. Créez un compte ou connectez-vous.
 4. Commencez à enregistrer vos parties.
 
@@ -59,39 +65,38 @@ Aucune installation de serveur local ou configuration technique n'est nécessair
 
 ## 🔄 Mises à jour
 
-L'application vérifie automatiquement la disponibilité des nouvelles versions.
+L'application vérifie automatiquement la disponibilité d'une nouvelle version à chaque démarrage et propose de l'installer en un clic (téléchargement, installation puis redémarrage automatique).
 
-Les mises à jour sont distribuées via GitHub Releases et peuvent être installées directement depuis l'application.
+Les mises à jour sont publiées via GitHub Releases : un tag `v*` déclenche une pipeline CI qui compile, signe et prépare la release ; voir `.github/workflows/release.yml`.
 
 ## 🏗️ Technologies utilisées
 
-* Frontend : React + TypeScript
-* Desktop : Tauri
-* Backend & Base de données : Supabase
-* Authentification : Supabase Auth
-* Graphiques : Chart.js
-* Gestion de version : GitHub
+* Frontend : React + TypeScript (architecture par feature) + Zustand
+* Desktop : Tauri (Rust)
+* Backend & Base de données : Supabase (Postgres, Auth, RLS)
+* Graphiques : composants maison (SVG/CSS), sans librairie externe
+* Gestion de version & CI : GitHub / GitHub Actions
 
 ## 📁 Structure du projet
 
-* `/src` : Interface utilisateur et logique métier.
-* `/assets` : Ressources graphiques.
-* `/database` : Scripts et migrations Supabase.
-* `/public` : Fichiers statiques.
-* `/docs` : Documentation du projet.
+* `/dbd-stats-tracker` : application Tauri.
+  * `/src` : interface utilisateur et logique métier, organisées par feature (auth, match-tracker, builds, hardcore-mode, survivor-gauntlet, world-cup, statistics, settings...).
+  * `/src-tauri` : backend Tauri (Rust), configuration de l'app et ressources embarquées dans le build (dont le dossier d'icônes par défaut).
+  * `/supabase/migrations` : schéma et migrations de la base de données.
+* `/.github/workflows` : pipeline de build, signature et publication des releases.
 
 ## 🎨 Personnalisation des Icônes
 
-L'application permet l'utilisation d'icônes personnalisées pour les personnages, perks, objets et add-ons.
+L'application embarque un dossier d'icônes par défaut (personnages, perks, objets, add-ons), utilisable sans aucune configuration.
 
-Structure recommandée :
+Tu peux pointer vers ton propre dossier `Icons` depuis la page d'accueil de l'app pour le remplacer. Structure attendue :
 
 * `Icons/CharPortraits/`
 * `Icons/Perks/`
 * `Icons/ItemAddons/`
 * `Icons/Items/`
 
-Chaque dossier peut contenir un fichier `empty.png` utilisé comme ressource de secours lorsqu'une icône est absente.
+Si une icône est absente de ton dossier personnalisé, l'application la récupère automatiquement depuis le dossier par défaut plutôt que de l'afficher vide. Chaque dossier peut aussi contenir un fichier `empty.png` utilisé comme ressource de secours ultime.
 
 ## 📜 Licence
 
