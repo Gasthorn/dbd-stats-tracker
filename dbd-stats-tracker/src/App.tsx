@@ -5,6 +5,7 @@ import { MatchHistoryPage, MatchTrackerPage } from "./features/match-tracker";
 import { IconsIndexPage, useSettingsStore } from "./features/settings";
 import { HardcorePage } from "./features/hardcore-mode";
 import { GauntletPage } from "./features/survivor-gauntlet";
+import { StatisticsPage } from "./features/statistics";
 import { HomePage } from "./components/HomePage";
 import "./App.css";
 
@@ -20,6 +21,7 @@ type DashboardView =
   | "home"
   | "matches"
   | "history"
+  | "statistics"
   | "hardcore"
   | "gauntlet"
   | "characters"
@@ -29,6 +31,7 @@ const TABS: { view: DashboardView; label: string }[] = [
   { view: "home", label: "Accueil" },
   { view: "matches", label: "Parties" },
   { view: "history", label: "Historique" },
+  { view: "statistics", label: "Statistiques" },
   { view: "hardcore", label: "Hardcore" },
   { view: "gauntlet", label: "Gauntlet" },
   { view: "characters", label: "Personnages" },
@@ -71,6 +74,7 @@ function Dashboard() {
         {view === "characters" && <CharacterUnlockPage />}
         {view === "matches" && <MatchTrackerPage />}
         {view === "history" && <MatchHistoryPage />}
+        {view === "statistics" && <StatisticsPage />}
         {view === "icons-index" && <IconsIndexPage />}
         {view === "hardcore" && <HardcorePage />}
         {view === "gauntlet" && <GauntletPage />}

@@ -1,0 +1,297 @@
+.statistics-page {
+  text-align: left;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+  /* Validated categorical pair (dark-surface steps) for the killer/survivor series used
+     throughout this page's charts - kept separate from the generic UI accent color. */
+  --stats-killer: #e66767;
+  --stats-survivor: #3987e5;
+}
+
+.statistics-page h1 {
+  text-align: center;
+}
+
+.statistics-empty {
+  text-align: center;
+  opacity: 0.7;
+  margin-top: 2rem;
+}
+
+.stats-zone {
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- Favorites / records ---- */
+
+.top-stats-row {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: space-around;
+  text-align: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.top-stat-card {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top-stat-card p {
+  margin: 0 0 0.5rem;
+  font-weight: bold;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-size: 0.8em;
+}
+
+.top-stat-count {
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+}
+
+.top-stat-empty {
+  opacity: 0.5;
+  font-size: 1.4em;
+}
+
+.top-stat-value {
+  font-size: 1.3em;
+}
+
+.top-stat-value.is-killer {
+  color: var(--stats-killer);
+}
+
+.top-stat-value.is-survivor {
+  color: var(--stats-survivor);
+}
+
+.top-stat-value.is-global {
+  color: var(--color-gold);
+}
+
+.top-build-icons {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+
+.top-build-perk-slot {
+  width: 44px;
+  height: 44px;
+  transform: rotate(45deg);
+  background-color: var(--color-bg-inset);
+  border: 2px solid var(--color-border-strong);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.top-build-perk-slot img {
+  transform: rotate(-45deg) scale(1.3);
+}
+
+/* ---- Role distribution ---- */
+
+.role-distribution-bar {
+  display: flex;
+  width: 100%;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background-color: var(--color-bg-inset);
+  gap: 2px;
+}
+
+.role-distribution-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.8em;
+  font-weight: bold;
+  transition: width 0.3s ease;
+}
+
+.role-distribution-segment.is-killer {
+  background-color: var(--stats-killer);
+}
+
+.role-distribution-segment.is-survivor {
+  background-color: var(--stats-survivor);
+}
+
+.role-distribution-legend {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin: 1rem 0 0;
+  padding: 0;
+  font-size: 0.9em;
+}
+
+.role-distribution-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 0.4em;
+  vertical-align: middle;
+}
+
+.role-distribution-swatch.is-killer {
+  background-color: var(--stats-killer);
+}
+
+.role-distribution-swatch.is-survivor {
+  background-color: var(--stats-survivor);
+}
+
+/* ---- Activity heatmap ---- */
+
+.heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.heatmap-header h2 {
+  margin-top: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.heatmap-month-label {
+  display: inline-block;
+  min-width: 140px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.activity-heatmap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 1rem;
+  margin-top: 0.75rem;
+  background: var(--color-bg-inset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.heatmap-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.7em;
+}
+
+.heatmap-day span {
+  margin-top: 4px;
+  color: var(--color-text-dim);
+}
+
+.heatmap-day-cell {
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  background-color: rgba(57, 135, 229, 0.08);
+}
+
+.heatmap-day-cell.count-1 {
+  background-color: rgba(57, 135, 229, 0.3);
+}
+
+.heatmap-day-cell.count-3 {
+  background-color: rgba(57, 135, 229, 0.55);
+}
+
+.heatmap-day-cell.count-5 {
+  background-color: rgba(57, 135, 229, 0.8);
+}
+
+.heatmap-day-cell.count-max {
+  background-color: #3987e5;
+  box-shadow: 0 0 6px rgba(57, 135, 229, 0.7);
+}
+
+/* ---- Performance bar charts ---- */
+
+.performance-chart {
+  margin-bottom: 1.75rem;
+}
+
+.performance-chart h3 {
+  border: none;
+  margin-bottom: 0.5rem;
+}
+
+.performance-chart-empty {
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+}
+
+.performance-chart-plot {
+  display: flex;
+  gap: 0.5rem;
+  height: 180px;
+}
+
+.performance-chart-gridlines {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.7em;
+  color: var(--color-text-dim);
+  text-align: right;
+  padding: 0 0.25rem 0 0;
+}
+
+.performance-chart-bars {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  border-left: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+  padding-left: 0.25rem;
+  overflow-x: auto;
+}
+
+.performance-chart-bar-slot {
+  flex: 0 0 10px;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.performance-chart-bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+}
+
+.performance-chart-bar.is-killer {
+  background-color: var(--stats-killer);
+}
+
+.performance-chart-bar.is-survivor {
+  background-color: var(--stats-survivor);
+}

@@ -1,2 +1,4 @@
 export * from "./types";
-export type { StatisticsService } from "./services/statistics.service.types";
+export type { StatisticsActions, StatisticsState, StatisticsStore } from "./stores/statistics.store";
+export { useStatisticsStore } from "./stores/statistics.store";
+export { StatisticsPage } from "./components/StatisticsPage";

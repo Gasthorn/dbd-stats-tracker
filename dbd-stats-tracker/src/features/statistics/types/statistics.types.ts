@@ -1,48 +1,36 @@
-import type { ISODateString, UUID } from "../../../shared/types/common.types";
-import type {
-  CharacterId,
-  CharacterRole,
-} from "../../../shared/types/dbd-entities.types";
-
-export interface KillerStatistics {
-  characterId: CharacterId;
-  matchesPlayed: number;
-  totalKills: number;
-  averageKillsPerMatch: number;
-  escapesAgainst: number;
-  killRatePercent: number;
-  mostUsedPerkIds: UUID[];
-  mostPlayedMapId: UUID | null;
-  currentRating: number | null;
-  peakRating: number | null;
+export interface TopCharacterStat {
+  characterName: string;
+  count: number;
 }
 
-export interface SurvivorStatistics {
-  characterId: CharacterId;
-  matchesPlayed: number;
-  escapes: number;
-  deaths: number;
-  escapeRatePercent: number;
-  averageHooksTaken: number;
-  mostUsedPerkIds: UUID[];
-  currentRating: number | null;
-  peakRating: number | null;
+export interface TopBuildStat {
+  perks: string[];
+  count: number;
 }
 
-export interface OverallStatistics {
-  totalMatches: number;
-  totalPlaytimeSeconds: number;
-  killerMatches: number;
-  survivorMatches: number;
-  overallEscapeRatePercent: number;
-  overallKillRatePercent: number;
-  mostPlayedKillerId: CharacterId | null;
-  mostPlayedSurvivorId: CharacterId | null;
+export interface StatisticsSummary {
+  topSurvivor: TopCharacterStat | null;
+  topOpponentKiller: TopCharacterStat | null;
+  topKiller: TopCharacterStat | null;
+  topSurvivorBuild: TopBuildStat | null;
+  topKillerBuild: TopBuildStat | null;
+  avgBloodpointsGlobal: number;
+  avgBloodpointsKiller: number;
+  avgBloodpointsSurvivor: number;
+  killerMatchCount: number;
+  survivorMatchCount: number;
 }
 
-export interface StatisticsFilters {
-  role?: CharacterRole;
-  characterId?: CharacterId;
-  dateFrom?: ISODateString;
-  dateTo?: ISODateString;
+export interface ActivityHeatmapDay {
+  day: number;
+  count: number;
+}
+
+export interface PerformanceSeries {
+  /** One entry per day that has at least one non-hardcore match, chronologically sorted. */
+  labels: string[];
+  /** Kill rate %, aligned with labels; null on days with no killer games. */
+  killRate: (number | null)[];
+  /** Escape rate %, aligned with labels; null on days with no survivor games. */
+  escapeRate: (number | null)[];
 }
