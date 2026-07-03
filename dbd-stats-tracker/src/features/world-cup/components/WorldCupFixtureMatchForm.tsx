@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { KILLER_ADDONS } from "../../../shared/data/equipment";
 import { KILLER_PERKS } from "../../../shared/data/perks";
+import { getCharacterUniquePerkNames } from "../../../shared/lib/gauntlet/tier";
 import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons/rarity";
 import "../../../shared/styles/rarity.css";
 import { BuildManagerPanel } from "../../builds";
@@ -10,6 +11,7 @@ import { IconSelectionSlot } from "../../settings";
 import type { WorldCupMatchInput } from "../stores/world-cup.store.types";
 
 const EMPTY_PERKS: [string, string, string, string] = ["", "", "", ""];
+const MIN_OWNED_PERKS = 2;
 
 function toPerksTuple(perks: string[]): [string, string, string, string] {
   const padded = [...perks, "", "", "", ""].slice(0, 4);
@@ -43,6 +45,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
     () => KILLER_PERKS.filter((perk) => perk.owner === "Base Kit" || unlockedKillers.includes(perk.owner)),
     [unlockedKillers],
   );
+  const uniquePerkNames = useMemo(() => getCharacterUniquePerkNames(KILLER_PERKS, characterName), [characterName]);
   const killerAddonOptions = KILLER_ADDONS[characterName] ?? [];
 
   function updatePerk(index: number, value: string) {
@@ -80,11 +83,18 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
       return;
     }
 
+    const cleanedPerks = perks.filter((perk) => perk !== "");
+    const ownedPerkCount = cleanedPerks.filter((perk) => uniquePerkNames.includes(perk)).length;
+    if (ownedPerkCount < MIN_OWNED_PERKS) {
+      setFormError(`Le build doit inclure au moins ${MIN_OWNED_PERKS} perks propres à ${characterName}.`);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await onSubmit({
         characterName,
-        perks: perks.filter((perk) => perk !== ""),
+        perks: cleanedPerks,
         equipment: equipment.filter((item) => item !== ""),
         bloodpoints: Number(bloodpoints) || 0,
         kills: Number(kills),
