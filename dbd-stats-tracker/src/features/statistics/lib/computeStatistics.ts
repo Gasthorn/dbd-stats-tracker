@@ -1,6 +1,8 @@
-import type { Match } from "../../match-tracker/types/match.types";
+import type { Build } from "../../builds/types/build.types";
+import type { KillerMatch, Match, MatchRole, SurvivorMatch } from "../../match-tracker/types/match.types";
 import type {
   ActivityHeatmapDay,
+  KeyedPerformanceStat,
   PerformanceSeries,
   StatisticsSummary,
   TopBuildStat,
@@ -140,4 +142,105 @@ export function computePerformanceSeries(matches: Match[]): PerformanceSeries {
   });
 
   return { labels, killRate, escapeRate };
+}
+
+/**
+ * Groups survivor matches by one or more keys per match (e.g. the opponent killer, or each perk
+ * equipped) and reports, per key: matches played, escapes, and escape rate %.
+ */
+function aggregateSurvivorStatsByKeys(
+  matches: readonly Match[],
+  keysOf: (match: SurvivorMatch) => readonly string[],
+): KeyedPerformanceStat[] {
+  const byKey = new Map<string, { matches: number; escapes: number }>();
+
+  for (const match of matches) {
+    if (match.role !== "survivor") continue;
+    const escaped = isSurvivorEscaped(match);
+    for (const key of keysOf(match)) {
+      const agg = byKey.get(key) ?? { matches: 0, escapes: 0 };
+      agg.matches++;
+      if (escaped) agg.escapes++;
+      byKey.set(key, agg);
+    }
+  }
+
+  return Array.from(byKey.entries()).map(([key, agg]) => ({
+    key,
+    matches: agg.matches,
+    secondaryCount: agg.escapes,
+    ratePercent: agg.matches > 0 ? Math.round((agg.escapes / agg.matches) * 1000) / 10 : 0,
+  }));
+}
+
+/**
+ * Groups killer matches by one or more keys per match (e.g. each perk equipped, or the build
+ * played) and reports, per key: matches played, total sacrifices, and kill rate % (sacrifices
+ * out of the 4 possible per match).
+ */
+function aggregateKillerStatsByKeys(
+  matches: readonly Match[],
+  keysOf: (match: KillerMatch) => readonly string[],
+): KeyedPerformanceStat[] {
+  const byKey = new Map<string, { matches: number; kills: number }>();
+
+  for (const match of matches) {
+    if (match.role !== "killer") continue;
+    const kills = match.kills ?? 0;
+    for (const key of keysOf(match)) {
+      const agg = byKey.get(key) ?? { matches: 0, kills: 0 };
+      agg.matches++;
+      agg.kills += kills;
+      byKey.set(key, agg);
+    }
+  }
+
+  return Array.from(byKey.entries()).map(([key, agg]) => ({
+    key,
+    matches: agg.matches,
+    secondaryCount: agg.kills,
+    ratePercent: agg.matches > 0 ? Math.round((agg.kills / (agg.matches * 4)) * 1000) / 10 : 0,
+  }));
+}
+
+/** The survivor's record (matches played, escapes, escape rate) against every killer faced. */
+export function computeOpponentPerformance(matches: Match[]): KeyedPerformanceStat[] {
+  return aggregateSurvivorStatsByKeys(matches, (match) => (match.opponentName ? [match.opponentName] : []));
+}
+
+/** Performance of each individual perk played, for the given role (one entry per perk, across all matches/builds it appeared in). */
+export function computePerkPerformance(matches: Match[], role: MatchRole): KeyedPerformanceStat[] {
+  const keysOf = (match: Match) => match.perks.filter((perk) => perk !== "");
+  return role === "survivor"
+    ? aggregateSurvivorStatsByKeys(matches, keysOf)
+    : aggregateKillerStatsByKeys(matches, keysOf);
+}
+
+/**
+ * Performance of each saved build, for the given role: a match is attributed to a saved build
+ * when its perks (order-independent) exactly match that build's perks. If two saved builds share
+ * the exact same perks, matches are attributed to whichever of them was saved last.
+ */
+export function computeBuildPerformance(
+  matches: Match[],
+  role: MatchRole,
+  builds: readonly Build[],
+): KeyedPerformanceStat[] {
+  const buildNameByKey = new Map<string, string>();
+  for (const build of builds) {
+    if (build.role !== role) continue;
+    const key = buildKey(build.perks);
+    if (key) buildNameByKey.set(key, build.name);
+  }
+
+  const keysOf = (match: Match) => {
+    const key = buildKey(match.perks);
+    return buildNameByKey.has(key) ? [key] : [];
+  };
+  const stats =
+    role === "survivor"
+      ? aggregateSurvivorStatsByKeys(matches, keysOf)
+      : aggregateKillerStatsByKeys(matches, keysOf);
+
+  return stats.map((stat) => ({ ...stat, key: buildNameByKey.get(stat.key) as string }));
 }

@@ -311,3 +311,135 @@
 .performance-chart-bar.is-survivor {
   background-color: var(--stats-survivor);
 }
+
+/* ---- Entity performance (opponents faced, builds, perks) ---- */
+
+.entity-section-row {
+  display: grid;
+  grid-template-columns: minmax(340px, 1.3fr) minmax(280px, 1fr);
+  gap: 1.5rem 2.5rem;
+  align-items: start;
+}
+
+.entity-role-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.entity-role-heading {
+  border: none;
+  margin: 0;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.entity-role-heading.is-killer {
+  color: var(--stats-killer);
+}
+
+.entity-role-heading.is-survivor {
+  color: var(--stats-survivor);
+}
+
+.entity-role-column .entity-section-row {
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.entity-performance-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.entity-performance-header h3,
+.entity-performance-lookup h3 {
+  border: none;
+  margin: 0 0 0.5rem;
+}
+
+.entity-performance-topn-toggle {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.entity-performance-topn-toggle button {
+  padding: 0.3em 0.8em;
+  font-size: 0.85em;
+}
+
+.entity-performance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  font-size: 0.9em;
+}
+
+.entity-performance-table th,
+.entity-performance-table td {
+  padding: 0.5em 0.6em;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.entity-performance-key {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: left !important;
+}
+
+.entity-performance-icon.is-diamond {
+  display: inline-flex;
+  transform: rotate(45deg);
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-inset);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.entity-performance-icon.is-diamond img {
+  transform: rotate(-45deg) scale(1.3);
+}
+
+.entity-performance-lookup {
+  padding-top: 0.25rem;
+}
+
+.entity-performance-lookup label {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.entity-performance-lookup select {
+  width: 100%;
+  max-width: 320px;
+}
+
+.entity-performance-lookup-result {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.entity-performance-lookup-stats {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.entity-performance-lookup-stats .top-stat-card {
+  min-width: 100px;
+}

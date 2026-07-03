@@ -34,3 +34,16 @@ export interface PerformanceSeries {
   /** Escape rate %, aligned with labels; null on days with no survivor games. */
   escapeRate: (number | null)[];
 }
+
+/**
+ * Performance tied to one "key" - an opposing killer, a perk, or a saved build - for a given
+ * role: how many matches it appeared in, and the resulting rate (escape rate for survivor,
+ * kill rate for killer). `secondaryCount` is the raw numerator behind the rate: escapes for
+ * survivor stats, total sacrifices for killer stats.
+ */
+export interface KeyedPerformanceStat {
+  key: string;
+  matches: number;
+  secondaryCount: number;
+  ratePercent: number;
+}
