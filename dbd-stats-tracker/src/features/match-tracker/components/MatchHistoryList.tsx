@@ -34,6 +34,12 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
             <Icon category="Characters" name={match.characterName} alt={match.characterName} size={32} />
             [{match.role === "killer" ? "Tueur" : "Survivant"}] {match.characterName}
           </span>
+          {match.role === "survivor" && match.opponentName && (
+            <span className="match-field-with-icon">
+              <Icon category="Characters" name={match.opponentName} alt={match.opponentName} size={32} />
+              vs {match.opponentName}
+            </span>
+          )}
           <span>{summarize(match)}</span>
           <span>{match.bloodpoints} PS</span>
           <span>{new Date(match.playedAt).toLocaleString()}</span>
