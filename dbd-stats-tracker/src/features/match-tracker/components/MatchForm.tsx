@@ -8,6 +8,7 @@ import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons
 import "../../../shared/styles/rarity.css";
 import { BuildManagerPanel } from "../../builds";
 import type { Build } from "../../builds";
+import { pickRandomPerks } from "../lib/chaosShuffle";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
 import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/match.types";
 
@@ -128,6 +129,10 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
   function handleResetBuild() {
     setPerks(EMPTY_PERKS);
     setEquipment(emptyEquipment(role));
+  }
+
+  function handleChaosShuffle() {
+    setPerks(toPerksTuple(pickRandomPerks(availablePerks, 4)));
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -282,7 +287,18 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         </>
       )}
 
-      <label>Perks</label>
+      <div className="match-perks-label-row">
+        <label>Perks</label>
+        <button
+          type="button"
+          className="chaos-shuffle-button"
+          onClick={handleChaosShuffle}
+          disabled={availablePerks.length === 0}
+          title="Tire 4 perks au hasard parmi ceux disponibles pour vos personnages débloqués"
+        >
+          🎲 Chaos Shuffle
+        </button>
+      </div>
       <div className="match-perks-grid">
         {perks.map((perk, index) => (
           <IconSelectionSlot

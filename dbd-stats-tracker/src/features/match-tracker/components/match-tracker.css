@@ -56,6 +56,23 @@
   gap: 0.75rem;
 }
 
+.match-perks-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.match-perks-label-row label {
+  margin-top: 0;
+}
+
+.chaos-shuffle-button {
+  font-size: 0.8em;
+  padding: 0.3em 0.7em;
+  border-color: var(--color-accent);
+}
+
 .match-perks-grid {
   display: flex;
   flex-wrap: wrap;
