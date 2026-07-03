@@ -47,3 +47,14 @@ export interface KeyedPerformanceStat {
   secondaryCount: number;
   ratePercent: number;
 }
+
+/** `current` is the trailing run of wins up to the most recent match; `best` is the longest ever. */
+export interface WinStreakStat {
+  current: number;
+  best: number;
+}
+
+export interface WinStreaks {
+  survivor: WinStreakStat;
+  killer: WinStreakStat;
+}

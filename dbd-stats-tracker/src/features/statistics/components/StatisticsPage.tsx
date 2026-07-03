@@ -9,6 +9,7 @@ import {
   computePerformanceSeries,
   computePerkPerformance,
   computeSummary,
+  computeWinStreaks,
 } from "../lib/computeStatistics";
 import { useStatisticsStore } from "../stores/statistics.store";
 import { ActivityHeatmap } from "./ActivityHeatmap";
@@ -18,6 +19,7 @@ import { PerformanceBarChart } from "./PerformanceBarChart";
 import { RoleDistributionBar } from "./RoleDistributionBar";
 import { TopBuildCard } from "./TopBuildCard";
 import { TopCharacterCard } from "./TopCharacterCard";
+import { WinStreakCard } from "./WinStreakCard";
 import "./statistics.css";
 
 function formatBloodpoints(value: number): string {
@@ -50,6 +52,7 @@ export function StatisticsPage() {
     [matches, viewedMonth, viewedYear],
   );
   const performance = useMemo(() => computePerformanceSeries(matches), [matches]);
+  const winStreaks = useMemo(() => computeWinStreaks(matches), [matches]);
   const opponentStats = useMemo(() => computeOpponentPerformance(matches), [matches]);
 
   const survivorPerkStats = useMemo(() => computePerkPerformance(matches, "survivor"), [matches]);
@@ -92,6 +95,10 @@ export function StatisticsPage() {
             <div className="top-stats-row">
               <TopBuildCard label="Build Survivant favori" stat={summary.topSurvivorBuild} />
               <TopBuildCard label="Build Tueur favori" stat={summary.topKillerBuild} />
+            </div>
+            <div className="top-stats-row">
+              <WinStreakCard label="Série Survivant (évasions)" streak={winStreaks.survivor} seriesClassName="is-survivor" />
+              <WinStreakCard label="Série Tueur (3+ sacrifices)" streak={winStreaks.killer} seriesClassName="is-killer" />
             </div>
             <div className="top-stats-row">
               <div className="top-stat-card">

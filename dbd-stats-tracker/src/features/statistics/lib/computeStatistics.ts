@@ -7,10 +7,16 @@ import type {
   StatisticsSummary,
   TopBuildStat,
   TopCharacterStat,
+  WinStreakStat,
+  WinStreaks,
 } from "../types/statistics.types";
 
 function isSurvivorEscaped(match: Match): boolean {
   return match.role === "survivor" && (match.escapeResult === "escaped_door" || match.escapeResult === "escaped_hatch");
+}
+
+function isKillerWin(match: Match): boolean {
+  return match.role === "killer" && match.kills >= 3;
 }
 
 /** Normalizes a build's perks (order-independent) into a single lookup key. */
@@ -243,4 +249,46 @@ export function computeBuildPerformance(
       : aggregateKillerStatsByKeys(matches, keysOf);
 
   return stats.map((stat) => ({ ...stat, key: buildNameByKey.get(stat.key) as string }));
+}
+
+/** The trailing run of wins (up to the most recent match) and the longest run ever, in chronological order. */
+function streakStats(matchesChronological: Match[], isWin: (match: Match) => boolean): WinStreakStat {
+  let best = 0;
+  let running = 0;
+  for (const match of matchesChronological) {
+    running = isWin(match) ? running + 1 : 0;
+    best = Math.max(best, running);
+  }
+
+  let current = 0;
+  for (let i = matchesChronological.length - 1; i >= 0; i--) {
+    if (!isWin(matchesChronological[i])) break;
+    current++;
+  }
+
+  return { current, best };
+}
+
+/**
+ * Consecutive-win streaks, per role: a survivor "win" is escaping, a killer "win" is 3+ kills.
+ * Only regular (`mode === "normal"`) matches count - Hardcore, Gauntlet, and World Cup each have
+ * their own notion of success (permadeath pips, one-shot character runs, head-to-head fixtures)
+ * that isn't a personal win/loss in this sense.
+ */
+export function computeWinStreaks(matches: Match[]): WinStreaks {
+  const normalMatches = matches
+    .filter((match) => match.mode === "normal")
+    .slice()
+    .sort((a, b) => new Date(a.playedAt).getTime() - new Date(b.playedAt).getTime());
+
+  return {
+    survivor: streakStats(
+      normalMatches.filter((match) => match.role === "survivor"),
+      isSurvivorEscaped,
+    ),
+    killer: streakStats(
+      normalMatches.filter((match) => match.role === "killer"),
+      isKillerWin,
+    ),
+  };
 }
