@@ -9,3 +9,9 @@ export function pickRandomPerks(pool: readonly PerkDefinition[], count: number):
   }
   return shuffled.slice(0, count).map((perk) => perk.name);
 }
+
+/** Picks one random item from the pool, or `undefined` if it's empty. */
+export function pickRandomItem<T>(pool: readonly T[]): T | undefined {
+  if (pool.length === 0) return undefined;
+  return pool[Math.floor(Math.random() * pool.length)];
+}

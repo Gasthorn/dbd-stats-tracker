@@ -8,7 +8,7 @@ import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons
 import "../../../shared/styles/rarity.css";
 import { BuildManagerPanel } from "../../builds";
 import type { Build } from "../../builds";
-import { pickRandomPerks } from "../lib/chaosShuffle";
+import { pickRandomItem, pickRandomPerks } from "../lib/chaosShuffle";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
 import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/match.types";
 
@@ -135,6 +135,11 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
     setPerks(toPerksTuple(pickRandomPerks(availablePerks, 4)));
   }
 
+  function handleRandomCharacter() {
+    const picked = pickRandomItem(unlockedCharacters);
+    if (picked) setCharacterName(picked);
+  }
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setFormError(null);
@@ -249,7 +254,18 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         onReset={handleResetBuild}
       />
 
-      <label htmlFor="match-character">Personnage</label>
+      <div className="match-perks-label-row">
+        <label htmlFor="match-character">Personnage</label>
+        <button
+          type="button"
+          className="chaos-shuffle-button"
+          onClick={handleRandomCharacter}
+          disabled={unlockedCharacters.length === 0}
+          title="Sélectionne un personnage au hasard parmi vos personnages débloqués"
+        >
+          🎲 Personnage aléatoire
+        </button>
+      </div>
       <IconSelectionSlot
         as="select"
         id="match-character"
