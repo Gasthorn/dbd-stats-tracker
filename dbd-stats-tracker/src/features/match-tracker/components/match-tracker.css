@@ -156,6 +156,15 @@
   box-shadow: 0 0 5px var(--color-accent-glow);
 }
 
+.match-result-dot.is-draw {
+  background-color: var(--color-gold);
+  box-shadow: 0 0 5px rgba(241, 196, 15, 0.6);
+}
+
+.match-result-dot.is-pending {
+  background-color: var(--color-text-dim);
+}
+
 .match-mode-badge {
   font-size: 0.75em;
   font-weight: bold;

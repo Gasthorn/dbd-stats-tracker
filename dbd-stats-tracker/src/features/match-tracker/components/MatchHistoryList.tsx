@@ -11,6 +11,20 @@ const MODE_LABELS: Record<MatchMode, string> = {
   world_cup: "World Cup",
 };
 
+type MatchOutcome = "win" | "loss" | "draw" | "pending";
+
+const OUTCOME_LABELS: Record<MatchOutcome, string> = {
+  win: "Victoire",
+  loss: "Défaite",
+  draw: "Égalité",
+  pending: "Confrontation non terminée",
+};
+
+interface WorldCupDuelInfo {
+  opponent: string;
+  outcome: MatchOutcome;
+}
+
 function summarize(match: Match): string {
   if (match.role === "killer") {
     return `${match.kills} sacrifice(s)`;
@@ -31,6 +45,12 @@ function isWin(match: Match): boolean {
   return match.escapeResult === "escaped_door" || match.escapeResult === "escaped_hatch";
 }
 
+function fixtureOutcome(winner: "a" | "b" | "draw" | null, side: "a" | "b"): MatchOutcome {
+  if (winner === null) return "pending";
+  if (winner === "draw") return "draw";
+  return winner === side ? "win" : "loss";
+}
+
 interface MatchHistoryListProps {
   matches: Match[];
   onEdit?: (match: Match) => void;
@@ -39,7 +59,7 @@ interface MatchHistoryListProps {
 
 export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryListProps) {
   const userId = useAuthStore((state) => state.user?.id);
-  const [worldCupOpponentByMatchId, setWorldCupOpponentByMatchId] = useState<Map<string, string>>(new Map());
+  const [worldCupDuelByMatchId, setWorldCupDuelByMatchId] = useState<Map<string, WorldCupDuelInfo>>(new Map());
   const hasWorldCupMatches = useMemo(() => matches.some((match) => match.mode === "world_cup"), [matches]);
 
   useEffect(() => {
@@ -47,12 +67,22 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
     let cancelled = false;
     worldCupService.listFixturesForUser(userId).then((fixtures) => {
       if (cancelled) return;
-      const map = new Map<string, string>();
+      const map = new Map<string, WorldCupDuelInfo>();
       for (const fixture of fixtures) {
-        if (fixture.killerAMatchId) map.set(fixture.killerAMatchId, fixture.killerB);
-        if (fixture.killerBMatchId) map.set(fixture.killerBMatchId, fixture.killerA);
+        if (fixture.killerAMatchId) {
+          map.set(fixture.killerAMatchId, {
+            opponent: fixture.killerB,
+            outcome: fixtureOutcome(fixture.winner, "a"),
+          });
+        }
+        if (fixture.killerBMatchId) {
+          map.set(fixture.killerBMatchId, {
+            opponent: fixture.killerA,
+            outcome: fixtureOutcome(fixture.winner, "b"),
+          });
+        }
       }
-      setWorldCupOpponentByMatchId(map);
+      setWorldCupDuelByMatchId(map);
     });
     return () => {
       cancelled = true;
@@ -66,7 +96,7 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
   return (
     <ul className="match-history-list">
       {matches.map((match) => {
-        const duelOpponent = match.mode === "world_cup" ? worldCupOpponentByMatchId.get(match.id) : undefined;
+        const duel = match.mode === "world_cup" ? worldCupDuelByMatchId.get(match.id) : undefined;
         return (
           <li key={match.id} className="match-history-item">
             <span className="match-history-tags">
@@ -79,7 +109,16 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
             <span className="match-field-with-icon">
               <Icon category="Characters" name={match.characterName} alt={match.characterName} size={32} />
               [{match.role === "killer" ? "Tueur" : "Survivant"}] {match.characterName}
-              {duelOpponent ? ` (vs ${duelOpponent})` : ""}
+              {duel && (
+                <>
+                  {" "}
+                  (vs {duel.opponent})
+                  <span
+                    className={`match-result-dot is-${duel.outcome}`}
+                    title={`Issue du versus : ${OUTCOME_LABELS[duel.outcome]}`}
+                  />
+                </>
+              )}
             </span>
             {match.role === "survivor" && match.opponentName && (
               <span className="match-field-with-icon">

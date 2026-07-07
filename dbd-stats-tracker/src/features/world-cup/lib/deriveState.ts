@@ -26,3 +26,8 @@ export function toFixtureSideResult(match: Match | undefined): FixtureSideResult
     bloodpoints: match.bloodpoints,
   };
 }
+
+/** Every fixture (group stage and knockout) a given killer has been drawn into, across the whole run. */
+export function getKillerFixtures(killerName: string, fixtures: readonly WorldCupFixture[]): WorldCupFixture[] {
+  return fixtures.filter((fixture) => fixture.killerA === killerName || fixture.killerB === killerName);
+}

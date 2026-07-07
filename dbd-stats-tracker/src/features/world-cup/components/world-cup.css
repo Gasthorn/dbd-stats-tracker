@@ -161,6 +161,144 @@
   align-items: center;
   gap: 0.5rem;
   text-align: left !important;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--color-text);
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+
+.world-cup-standings-killer:hover {
+  color: var(--color-accent-hover);
+  box-shadow: none;
+  background: transparent;
+}
+
+/* ---- Killer fixture history modal ---- */
+
+.world-cup-killer-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 1000;
+}
+
+.world-cup-killer-modal {
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  max-width: 640px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.world-cup-killer-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.world-cup-killer-modal-title {
+  flex: 1;
+}
+
+.world-cup-killer-modal-header h3 {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.world-cup-killer-modal-record {
+  margin: 0.2rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+}
+
+.world-cup-killer-modal-close {
+  padding: 0.4em 0.7em;
+}
+
+.world-cup-killer-modal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.world-cup-killer-modal-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.6rem;
+  background-color: var(--color-bg-inset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9em;
+}
+
+.world-cup-killer-modal-round {
+  flex: 0 0 90px;
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+}
+
+.world-cup-killer-modal-opponent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.world-cup-killer-modal-score {
+  font-weight: bold;
+  color: var(--color-gold);
+  white-space: nowrap;
+}
+
+.world-cup-killer-modal-outcome {
+  flex: 0 0 80px;
+  text-align: right;
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
+.world-cup-result-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.world-cup-result-dot.is-win {
+  background-color: var(--color-success);
+  box-shadow: 0 0 5px rgba(46, 204, 113, 0.6);
+}
+
+.world-cup-result-dot.is-loss {
+  background-color: var(--color-accent-hover);
+  box-shadow: 0 0 5px var(--color-accent-glow);
+}
+
+.world-cup-result-dot.is-draw {
+  background-color: var(--color-gold);
+  box-shadow: 0 0 5px rgba(241, 196, 15, 0.6);
+}
+
+.world-cup-result-dot.is-pending {
+  background-color: var(--color-text-dim);
 }
 
 /* ---- Fixtures ---- */

@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
+import { groupLetter } from "../../../shared/lib/world-cup/groups";
 import { computeGroupStandings, rankGroupStandings } from "../../../shared/lib/world-cup/standings";
 import { Icon } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
+import { useWorldCupStore } from "../stores/world-cup.store";
 import { toStandingsFixture } from "../lib/deriveState";
 import type { WorldCupFixture, WorldCupGroup } from "../types/world-cup.types";
-
-const GROUP_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+import { WorldCupKillerHistoryModal } from "./WorldCupKillerHistoryModal";
 
 interface WorldCupGroupCardProps {
   group: WorldCupGroup;
@@ -18,6 +19,10 @@ interface WorldCupGroupCardProps {
 /** Read-only standings for one group; match recording happens in the current matchday panel. */
 export function WorldCupGroupCard({ group, fixtures, matchesById, isCurrent, defaultOpen = false }: WorldCupGroupCardProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [selectedKiller, setSelectedKiller] = useState<string | null>(null);
+  const allFixtures = useWorldCupStore((state) => state.fixtures);
+  const allMatchesById = useWorldCupStore((state) => state.matchesById);
+  const allGroups = useWorldCupStore((state) => state.groups);
 
   const standingsFixtures = useMemo(
     () => fixtures.map((fixture) => toStandingsFixture(fixture, matchesById)),
@@ -32,7 +37,7 @@ export function WorldCupGroupCard({ group, fixtures, matchesById, isCurrent, def
   return (
     <div className={`world-cup-group-card${isCurrent ? " is-current" : ""}`}>
       <button type="button" className="world-cup-group-header" onClick={() => setIsOpen((prev) => !prev)}>
-        <h3>Poule {GROUP_LETTERS[group.groupIndex] ?? group.groupIndex + 1}</h3>
+        <h3>Poule {groupLetter(group.groupIndex)}</h3>
         <span className="world-cup-group-progress">
           {playedCount} / {fixtures.length} matchs
         </span>
@@ -58,9 +63,15 @@ export function WorldCupGroupCard({ group, fixtures, matchesById, isCurrent, def
             {standings.map((standing, index) => (
               <tr key={standing.killer}>
                 <td>{index + 1}</td>
-                <td className="world-cup-standings-killer">
-                  <Icon category="Characters" name={standing.killer} alt={standing.killer} size={32} />
-                  {standing.killer}
+                <td>
+                  <button
+                    type="button"
+                    className="world-cup-standings-killer"
+                    onClick={() => setSelectedKiller(standing.killer)}
+                  >
+                    <Icon category="Characters" name={standing.killer} alt={standing.killer} size={32} />
+                    {standing.killer}
+                  </button>
                 </td>
                 <td>{standing.played}</td>
                 <td>{standing.wins}</td>
@@ -77,6 +88,16 @@ export function WorldCupGroupCard({ group, fixtures, matchesById, isCurrent, def
             ))}
           </tbody>
         </table>
+      )}
+
+      {selectedKiller && (
+        <WorldCupKillerHistoryModal
+          killerName={selectedKiller}
+          fixtures={allFixtures}
+          matchesById={allMatchesById}
+          groups={allGroups}
+          onClose={() => setSelectedKiller(null)}
+        />
       )}
     </div>
   );
