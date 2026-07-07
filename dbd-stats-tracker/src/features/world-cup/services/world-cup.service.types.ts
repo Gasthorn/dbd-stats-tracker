@@ -29,6 +29,8 @@ export interface WorldCupService {
   ) => Promise<{ run: WorldCupRun; groups: WorldCupGroup[]; fixtures: WorldCupFixture[] }>;
   listGroups: (runId: UUID) => Promise<WorldCupGroup[]>;
   listFixtures: (runId: UUID) => Promise<WorldCupFixture[]>;
+  /** Every fixture the user has ever recorded a side for, across all runs (used to resolve the opposing killer of a past World Cup match in history views). */
+  listFixturesForUser: (userId: UUID) => Promise<WorldCupFixture[]>;
   recordFixtureSide: (fixtureId: UUID, side: FixtureSide, matchId: UUID) => Promise<WorldCupFixture>;
   setFixtureWinner: (fixtureId: UUID, winner: "a" | "b" | "draw") => Promise<WorldCupFixture>;
   createKnockoutFixtures: (input: CreateKnockoutFixturesInput) => Promise<WorldCupFixture[]>;

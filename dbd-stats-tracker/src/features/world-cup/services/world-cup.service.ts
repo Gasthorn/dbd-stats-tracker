@@ -132,6 +132,15 @@ export const worldCupService: WorldCupService = {
     return (data ?? []).map(toFixture);
   },
 
+  async listFixturesForUser(userId) {
+    const { data, error } = await supabase
+      .from("world_cup_fixtures")
+      .select("*")
+      .eq("user_id", userId);
+    if (error) throw error;
+    return (data ?? []).map(toFixture);
+  },
+
   async recordFixtureSide(fixtureId, side, matchId) {
     const { data, error } = await supabase
       .from("world_cup_fixtures")

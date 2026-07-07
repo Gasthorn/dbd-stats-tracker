@@ -133,6 +133,59 @@
   font-size: 0.9em;
 }
 
+.match-history-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.match-result-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.match-result-dot.is-win {
+  background-color: var(--color-success);
+  box-shadow: 0 0 5px rgba(46, 204, 113, 0.6);
+}
+
+.match-result-dot.is-loss {
+  background-color: var(--color-accent-hover);
+  box-shadow: 0 0 5px var(--color-accent-glow);
+}
+
+.match-mode-badge {
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.15em 0.55em;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-muted);
+}
+
+.match-mode-badge--normal {
+  color: var(--color-text-muted);
+}
+
+.match-mode-badge--hardcore {
+  color: var(--color-accent-hover);
+  border-color: var(--color-accent);
+}
+
+.match-mode-badge--gauntlet {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+}
+
+.match-mode-badge--world_cup {
+  color: #3987e5;
+  border-color: #3987e5;
+}
+
 .match-history-actions {
   display: flex;
   gap: 0.4rem;
