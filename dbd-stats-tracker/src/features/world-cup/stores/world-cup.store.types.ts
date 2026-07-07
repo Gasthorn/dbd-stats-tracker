@@ -1,4 +1,5 @@
 import type { AsyncStatus, UUID } from "../../../shared/types/common.types";
+import type { GroupStanding } from "../../../shared/lib/world-cup/standings";
 import type { CreateKillerMatchInput } from "../../match-tracker/types/match.types";
 import type { Match } from "../../match-tracker/types/match.types";
 import type { FixtureSide, WorldCupFixture, WorldCupGroup, WorldCupRun } from "../types/world-cup.types";
@@ -9,6 +10,14 @@ export type WorldCupMatchInput = Pick<
   "characterName" | "perks" | "equipment" | "bloodpoints" | "kills" | "hooks" | "generatorsCompleted"
 >;
 
+/** A past completed World Cup's full data, for read-only browsing. */
+export interface WorldCupRunDetail {
+  run: WorldCupRun;
+  groups: WorldCupGroup[];
+  fixtures: WorldCupFixture[];
+  matchesById: Record<UUID, Match>;
+}
+
 export interface WorldCupState {
   run: WorldCupRun | null;
   groups: WorldCupGroup[];
@@ -18,6 +27,20 @@ export interface WorldCupState {
   hasHistory: boolean;
   status: AsyncStatus;
   error: string | null;
+  /** Every completed World Cup, most recent first - populated on demand for the history browser. */
+  historyRuns: WorldCupRun[];
+  historyStatus: AsyncStatus;
+  historyError: string | null;
+  /** The past run currently being viewed in detail, if any. */
+  selectedHistoryRun: WorldCupRunDetail | null;
+  /** Every killer's record pooled across every match (group and knockout) from every World Cup the player has ever played, ranked best to worst. */
+  careerStandings: GroupStanding[];
+  /** The raw fixtures/matches/groups behind `careerStandings`, kept around so the killer-history modal can be opened from the career standings view without refetching. */
+  careerFixtures: WorldCupFixture[];
+  careerMatchesById: Record<UUID, Match>;
+  careerGroups: WorldCupGroup[];
+  careerStatus: AsyncStatus;
+  careerError: string | null;
 }
 
 export interface WorldCupActions {
@@ -29,6 +52,10 @@ export interface WorldCupActions {
   advanceToKnockout: () => Promise<void>;
   advanceKnockoutRound: () => Promise<void>;
   resetActiveRun: () => Promise<void>;
+  loadCompletedRuns: () => Promise<void>;
+  loadHistoryRunDetail: (runId: UUID) => Promise<void>;
+  clearHistoryRunDetail: () => void;
+  loadCareerStandings: () => Promise<void>;
 }
 
 export type WorldCupStore = WorldCupState & WorldCupActions;

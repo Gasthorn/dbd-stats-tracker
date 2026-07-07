@@ -69,6 +69,17 @@ export const worldCupService: WorldCupService = {
     return data ? toRun(data) : null;
   },
 
+  async listCompletedRuns(userId) {
+    const { data, error } = await supabase
+      .from("world_cup_runs")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false });
+    if (error) throw error;
+    return (data ?? []).map(toRun);
+  },
+
   async createRun({ userId, groups }) {
     const { data: runRow, error: runError } = await supabase
       .from("world_cup_runs")
@@ -139,6 +150,15 @@ export const worldCupService: WorldCupService = {
       .eq("user_id", userId);
     if (error) throw error;
     return (data ?? []).map(toFixture);
+  },
+
+  async listGroupsForUser(userId) {
+    const { data, error } = await supabase
+      .from("world_cup_groups")
+      .select("*")
+      .eq("user_id", userId);
+    if (error) throw error;
+    return (data ?? []).map(toGroup);
   },
 
   async recordFixtureSide(fixtureId, side, matchId) {

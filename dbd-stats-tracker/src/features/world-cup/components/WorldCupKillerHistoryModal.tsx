@@ -75,8 +75,8 @@ export function WorldCupKillerHistoryModal({
   const losses = rows.filter((row) => row.outcome === "loss").length;
 
   return (
-    <div className="world-cup-killer-modal-overlay" onClick={onClose}>
-      <div className="world-cup-killer-modal" onClick={(event) => event.stopPropagation()}>
+    <div className="world-cup-modal-overlay" onClick={onClose}>
+      <div className="world-cup-modal world-cup-killer-modal" onClick={(event) => event.stopPropagation()}>
         <div className="world-cup-killer-modal-header">
           <Icon category="Characters" name={killerName} alt={killerName} size={56} />
           <div className="world-cup-killer-modal-title">

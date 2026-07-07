@@ -44,6 +44,28 @@
   gap: 0.6rem;
   padding: 0.4rem 0.75rem;
   border-bottom: 1px solid var(--color-border);
+  border-top: 2px solid transparent;
+}
+
+.world-cup-seeding-list li.is-dragging {
+  opacity: 0.4;
+}
+
+.world-cup-seeding-list li.is-drag-over {
+  border-top-color: var(--color-accent-hover);
+}
+
+.world-cup-seeding-drag-handle {
+  color: var(--color-text-dim);
+  font-size: 1.1em;
+  line-height: 1;
+  cursor: grab;
+  touch-action: none;
+  padding: 0.2em;
+}
+
+.world-cup-seeding-drag-handle:active {
+  cursor: grabbing;
 }
 
 .world-cup-seeding-rank {
@@ -177,9 +199,9 @@
   background: transparent;
 }
 
-/* ---- Killer fixture history modal ---- */
+/* ---- Modals (shared shell) ---- */
 
-.world-cup-killer-modal-overlay {
+.world-cup-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
@@ -190,7 +212,7 @@
   z-index: 1000;
 }
 
-.world-cup-killer-modal {
+.world-cup-modal {
   background-color: var(--color-bg-elevated);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
@@ -201,6 +223,8 @@
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
 }
+
+/* ---- Killer fixture history modal ---- */
 
 .world-cup-killer-modal-header {
   display: flex;
@@ -264,7 +288,7 @@
 
 .world-cup-killer-modal-score {
   font-weight: bold;
-  color: var(--color-gold);
+  color: var(--color-text);
   white-space: nowrap;
 }
 
@@ -276,6 +300,7 @@
 }
 
 .world-cup-result-dot {
+  display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -320,6 +345,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  min-width: 0;
 }
 
 .world-cup-fixture-side {
@@ -329,22 +355,31 @@
   gap: 0.5rem;
   padding: 0.3rem 0.5rem;
   border-radius: var(--radius-sm);
+  min-width: 0;
 }
 
 .world-cup-fixture-side.is-winner {
-  background: rgba(241, 196, 15, 0.12);
-  box-shadow: 0 0 0 1px var(--color-gold);
+  background: rgba(46, 204, 113, 0.12);
+  box-shadow: 0 0 0 1px var(--color-success);
 }
 
 .world-cup-fixture-killer-name {
   flex: 1;
   font-size: 0.9em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-cup-fixture-side button {
+  flex-shrink: 0;
 }
 
 .world-cup-fixture-hooks {
   font-weight: bold;
   font-size: 0.9em;
-  color: var(--color-gold);
+  color: var(--color-text);
   white-space: nowrap;
 }
 
@@ -373,37 +408,192 @@
   border-top: 1px solid var(--color-border);
 }
 
-/* ---- Bracket ---- */
+/* ---- Bracket tree ---- */
 
-.world-cup-bracket-rounds-nav {
+.world-cup-bracket h3 {
+  text-align: center;
+}
+
+.world-cup-bracket-tree {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  align-items: stretch;
+  /* "safe" falls back to start-alignment once content overflows, so the left side stays reachable by scrolling
+     (plain "center" would center-clip the overflow and make it impossible to scroll far enough left to see it). */
+  justify-content: safe center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 1rem 0.5rem 1.5rem;
+}
+
+.bracket-half {
+  display: flex;
+  align-items: stretch;
+}
+
+.bracket-round-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 1rem;
+  padding: 0 1.5rem;
+  min-width: 96px;
+}
+
+.bracket-final-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+}
+
+.bracket-match-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background-color: var(--color-bg-inset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.6rem;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: normal;
+  width: 100%;
+}
+
+.bracket-match-card:hover {
+  border-color: var(--color-accent-hover);
+  box-shadow: 0 0 10px var(--color-accent-glow);
+}
+
+.bracket-match-card.is-placeholder {
+  border-style: dashed;
+  border-color: var(--color-border-strong);
+  cursor: default;
+}
+
+.bracket-match-card.is-placeholder:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: none;
+}
+
+.bracket-match-placeholder-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-text-dim);
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+/* A killer already known to be advancing into a not-yet-drawn slot: shown but visibly "not official yet". */
+.bracket-match-card.is-placeholder img {
+  opacity: 0.55;
+  filter: grayscale(50%);
+}
+
+.bracket-half.is-left .bracket-match-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -1.5rem;
+  width: 1.5rem;
+  height: 1px;
+  background: var(--color-border-strong);
+}
+
+.bracket-half.is-right .bracket-match-card::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -1.5rem;
+  width: 1.5rem;
+  height: 1px;
+  background: var(--color-border-strong);
+}
+
+.bracket-final-col .bracket-match-card {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+}
+
+.bracket-match-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: var(--radius-sm);
+}
+
+.bracket-match-side.is-winner {
+  background: rgba(46, 204, 113, 0.15);
+  box-shadow: 0 0 0 1px var(--color-success);
+}
+
+.bracket-match-score {
+  font-weight: bold;
+  color: var(--color-text);
   font-size: 0.85em;
 }
 
-.world-cup-bracket-rounds-nav span {
-  padding: 0.3em 0.7em;
-  border-radius: 999px;
-  border: 1px solid var(--color-border-strong);
+.world-cup-bracket-advancing {
+  text-align: center;
   color: var(--color-text-muted);
+  font-size: 0.9em;
+  margin-top: 1rem;
 }
 
-.world-cup-bracket-rounds-nav span.is-current {
-  border-color: var(--color-accent);
-  color: var(--color-text);
-  background: rgba(169, 29, 29, 0.15);
+/* ---- Fixture recording modal ---- */
+
+.world-cup-fixture-modal {
+  max-width: 760px;
 }
 
-.world-cup-bracket .world-cup-fixture-list {
-  max-width: 680px;
-  margin: 0 auto 1.5rem;
+.world-cup-groups-modal {
+  max-width: min(1200px, 95vw);
 }
 
-.world-cup-bracket > button {
-  display: block;
-  margin: 0 auto;
+.world-cup-groups-modal .world-cup-groups-grid {
+  margin: 0;
+}
+
+/* ---- World Cup history browser ---- */
+
+.world-cup-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.world-cup-history-list button {
+  width: 100%;
+  text-align: left;
+}
+
+.world-cup-history-champion {
+  text-align: center;
+  font-size: 1.1em;
+  color: var(--color-gold);
+  margin-bottom: 1rem;
+}
+
+.world-cup-fixture-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.world-cup-fixture-modal-header h3 {
+  margin: 0;
+  border: none;
+  padding: 0;
 }
 
 .world-cup-champion {

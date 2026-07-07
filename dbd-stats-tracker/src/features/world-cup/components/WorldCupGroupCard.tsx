@@ -14,10 +14,19 @@ interface WorldCupGroupCardProps {
   matchesById: Record<string, Match>;
   isCurrent: boolean;
   defaultOpen?: boolean;
+  /** Once every group is complete, which killers made the knockout field - drives the qualified/eliminated dot. Omit or pass null while it isn't determinable yet. */
+  qualifiedKillers?: Set<string> | null;
 }
 
 /** Read-only standings for one group; match recording happens in the current matchday panel. */
-export function WorldCupGroupCard({ group, fixtures, matchesById, isCurrent, defaultOpen = false }: WorldCupGroupCardProps) {
+export function WorldCupGroupCard({
+  group,
+  fixtures,
+  matchesById,
+  isCurrent,
+  defaultOpen = false,
+  qualifiedKillers = null,
+}: WorldCupGroupCardProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [selectedKiller, setSelectedKiller] = useState<string | null>(null);
   const allFixtures = useWorldCupStore((state) => state.fixtures);
@@ -69,6 +78,12 @@ export function WorldCupGroupCard({ group, fixtures, matchesById, isCurrent, def
                     className="world-cup-standings-killer"
                     onClick={() => setSelectedKiller(standing.killer)}
                   >
+                    {qualifiedKillers && (
+                      <span
+                        className={`world-cup-result-dot ${qualifiedKillers.has(standing.killer) ? "is-win" : "is-loss"}`}
+                        title={qualifiedKillers.has(standing.killer) ? "Qualifié pour les seizièmes de finale" : "Éliminé en poule"}
+                      />
+                    )}
                     <Icon category="Characters" name={standing.killer} alt={standing.killer} size={32} />
                     {standing.killer}
                   </button>

@@ -1,11 +1,19 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { isGroupComplete } from "../../../shared/lib/world-cup/standings";
 import { useCharactersStore } from "../../characters/stores/characters.store";
-import { toStandingsFixture } from "../lib/deriveState";
+import {
+  AUTO_QUALIFIERS_PER_GROUP,
+  computeGroupQualification,
+  KNOCKOUT_FIELD_SIZE,
+  toStandingsFixture,
+} from "../lib/deriveState";
 import { getCurrentGroupStageBatch } from "../lib/matchday";
 import { useWorldCupStore } from "../stores/world-cup.store";
 import { WorldCupBracket } from "./WorldCupBracket";
+import { WorldCupCareerStandingsModal } from "./WorldCupCareerStandingsModal";
 import { WorldCupGroupCard } from "./WorldCupGroupCard";
+import { WorldCupGroupsResultsModal } from "./WorldCupGroupsResultsModal";
+import { WorldCupHistoryModal } from "./WorldCupHistoryModal";
 import { WorldCupMatchdayPanel } from "./WorldCupMatchdayPanel";
 import { WorldCupSeedingSetup } from "./WorldCupSeedingSetup";
 import "./world-cup.css";
@@ -30,11 +38,23 @@ export function WorldCupPage() {
   const advanceKnockoutRound = useWorldCupStore((state) => state.advanceKnockoutRound);
   const resetActiveRun = useWorldCupStore((state) => state.resetActiveRun);
 
+  const [showGroupsModal, setShowGroupsModal] = useState(false);
+  const [showCareerModal, setShowCareerModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+
   useEffect(() => {
     if (charactersStatus === "idle") fetchCharacters();
     initialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Once every fixture of the current knockout round is resolved, move on automatically - no manual "next round" click.
+  useEffect(() => {
+    if (!run || run.status !== "knockout" || !run.currentRound || status === "loading") return;
+    const currentRoundFixtures = fixtures.filter((f) => f.round === run.currentRound);
+    const allResolved = currentRoundFixtures.length > 0 && currentRoundFixtures.every((f) => f.winner !== null);
+    if (allResolved) advanceKnockoutRound();
+  }, [run, fixtures, status, advanceKnockoutRound]);
 
   const groupFixtures = useMemo(
     () => groups.map((group) => ({ group, fixtures: fixtures.filter((f) => f.groupId === group.id) })),
@@ -51,6 +71,16 @@ export function WorldCupPage() {
       ),
     [groupFixtures, matchesById],
   );
+  const qualifiedKillers = useMemo(() => {
+    if (!allGroupsComplete) return null;
+    const groupsWithStandingsFixtures = groupFixtures.map(({ group, fixtures: groupFxs }) => ({
+      groupIndex: group.groupIndex,
+      killers: group.killers,
+      fixtures: groupFxs.map((fixture) => toStandingsFixture(fixture, matchesById)),
+    }));
+    return computeGroupQualification(groupsWithStandingsFixtures, AUTO_QUALIFIERS_PER_GROUP, KNOCKOUT_FIELD_SIZE)
+      .qualifiedKillers;
+  }, [allGroupsComplete, groupFixtures, matchesById]);
   const currentBatch = useMemo(() => getCurrentGroupStageBatch(groups, fixtures), [groups, fixtures]);
   const groupFixtureCount = fixtures.filter((f) => f.round === "group").length;
   const groupPlayedCount = fixtures.filter((f) => f.round === "group" && f.winner !== null).length;
@@ -79,6 +109,19 @@ export function WorldCupPage() {
   return (
     <div className="world-cup-page">
       <div className="world-cup-header">
+        <button type="button" onClick={() => setShowCareerModal(true)}>
+          Voir le classement général
+        </button>
+        {run && (run.status === "knockout" || run.status === "completed") && (
+          <button type="button" onClick={() => setShowGroupsModal(true)}>
+            Voir les résultats des poules
+          </button>
+        )}
+        {hasHistory && (
+          <button type="button" onClick={() => setShowHistoryModal(true)}>
+            Voir les anciens World Cup
+          </button>
+        )}
         {run && run.status !== "completed" && (
           <button type="button" onClick={handleReset}>
             Abandonner ce World Cup
@@ -135,6 +178,7 @@ export function WorldCupPage() {
                 matchesById={matchesById}
                 isCurrent={currentBatch?.group.id === group.id}
                 defaultOpen={index === 0}
+                qualifiedKillers={qualifiedKillers}
               />
             ))}
           </div>
@@ -156,7 +200,6 @@ export function WorldCupPage() {
           isAdvancing={status === "loading"}
           onRecordSide={(fixtureId, side, input) => recordFixtureMatch(fixtureId, side, input)}
           onManualTiebreak={(fixtureId, side) => resolveManualTiebreak(fixtureId, side)}
-          onAdvanceRound={advanceKnockoutRound}
         />
       )}
 
@@ -165,6 +208,19 @@ export function WorldCupPage() {
           Nouveau World Cup
         </button>
       )}
+
+      {showGroupsModal && (
+        <WorldCupGroupsResultsModal
+          groupFixtures={groupFixtures}
+          matchesById={matchesById}
+          qualifiedKillers={qualifiedKillers}
+          onClose={() => setShowGroupsModal(false)}
+        />
+      )}
+
+      {showCareerModal && <WorldCupCareerStandingsModal onClose={() => setShowCareerModal(false)} />}
+
+      {showHistoryModal && <WorldCupHistoryModal onClose={() => setShowHistoryModal(false)} />}
     </div>
   );
 }

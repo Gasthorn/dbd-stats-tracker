@@ -66,7 +66,7 @@ export function WorldCupFixtureRow({ fixture, matchesById, onRecordSide, onManua
 
       {needsManualTiebreak && (
         <div className="world-cup-fixture-tiebreak">
-          <p>Égalité totale (crochets, sacrifices et points de sang) : désignez le vainqueur.</p>
+          <p>Égalité totale (crochets, sacrifices, générateurs terminés et points de sang) : désignez le vainqueur.</p>
           <button type="button" onClick={() => onManualTiebreak("a")}>
             {fixture.killerA} gagne
           </button>

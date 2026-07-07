@@ -1,5 +1,5 @@
-import { computeGroupStandings, rankOverallStandings, type StandingsFixture } from "./standings";
 import type { KnockoutRound } from "./knockout";
+import { computeGroupStandings, rankOverallStandings, type StandingsFixture } from "./standings";
 
 function shuffle<T>(items: readonly T[]): T[] {
   const result = [...items];
@@ -49,9 +49,10 @@ export function drawRandomSeedOrder(eligibleKillers: readonly string[]): string[
 
 /**
  * Combines a previous tournament's final ranking with the player's currently-eligible killer
- * pool: killers who played last time keep their relative order (best first); killers who are
- * newly eligible now (unlocked since, or sat out the truncation last time) are appended after,
- * in random order since there's no data to rank them by.
+ * pool: killers who played last time keep their relative order (best first). Killers who are
+ * newly eligible now (unlocked since, or sat out last time) have no data to rank them by, so
+ * they're inserted as a block in the middle of the ranked list, in random order, rather than
+ * tacked onto either end.
  */
 export function computeSeedingFromHistory(
   eligibleKillers: readonly string[],
@@ -61,7 +62,18 @@ export function computeSeedingFromHistory(
   const rankedEligible = previousRanking.filter((killer) => eligibleSet.has(killer));
   const rankedSet = new Set(rankedEligible);
   const unrankedEligible = shuffle(eligibleKillers.filter((killer) => !rankedSet.has(killer)));
-  return [...rankedEligible, ...unrankedEligible];
+
+  const middleIndex = Math.floor(rankedEligible.length / 2);
+  return [
+    ...rankedEligible.slice(0, middleIndex),
+    ...unrankedEligible,
+    ...rankedEligible.slice(middleIndex),
+  ];
+}
+
+export interface GroupWithFixtures {
+  killers: readonly string[];
+  fixtures: readonly StandingsFixture[];
 }
 
 export interface ResolvedKnockoutFixture {
@@ -69,11 +81,6 @@ export interface ResolvedKnockoutFixture {
   killerA: string;
   killerB: string;
   winner: "a" | "b";
-}
-
-export interface GroupWithFixtures {
-  killers: readonly string[];
-  fixtures: readonly StandingsFixture[];
 }
 
 const ROUND_ELIMINATION_ORDER: Record<KnockoutRound, number> = {
@@ -89,6 +96,7 @@ const ROUND_ELIMINATION_ORDER: Record<KnockoutRound, number> = {
  * and knockout results, for seeding the next tournament: champion, then knockout losers grouped
  * by the round that eliminated them (deepest run first, group-stage finish as the tiebreak
  * within a round), then killers who never escaped the group stage (by their overall standing).
+ * Every match played - group or knockout - factors into this, not just the group stage.
  */
 export function computePreviousTournamentRanking(
   groups: readonly GroupWithFixtures[],

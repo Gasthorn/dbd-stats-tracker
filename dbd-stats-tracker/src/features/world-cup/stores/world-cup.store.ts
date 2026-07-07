@@ -1,12 +1,8 @@
 import { create } from "zustand";
+import { computeGroupStandings, isGroupComplete, rankOverallStandings } from "../../../shared/lib/world-cup/standings";
 import {
-  computeGroupStandings,
-  isGroupComplete,
-  rankOverallStandings,
-} from "../../../shared/lib/world-cup/standings";
-import {
+  generateFifaStyleSeeding,
   generateNextRoundPairings,
-  generateSnakeSeeding,
   nextKnockoutRound,
   resolveFixtureOutcome,
   resolveKnockoutOutcome,
@@ -18,12 +14,17 @@ import { useCharactersStore } from "../../characters/stores/characters.store";
 import { matchService } from "../../match-tracker";
 import { useMatchTrackerStore } from "../../match-tracker/stores/match-tracker.store";
 import type { CreateMatchInput } from "../../match-tracker/types/match.types";
-import { toFixtureSideResult, toStandingsFixture } from "../lib/deriveState";
+import {
+  AUTO_QUALIFIERS_PER_GROUP,
+  computeGroupQualification,
+  KNOCKOUT_FIELD_SIZE,
+  toFixtureSideResult,
+  toStandingsFixture,
+} from "../lib/deriveState";
 import { worldCupService } from "../services/world-cup.service";
 import type { WorldCupStore } from "./world-cup.store.types";
 
 const GROUP_SIZE = 6;
-const KNOCKOUT_FIELD_SIZE = 32;
 
 function toErrorMessage(err: unknown): string {
   return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
@@ -43,6 +44,16 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
   hasHistory: false,
   status: "idle",
   error: null,
+  historyRuns: [],
+  historyStatus: "idle",
+  historyError: null,
+  selectedHistoryRun: null,
+  careerStandings: [],
+  careerFixtures: [],
+  careerMatchesById: {},
+  careerGroups: [],
+  careerStatus: "idle",
+  careerError: null,
 
   initialize: async () => {
     set({ status: "loading", error: null });
@@ -181,12 +192,18 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
   },
 
   advanceToKnockout: async () => {
-    const run = get().run;
+    const state = get();
+    // Guards against a duplicate/overlapping call (e.g. React Strict Mode double-invoking the
+    // effect that triggers this) creating the same knockout fixtures twice: the inline effect
+    // guard only sees a stale closure of `status`, so this reads the live store value instead.
+    if (state.status === "loading") return;
+    const run = state.run;
     if (!run || run.status !== "group_stage") return;
     set({ status: "loading", error: null });
     try {
       const { groups, fixtures, matchesById } = get();
       const groupsWithFixtures = groups.map((group) => ({
+        groupIndex: group.groupIndex,
         killers: group.killers,
         fixtures: fixtures
           .filter((fixture) => fixture.groupId === group.id)
@@ -199,18 +216,16 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
         return;
       }
 
-      const allStandings = groupsWithFixtures.flatMap((group) =>
-        computeGroupStandings(group.killers, group.fixtures),
-      );
-      const top32 = rankOverallStandings(allStandings)
-        .slice(0, KNOCKOUT_FIELD_SIZE)
-        .map((standing) => standing.killer);
-      if (top32.length < KNOCKOUT_FIELD_SIZE) {
+      // FIFA-style qualification: a fixed number of automatic qualifiers per group, topped up
+      // with the best "next in line" killers across all groups (like the best third-placed teams
+      // at a real World Cup) to reach the fixed knockout field size.
+      const { qualifiers } = computeGroupQualification(groupsWithFixtures, AUTO_QUALIFIERS_PER_GROUP, KNOCKOUT_FIELD_SIZE);
+      if (qualifiers.length < KNOCKOUT_FIELD_SIZE) {
         set({ status: "error", error: "Pas assez de tueurs qualifiés pour former un tableau de 32." });
         return;
       }
 
-      const pairings = generateSnakeSeeding(top32);
+      const pairings = generateFifaStyleSeeding(qualifiers);
       const newFixtures = await worldCupService.createKnockoutFixtures({
         userId: requireUserId(),
         runId: run.id,
@@ -225,7 +240,11 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
   },
 
   advanceKnockoutRound: async () => {
-    const run = get().run;
+    const state = get();
+    // Same re-entrancy guard as advanceToKnockout - critical here since this is auto-triggered
+    // from an effect and can otherwise fire twice, creating duplicate fixtures for the next round.
+    if (state.status === "loading") return;
+    const run = state.run;
     if (!run || run.status !== "knockout" || !run.currentRound) return;
     set({ status: "loading", error: null });
     try {
@@ -272,6 +291,65 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
       set({ run: null, groups: [], fixtures: [], matchesById: {}, status: "success" });
     } catch (err) {
       set({ status: "error", error: toErrorMessage(err) });
+    }
+  },
+
+  loadCompletedRuns: async () => {
+    set({ historyStatus: "loading", historyError: null });
+    try {
+      const userId = requireUserId();
+      const historyRuns = await worldCupService.listCompletedRuns(userId);
+      set({ historyRuns, historyStatus: "success" });
+    } catch (err) {
+      set({ historyStatus: "error", historyError: toErrorMessage(err) });
+    }
+  },
+
+  loadHistoryRunDetail: async (runId) => {
+    set({ historyStatus: "loading", historyError: null });
+    try {
+      const historyRun = get().historyRuns.find((r) => r.id === runId);
+      if (!historyRun) throw new Error("World Cup introuvable.");
+
+      const [groups, fixtures, matches] = await Promise.all([
+        worldCupService.listGroups(runId),
+        worldCupService.listFixtures(runId),
+        matchService.listMatches({ mode: "world_cup" }),
+      ]);
+      const matchesById = Object.fromEntries(matches.items.map((m) => [m.id, m]));
+      set({
+        selectedHistoryRun: { run: historyRun, groups, fixtures, matchesById },
+        historyStatus: "success",
+      });
+    } catch (err) {
+      set({ historyStatus: "error", historyError: toErrorMessage(err) });
+    }
+  },
+
+  clearHistoryRunDetail: () => set({ selectedHistoryRun: null }),
+
+  loadCareerStandings: async () => {
+    set({ careerStatus: "loading", careerError: null });
+    try {
+      const userId = requireUserId();
+      const [fixtures, groups, matches] = await Promise.all([
+        worldCupService.listFixturesForUser(userId),
+        worldCupService.listGroupsForUser(userId),
+        matchService.listMatches({ mode: "world_cup" }),
+      ]);
+      const matchesById = Object.fromEntries(matches.items.map((m) => [m.id, m]));
+      const standingsFixtures = fixtures.map((fixture) => toStandingsFixture(fixture, matchesById));
+      const killers = Array.from(new Set(fixtures.flatMap((fixture) => [fixture.killerA, fixture.killerB])));
+      const careerStandings = rankOverallStandings(computeGroupStandings(killers, standingsFixtures));
+      set({
+        careerStandings,
+        careerFixtures: fixtures,
+        careerMatchesById: matchesById,
+        careerGroups: groups,
+        careerStatus: "success",
+      });
+    } catch (err) {
+      set({ careerStatus: "error", careerError: toErrorMessage(err) });
     }
   },
 }));
