@@ -25,6 +25,7 @@ export type WorldCupRoundEnum =
   | "semifinal"
   | "final";
 export type WorldCupKnockoutRoundEnum = Exclude<WorldCupRoundEnum, "group">;
+export type FriendshipStatusEnum = "pending" | "accepted";
 
 export type UserRow = {
   id: string;
@@ -95,6 +96,27 @@ export type TeamRow = {
 export type TeamInsert = Pick<TeamRow, "user_id" | "name"> &
   Partial<Omit<TeamRow, "id" | "user_id" | "name">>;
 export type TeamUpdate = Partial<TeamInsert>;
+
+export type FriendshipRow = {
+  id: string;
+  requester_id: string;
+  addressee_id: string;
+  status: FriendshipStatusEnum;
+  seen: boolean;
+  created_at: string;
+  responded_at: string | null;
+};
+export type FriendshipInsert = Pick<FriendshipRow, "requester_id" | "addressee_id"> &
+  Partial<Omit<FriendshipRow, "id" | "requester_id" | "addressee_id">>;
+export type FriendshipUpdate = Partial<FriendshipInsert>;
+
+export type UserPresenceRow = {
+  user_id: string;
+  last_seen_at: string;
+};
+export type UserPresenceInsert = Pick<UserPresenceRow, "user_id"> &
+  Partial<Omit<UserPresenceRow, "user_id">>;
+export type UserPresenceUpdate = Partial<UserPresenceInsert>;
 
 export type MatchRow = {
   id: string;
@@ -236,6 +258,41 @@ export interface Database {
           },
         ];
       };
+      friendships: {
+        Row: FriendshipRow;
+        Insert: FriendshipInsert;
+        Update: FriendshipUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "friendships_requester_id_fkey";
+            columns: ["requester_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "friendships_addressee_id_fkey";
+            columns: ["addressee_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      user_presence: {
+        Row: UserPresenceRow;
+        Insert: UserPresenceInsert;
+        Update: UserPresenceUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "user_presence_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       matches: {
         Row: MatchRow;
         Insert: MatchInsert;
@@ -315,7 +372,27 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      find_user_by_username: {
+        Args: { p_username: string };
+        Returns: { id: string; username: string; avatar_url: string | null }[];
+      };
+      list_friendships: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: string;
+          status: FriendshipStatusEnum;
+          seen: boolean;
+          created_at: string;
+          responded_at: string | null;
+          is_requester: boolean;
+          friend_id: string;
+          friend_username: string;
+          friend_avatar_url: string | null;
+          friend_last_seen_at: string | null;
+        }[];
+      };
+    };
     Enums: {
       match_role: MatchRoleEnum;
       match_mode: MatchModeEnum;

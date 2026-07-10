@@ -4,6 +4,7 @@ import { CharacterUnlockPage } from "./features/characters";
 import { MatchHistoryPage, MatchTrackerPage } from "./features/match-tracker";
 import { IconsIndexPage, useSettingsStore } from "./features/settings";
 import { HardcorePage } from "./features/hardcore-mode";
+import { FriendRequestPopup, FriendsPage, useFriendsStore } from "./features/friends";
 import { GauntletPage } from "./features/survivor-gauntlet";
 import { StatisticsPage } from "./features/statistics";
 import { TeamsPage } from "./features/teams";
@@ -29,6 +30,7 @@ type DashboardView =
   | "history"
   | "statistics"
   | "teams"
+  | "friends"
   | "hardcore"
   | "gauntlet"
   | "world-cup"
@@ -41,6 +43,7 @@ const TABS: { view: DashboardView; label: string }[] = [
   { view: "history", label: "Historique" },
   { view: "statistics", label: "Statistiques" },
   { view: "teams", label: "Équipes" },
+  { view: "friends", label: "Amis" },
   { view: "hardcore", label: "Hardcore" },
   { view: "gauntlet", label: "Gauntlet" },
   { view: "world-cup", label: "World Cup" },
@@ -58,8 +61,15 @@ function Dashboard() {
     useSettingsStore.getState().loadDefaultIconsFolderPath();
   }, []);
 
+  useEffect(() => {
+    useFriendsStore.getState().sendHeartbeat();
+    const interval = setInterval(() => useFriendsStore.getState().sendHeartbeat(), 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
+      <FriendRequestPopup />
       <header className="app-header">
         <nav className="app-nav">
           {TABS.map((tab) => (
@@ -87,6 +97,7 @@ function Dashboard() {
         {view === "history" && <MatchHistoryPage />}
         {view === "statistics" && <StatisticsPage />}
         {view === "teams" && <TeamsPage />}
+        {view === "friends" && <FriendsPage />}
         {view === "icons-index" && <IconsIndexPage />}
         {view === "hardcore" && <HardcorePage />}
         {view === "gauntlet" && <GauntletPage />}
