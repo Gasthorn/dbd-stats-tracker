@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
@@ -8,6 +8,7 @@ import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons
 import "../../../shared/styles/rarity.css";
 import { BuildManagerPanel } from "../../builds";
 import type { Build } from "../../builds";
+import { useTeamsStore } from "../../teams";
 import { pickRandomItem, pickRandomPerks } from "../lib/chaosShuffle";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
 import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/match.types";
@@ -15,8 +16,8 @@ import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/
 const ESCAPE_RESULT_OPTIONS: { value: EscapeResult; label: string }[] = [
   { value: "escaped_door", label: "Évadé par la porte" },
   { value: "escaped_hatch", label: "Évadé par la trappe" },
-  { value: "sacrificed", label: "Sacrifié" },
-  { value: "killed", label: "Tué" },
+  { value: "sacrificed", label: "Sacrifié (crochet)" },
+  { value: "killed", label: "Tué (mori)" },
   { value: "disconnected", label: "Déconnecté" },
 ];
 
@@ -51,9 +52,14 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
   const createMatch = useMatchTrackerStore((state) => state.createMatch);
   const updateMatch = useMatchTrackerStore((state) => state.updateMatch);
 
+  const teams = useTeamsStore((state) => state.teams);
+  const teamsStatus = useTeamsStore((state) => state.status);
+  const fetchTeams = useTeamsStore((state) => state.fetchTeams);
+
   const [role, setRole] = useState<MatchRole>(match?.role ?? "killer");
   const [characterName, setCharacterName] = useState(match?.characterName ?? "");
   const [opponentName, setOpponentName] = useState(match?.opponentName ?? "");
+  const [teamId, setTeamId] = useState(match?.role === "survivor" ? (match.teamId ?? "") : "");
   const [perks, setPerks] = useState<[string, string, string, string]>(
     match ? toPerksTuple(match.perks) : EMPTY_PERKS,
   );
@@ -74,6 +80,12 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  /** Bumped after a successful save to remount BuildManagerPanel, clearing its own build-selection state alongside the form fields it reset. */
+  const [buildPanelKey, setBuildPanelKey] = useState(0);
+
+  useEffect(() => {
+    if (teamsStatus === "idle") fetchTeams();
+  }, [teamsStatus, fetchTeams]);
 
   const unlockedCharacters = role === "killer" ? unlockedKillers : unlockedSurvivors;
 
@@ -98,6 +110,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
   function switchRole(nextRole: MatchRole) {
     setRole(nextRole);
     setCharacterName("");
+    setTeamId("");
     setPerks(EMPTY_PERKS);
     setEquipment(emptyEquipment(nextRole));
     setFormError(null);
@@ -165,6 +178,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             hardcoreRunId: null,
             characterName,
             opponentName: null,
+            teamId: null,
             perks: cleanedPerks,
             equipment: cleanedEquipment,
             bloodpoints: Number(bloodpoints) || 0,
@@ -182,6 +196,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             hardcoreRunId: null,
             characterName,
             opponentName,
+            teamId: teamId || null,
             perks: cleanedPerks,
             equipment: cleanedEquipment,
             bloodpoints: Number(bloodpoints) || 0,
@@ -204,6 +219,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         setSuccessMessage("Partie enregistrée !");
         setCharacterName("");
         setOpponentName("");
+        setTeamId("");
         setPerks(EMPTY_PERKS);
         setEquipment(emptyEquipment(role));
         setBloodpoints("");
@@ -211,6 +227,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         setHooks("");
         setGeneratorsCompleted("0");
         setEscapeResult("escaped_door");
+        setBuildPanelKey((key) => key + 1);
       }
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Impossible d'enregistrer la partie.");
@@ -245,6 +262,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       )}
 
       <BuildManagerPanel
+        key={buildPanelKey}
         idPrefix="match"
         role={role}
         characterName={characterName}
@@ -300,6 +318,16 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
               </option>
             ))}
           </IconSelectionSlot>
+
+          <label htmlFor="match-team">Équipe (optionnel)</label>
+          <select id="match-team" value={teamId} onChange={(e) => setTeamId(e.target.value)}>
+            <option value="">-- Aucune équipe --</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
         </>
       )}
 

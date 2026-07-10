@@ -156,6 +156,7 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
       mode: "world_cup",
       hardcoreRunId: null,
       opponentName: null,
+      teamId: null,
       escapeResult: null,
       hardcorePips: null,
       hardcoreDied: null,

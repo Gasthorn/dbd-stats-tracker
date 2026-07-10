@@ -84,6 +84,18 @@ export type BuildInsert = Pick<BuildRow, "user_id" | "name" | "role" | "characte
   Partial<Omit<BuildRow, "id" | "user_id" | "name" | "role" | "character_name">>;
 export type BuildUpdate = Partial<BuildInsert>;
 
+export type TeamRow = {
+  id: string;
+  user_id: string;
+  name: string;
+  member_names: string[];
+  created_at: string;
+  updated_at: string;
+};
+export type TeamInsert = Pick<TeamRow, "user_id" | "name"> &
+  Partial<Omit<TeamRow, "id" | "user_id" | "name">>;
+export type TeamUpdate = Partial<TeamInsert>;
+
 export type MatchRow = {
   id: string;
   user_id: string;
@@ -92,6 +104,7 @@ export type MatchRow = {
   mode: MatchModeEnum;
   character_name: string;
   opponent_name: string | null;
+  team_id: string | null;
   perks: string[];
   equipment: string[];
   bloodpoints: number;
@@ -209,6 +222,20 @@ export interface Database {
           },
         ];
       };
+      teams: {
+        Row: TeamRow;
+        Insert: TeamInsert;
+        Update: TeamUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "teams_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       matches: {
         Row: MatchRow;
         Insert: MatchInsert;
@@ -226,6 +253,13 @@ export interface Database {
             columns: ["hardcore_run_id"];
             isOneToOne: false;
             referencedRelation: "hardcore_runs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "matches_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "teams";
             referencedColumns: ["id"];
           },
         ];

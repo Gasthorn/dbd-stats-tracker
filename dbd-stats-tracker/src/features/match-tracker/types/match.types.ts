@@ -31,6 +31,7 @@ interface BaseMatch {
 export interface KillerMatch extends BaseMatch {
   role: "killer";
   opponentName: null;
+  teamId: null;
   kills: number;
   /** Hooks landed this match. Optional outside World Cup, where it's the deciding stat. */
   hooks: number | null;
@@ -42,6 +43,8 @@ export interface KillerMatch extends BaseMatch {
 export interface SurvivorMatch extends BaseMatch {
   role: "survivor";
   opponentName: string | null;
+  /** The SWF team (if any) this match was played with. */
+  teamId: UUID | null;
   kills: null;
   hooks: null;
   escapeResult: EscapeResult;

@@ -195,6 +195,11 @@
   border-color: #3987e5;
 }
 
+.match-team-badge {
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
 .match-history-actions {
   display: flex;
   gap: 0.4rem;

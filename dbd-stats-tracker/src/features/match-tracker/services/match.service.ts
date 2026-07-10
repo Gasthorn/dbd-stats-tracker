@@ -26,6 +26,7 @@ function toMatch(row: MatchRow): Match {
       ...base,
       role: "killer",
       opponentName: null,
+      teamId: null,
       kills: row.kills ?? 0,
       hooks: row.hooks,
       escapeResult: null,
@@ -38,6 +39,7 @@ function toMatch(row: MatchRow): Match {
     ...base,
     role: "survivor",
     opponentName: row.opponent_name,
+    teamId: row.team_id,
     kills: null,
     hooks: null,
     escapeResult: row.escape_result as Exclude<MatchRow["escape_result"], null>,
@@ -54,6 +56,7 @@ function toInsertRow(userId: string, input: CreateMatchInput) {
     mode: input.mode,
     character_name: input.characterName,
     opponent_name: input.role === "survivor" ? input.opponentName : null,
+    team_id: input.role === "survivor" ? input.teamId : null,
     perks: input.perks,
     equipment: input.equipment,
     bloodpoints: input.bloodpoints,
@@ -79,6 +82,7 @@ function toUpdateRow(input: UpdateMatchInput) {
     ...(rest.role === "survivor" && rest.opponentName !== undefined
       ? { opponent_name: rest.opponentName }
       : {}),
+    ...(rest.role === "survivor" && rest.teamId !== undefined ? { team_id: rest.teamId } : {}),
     ...(rest.perks !== undefined ? { perks: rest.perks } : {}),
     ...(rest.equipment !== undefined ? { equipment: rest.equipment } : {}),
     ...(rest.bloodpoints !== undefined ? { bloodpoints: rest.bloodpoints } : {}),

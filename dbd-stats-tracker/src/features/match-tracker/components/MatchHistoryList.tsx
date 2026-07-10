@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "../../auth/stores/auth.store";
 import { Icon } from "../../settings";
+import { useTeamsStore } from "../../teams";
 import { worldCupService } from "../../world-cup/services/world-cup.service";
 import type { Match, MatchMode } from "../types/match.types";
 
@@ -32,8 +33,8 @@ function summarize(match: Match): string {
   const labels: Record<NonNullable<Match["escapeResult"]>, string> = {
     escaped_door: "Évadé (porte)",
     escaped_hatch: "Évadé (trappe)",
-    sacrificed: "Sacrifié",
-    killed: "Tué",
+    sacrificed: "Sacrifié (crochet)",
+    killed: "Tué (mori)",
     disconnected: "Déconnecté",
   };
   return labels[match.escapeResult];
@@ -61,6 +62,14 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
   const userId = useAuthStore((state) => state.user?.id);
   const [worldCupDuelByMatchId, setWorldCupDuelByMatchId] = useState<Map<string, WorldCupDuelInfo>>(new Map());
   const hasWorldCupMatches = useMemo(() => matches.some((match) => match.mode === "world_cup"), [matches]);
+
+  const teams = useTeamsStore((state) => state.teams);
+  const teamsStatus = useTeamsStore((state) => state.status);
+  const fetchTeams = useTeamsStore((state) => state.fetchTeams);
+  useEffect(() => {
+    if (teamsStatus === "idle") fetchTeams();
+  }, [teamsStatus, fetchTeams]);
+  const teamNameById = useMemo(() => new Map(teams.map((team) => [team.id, team.name])), [teams]);
 
   useEffect(() => {
     if (!userId || !hasWorldCupMatches) return;
@@ -125,6 +134,9 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
                 <Icon category="Characters" name={match.opponentName} alt={match.opponentName} size={32} />
                 vs {match.opponentName}
               </span>
+            )}
+            {match.role === "survivor" && match.teamId && teamNameById.get(match.teamId) && (
+              <span className="match-team-badge">Équipe : {teamNameById.get(match.teamId)}</span>
             )}
             <span>{summarize(match)}</span>
             <span>{match.bloodpoints} PS</span>
