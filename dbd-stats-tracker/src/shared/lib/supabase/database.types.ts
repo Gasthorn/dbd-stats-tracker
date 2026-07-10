@@ -118,10 +118,38 @@ export type UserPresenceInsert = Pick<UserPresenceRow, "user_id"> &
   Partial<Omit<UserPresenceRow, "user_id">>;
 export type UserPresenceUpdate = Partial<UserPresenceInsert>;
 
+export type HardcoreTeamStatusEnum = "pending" | "accepted";
+
+export type HardcoreTeamRow = {
+  id: string;
+  created_by: string;
+  season_id: string;
+  dead_survivors: string[];
+  created_at: string;
+  updated_at: string;
+};
+export type HardcoreTeamInsert = Pick<HardcoreTeamRow, "created_by" | "season_id"> &
+  Partial<Omit<HardcoreTeamRow, "id" | "created_by" | "season_id">>;
+export type HardcoreTeamUpdate = Partial<HardcoreTeamInsert>;
+
+export type HardcoreTeamMemberRow = {
+  id: string;
+  team_id: string;
+  user_id: string;
+  status: HardcoreTeamStatusEnum;
+  invited_by: string;
+  created_at: string;
+  responded_at: string | null;
+};
+export type HardcoreTeamMemberInsert = Pick<HardcoreTeamMemberRow, "team_id" | "user_id" | "invited_by"> &
+  Partial<Omit<HardcoreTeamMemberRow, "id" | "team_id" | "user_id" | "invited_by">>;
+export type HardcoreTeamMemberUpdate = Partial<HardcoreTeamMemberInsert>;
+
 export type MatchRow = {
   id: string;
   user_id: string;
   hardcore_run_id: string | null;
+  hardcore_team_id: string | null;
   role: MatchRoleEnum;
   mode: MatchModeEnum;
   character_name: string;
@@ -293,6 +321,48 @@ export interface Database {
           },
         ];
       };
+      hardcore_teams: {
+        Row: HardcoreTeamRow;
+        Insert: HardcoreTeamInsert;
+        Update: HardcoreTeamUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "hardcore_teams_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      hardcore_team_members: {
+        Row: HardcoreTeamMemberRow;
+        Insert: HardcoreTeamMemberInsert;
+        Update: HardcoreTeamMemberUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "hardcore_team_members_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "hardcore_teams";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hardcore_team_members_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hardcore_team_members_invited_by_fkey";
+            columns: ["invited_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       matches: {
         Row: MatchRow;
         Insert: MatchInsert;
@@ -310,6 +380,13 @@ export interface Database {
             columns: ["hardcore_run_id"];
             isOneToOne: false;
             referencedRelation: "hardcore_runs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "matches_hardcore_team_id_fkey";
+            columns: ["hardcore_team_id"];
+            isOneToOne: false;
+            referencedRelation: "hardcore_teams";
             referencedColumns: ["id"];
           },
           {
@@ -391,6 +468,33 @@ export interface Database {
           friend_avatar_url: string | null;
           friend_last_seen_at: string | null;
         }[];
+      };
+      create_hardcore_team: {
+        Args: { p_season_id: string };
+        Returns: HardcoreTeamRow;
+      };
+      invite_to_hardcore_team: {
+        Args: { p_team_id: string; p_friend_user_id: string };
+        Returns: HardcoreTeamMemberRow;
+      };
+      list_my_hardcore_team_members: {
+        Args: { p_season_id: string };
+        Returns: {
+          member_id: string;
+          team_id: string;
+          team_dead_survivors: string[];
+          member_user_id: string;
+          member_username: string;
+          status: HardcoreTeamStatusEnum;
+          invited_by: string;
+          is_self: boolean;
+          created_at: string;
+          responded_at: string | null;
+        }[];
+      };
+      record_team_hardcore_death: {
+        Args: { p_character_name: string; p_season_id: string };
+        Returns: HardcoreTeamRow;
       };
     };
     Enums: {

@@ -159,6 +159,7 @@ export function GauntletMatchForm({
                 generatorsCompleted: Number(generatorsCompleted),
                 escapeResult: null,
                 hardcoreRunId: null,
+                hardcoreTeamId: null,
                 hardcorePips: null,
                 hardcoreDied: null,
               }
@@ -175,6 +176,7 @@ export function GauntletMatchForm({
                 generatorsCompleted: Number(generatorsCompleted),
                 escapeResult,
                 hardcoreRunId: null,
+                hardcoreTeamId: null,
                 hardcorePips: null,
                 hardcoreDied: null,
               },

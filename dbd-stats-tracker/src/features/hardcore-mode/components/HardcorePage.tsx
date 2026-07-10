@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useCharactersStore } from "../../characters/stores/characters.store";
+import { HardcoreTeamPanel, useHardcoreTeamStore } from "../../hardcore-teams";
 import { Icon } from "../../settings";
 import type { MatchRole } from "../../match-tracker/types/match.types";
 import { useHardcoreStore } from "../stores/hardcore.store";
@@ -44,8 +45,17 @@ export function HardcorePage() {
     setSelectedCharacter(null);
   }
 
+  const teamMembers = useHardcoreTeamStore((state) => state.members);
+  const teamDeadSurvivors = useMemo(() => {
+    const myMembership = teamMembers.find((m) => m.isSelf && m.status === "accepted");
+    return myMembership?.teamDeadSurvivors ?? [];
+  }, [teamMembers]);
+
   const unlockedCharacters = role === "killer" ? unlockedKillers : unlockedSurvivors;
-  const deadCharacters = role === "killer" ? (currentRun?.deadKillers ?? []) : (currentRun?.deadSurvivors ?? []);
+  const deadCharacters =
+    role === "killer"
+      ? (currentRun?.deadKillers ?? [])
+      : Array.from(new Set([...(currentRun?.deadSurvivors ?? []), ...teamDeadSurvivors]));
 
   return (
     <div className="hardcore-page">
@@ -95,6 +105,8 @@ export function HardcorePage() {
           Survivant
         </button>
       </div>
+
+      {role === "survivor" && <HardcoreTeamPanel />}
 
       {role && !selectedCharacter && (
         <>

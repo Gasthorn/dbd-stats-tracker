@@ -9,6 +9,7 @@ function toMatch(row: MatchRow): Match {
     id: row.id,
     userId: row.user_id,
     hardcoreRunId: row.hardcore_run_id,
+    hardcoreTeamId: row.hardcore_team_id,
     mode: row.mode,
     characterName: row.character_name,
     perks: row.perks,
@@ -52,6 +53,7 @@ function toInsertRow(userId: string, input: CreateMatchInput) {
   return {
     user_id: userId,
     hardcore_run_id: input.hardcoreRunId,
+    hardcore_team_id: input.hardcoreTeamId,
     role: input.role,
     mode: input.mode,
     character_name: input.characterName,
@@ -76,6 +78,7 @@ function toUpdateRow(input: UpdateMatchInput) {
   void id;
   return {
     ...(rest.hardcoreRunId !== undefined ? { hardcore_run_id: rest.hardcoreRunId } : {}),
+    ...(rest.hardcoreTeamId !== undefined ? { hardcore_team_id: rest.hardcoreTeamId } : {}),
     ...(rest.role !== undefined ? { role: rest.role } : {}),
     ...(rest.mode !== undefined ? { mode: rest.mode } : {}),
     ...(rest.characterName !== undefined ? { character_name: rest.characterName } : {}),

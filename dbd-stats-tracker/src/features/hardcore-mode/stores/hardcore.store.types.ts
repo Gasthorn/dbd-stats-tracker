@@ -10,7 +10,7 @@ export interface HardcoreState {
 
 /** Distributes Omit over the KillerMatch | SurvivorMatch union so each branch keeps its own shape. */
 type OmitHardcoreFields<T> = T extends unknown
-  ? Omit<T, "mode" | "hardcoreRunId" | "hardcorePips" | "hardcoreDied" | "ignoreChallenge">
+  ? Omit<T, "mode" | "hardcoreRunId" | "hardcoreTeamId" | "hardcorePips" | "hardcoreDied" | "ignoreChallenge">
   : never;
 
 export interface RecordHardcoreMatchInput {

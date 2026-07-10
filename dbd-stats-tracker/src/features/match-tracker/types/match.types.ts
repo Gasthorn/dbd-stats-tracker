@@ -14,6 +14,8 @@ interface BaseMatch {
   id: UUID;
   userId: UUID;
   hardcoreRunId: UUID | null;
+  /** The Team Hardcore squad (if any) active when this survivor Hardcore match was recorded. Distinct from `teamId` (the free-text SWF address book). */
+  hardcoreTeamId: UUID | null;
   mode: MatchMode;
   characterName: string;
   /** up to 4 perk names */

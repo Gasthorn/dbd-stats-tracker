@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useAuthStore } from "../../auth/stores/auth.store";
+import { useHardcoreTeamStore } from "../../hardcore-teams";
 import { useMatchTrackerStore } from "../../match-tracker/stores/match-tracker.store";
 import { hardcoreService } from "../services/hardcore.service";
 import type { CreateMatchInput } from "../../match-tracker/types/match.types";
@@ -35,11 +36,16 @@ export const useHardcoreStore = create<HardcoreStore>((set, get) => ({
     const run = get().currentRun;
     if (!run) throw new Error("Aucune saison Hardcore active.");
 
+    const activeTeamMembership = useHardcoreTeamStore
+      .getState()
+      .members.find((m) => m.isSelf && m.status === "accepted");
+
     const createMatch = useMatchTrackerStore.getState().createMatch;
     const matchInput: CreateMatchInput = {
       ...match,
       mode: "hardcore",
       hardcoreRunId: run.id,
+      hardcoreTeamId: match.role === "survivor" ? (activeTeamMembership?.teamId ?? null) : null,
       hardcorePips: pips,
       hardcoreDied: died,
       ignoreChallenge,
@@ -61,6 +67,10 @@ export const useHardcoreStore = create<HardcoreStore>((set, get) => ({
       deadSurvivors: nextDeadSurvivors,
     });
     set({ currentRun: updatedRun });
+
+    if (!isKiller && died && activeTeamMembership) {
+      await useHardcoreTeamStore.getState().recordDeath(match.characterName, run.seasonId);
+    }
   },
 
   resetSeason: async () => {
