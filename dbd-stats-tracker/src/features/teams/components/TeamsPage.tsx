@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useFriendsStore } from "../../friends";
 import { useTeamsStore } from "../stores/teams.store";
 import type { Team } from "../types/team.types";
 import "./teams.css";
@@ -13,6 +14,9 @@ export function TeamsPage() {
   const saveTeamAction = useTeamsStore((state) => state.saveTeam);
   const deleteTeamAction = useTeamsStore((state) => state.deleteTeam);
 
+  const friendships = useFriendsStore((state) => state.friendships);
+  const fetchFriendships = useFriendsStore((state) => state.fetchFriendships);
+
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [members, setMembers] = useState<[string, string, string]>(EMPTY_MEMBERS);
@@ -23,6 +27,18 @@ export function TeamsPage() {
   useEffect(() => {
     if (status === "idle") fetchTeams();
   }, [status, fetchTeams]);
+
+  useEffect(() => {
+    // Always refetch (not idle-gated): the shared friends store may already be
+    // "success" from the app-wide request popup, but stale relative to any
+    // friendship accepted since then - this list needs to be current.
+    fetchFriendships();
+  }, [fetchFriendships]);
+
+  const friendUsernames = useMemo(
+    () => friendships.filter((f) => f.status === "accepted").map((f) => f.friendUsername),
+    [friendships],
+  );
 
   function updateMember(index: number, value: string) {
     setMembers((prev) => {
@@ -89,7 +105,7 @@ export function TeamsPage() {
       <h1>Équipes</h1>
       <p className="teams-hint">
         Enregistre tes groupes Survive With Friends (jusqu'à 3 coéquipiers par équipe) pour les retrouver
-        rapidement.
+        rapidement. Choisis parmi tes amis ou tape n'importe quel pseudo.
       </p>
 
       <div className="teams-form">
@@ -111,13 +127,19 @@ export function TeamsPage() {
               <input
                 id={`team-member-${index}`}
                 type="text"
-                placeholder="Pseudo (optionnel)"
+                placeholder="Pseudo (ami ou non)"
+                list="team-member-options"
                 value={member}
                 onChange={(e) => updateMember(index, e.target.value)}
               />
             </div>
           ))}
         </div>
+        <datalist id="team-member-options">
+          {friendUsernames.map((username) => (
+            <option key={username} value={username} />
+          ))}
+        </datalist>
 
         <div className="teams-form-actions">
           <button type="button" onClick={handleSave} disabled={isSaving}>
