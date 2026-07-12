@@ -149,7 +149,7 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
                   </button>
                 )}
                 {onDelete && (
-                  <button type="button" onClick={() => onDelete(match)}>
+                  <button type="button" className="btn-danger" onClick={() => onDelete(match)}>
                     Supprimer
                   </button>
                 )}

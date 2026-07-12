@@ -59,12 +59,3 @@
   margin: 1rem 0;
 }
 
-.hardcore-team-roster .btn-secondary {
-  border-color: var(--color-accent-hover);
-  color: var(--color-accent-hover);
-}
-
-.hardcore-team-roster .btn-secondary:hover:not(:disabled) {
-  background-color: var(--color-accent-hover);
-  color: #fff;
-}

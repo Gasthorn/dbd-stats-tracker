@@ -43,16 +43,6 @@
   margin-top: 1rem;
 }
 
-.teams-form .btn-secondary {
-  border-color: var(--color-accent-hover);
-  color: var(--color-accent-hover);
-}
-
-.teams-form .btn-secondary:hover:not(:disabled) {
-  background-color: var(--color-accent-hover);
-  color: #fff;
-}
-
 .teams-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -86,14 +76,4 @@
 .teams-card-actions {
   display: flex;
   gap: 0.5rem;
-}
-
-.teams-card .btn-secondary {
-  border-color: var(--color-accent-hover);
-  color: var(--color-accent-hover);
-}
-
-.teams-card .btn-secondary:hover:not(:disabled) {
-  background-color: var(--color-accent-hover);
-  color: #fff;
 }

@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useState } from "react";
 import { Icon } from "../../settings";
 import { useWorldCupStore } from "../stores/world-cup.store";
@@ -36,7 +37,7 @@ export function WorldCupCareerStandingsModal({ onClose }: WorldCupCareerStanding
           Cumul de tous les matchs (poules et phases finales) de tous les World Cup joués.
         </p>
 
-        {careerStatus === "loading" && <p>Chargement...</p>}
+        {careerStatus === "loading" && <LoadingSpinner />}
         {careerError && <p className="match-error">{careerError}</p>}
 
         {careerStatus !== "loading" && careerStandings.length === 0 && (

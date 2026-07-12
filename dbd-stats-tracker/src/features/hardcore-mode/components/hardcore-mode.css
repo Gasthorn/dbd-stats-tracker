@@ -30,8 +30,16 @@
   margin: 1rem auto;
 }
 
-.hardcore-rules h3 {
-  margin-top: 0;
+.hardcore-rules summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hardcore-rules[open] summary {
+  margin-bottom: 0.6rem;
 }
 
 .hardcore-rules ul {

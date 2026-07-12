@@ -24,8 +24,16 @@
   margin: 1rem auto;
 }
 
-.gauntlet-rules h3 {
-  margin-top: 0;
+.gauntlet-rules summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.gauntlet-rules[open] summary {
+  margin-bottom: 0.6rem;
 }
 
 .gauntlet-rules ul {

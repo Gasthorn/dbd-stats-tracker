@@ -60,7 +60,7 @@ export function GauntletPage() {
             <button type="button" onClick={handleRefresh}>
               Actualiser Liste
             </button>
-            <button type="button" onClick={handleReset}>
+            <button type="button" className="btn-danger" onClick={handleReset}>
               Réinitialiser
             </button>
           </>
@@ -69,8 +69,8 @@ export function GauntletPage() {
 
       <h1>{role ? (role === "killer" ? "Killer Gauntlet" : "Survivor Gauntlet") : "Gauntlet Challenge"}</h1>
 
-      <div className="gauntlet-rules">
-        <h3>Règles Gauntlet</h3>
+      <details className="gauntlet-rules">
+        <summary>Règles Gauntlet</summary>
         <ul>
           <li>
             <strong>Objectif :</strong> Réussir une partie avec chaque personnage de votre collection.
@@ -85,7 +85,7 @@ export function GauntletPage() {
             <strong>Validation :</strong> Évasion (Survivant) ou 3+ Sacrifices (Tueur).
           </li>
         </ul>
-      </div>
+      </details>
 
       {error && <p className="match-error">{error}</p>}
 

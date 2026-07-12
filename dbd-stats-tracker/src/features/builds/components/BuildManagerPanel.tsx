@@ -133,7 +133,7 @@ export function BuildManagerPanel({
         <button type="button" onClick={handleReset}>
           Réinitialiser le build
         </button>
-        <button type="button" className="btn-secondary" onClick={handleDelete}>
+        <button type="button" className="btn-danger" onClick={handleDelete}>
           Supprimer le build
         </button>
       </div>

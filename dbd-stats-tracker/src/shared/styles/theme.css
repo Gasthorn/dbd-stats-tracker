@@ -120,6 +120,32 @@ button:disabled {
   box-shadow: none;
 }
 
+/* Secondary action: transparent, accent outline; fills on hover. */
+.btn-secondary {
+  background-color: transparent;
+  border-color: var(--color-accent-hover);
+  color: var(--color-accent-hover);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  color: #fff;
+}
+
+/* Destructive action: same look as secondary, distinct class so intent reads in the markup. */
+.btn-danger {
+  background-color: transparent;
+  border-color: var(--color-accent);
+  color: var(--color-accent-hover);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent-hover);
+  color: #fff;
+}
+
 input,
 select,
 textarea {
@@ -155,4 +181,39 @@ input[type="range"] {
 
 textarea {
   resize: vertical;
+}
+
+/* Shared loading indicator (see shared/components/LoadingSpinner.tsx). */
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-text-muted);
+}
+
+.loading-spinner-circle {
+  width: 1em;
+  height: 1em;
+  border: 2px solid var(--color-border-strong);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: loading-spinner-spin 0.8s linear infinite;
+}
+
+@keyframes loading-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * Shared page container. Matches the idiom copied locally by existing pages
+ * (home-page, match-tracker-page, ...); use this class for any new page
+ * instead of adding another copy.
+ */
+.page {
+  text-align: left;
+  max-width: min(1300px, 95vw);
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
 }

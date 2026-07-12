@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useState } from "react";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useFriendsStore } from "../../friends";
@@ -104,7 +105,7 @@ export function HardcoreTeamPanel() {
         toute l'équipe. Vos points/rang personnels ne sont pas affectés par les parties des autres.
       </p>
 
-      {status === "loading" && members.length === 0 && <p>Chargement...</p>}
+      {status === "loading" && members.length === 0 && <LoadingSpinner />}
       {storeError && <p className="match-error">{storeError}</p>}
       {formError && <p className="match-error">{formError}</p>}
       {successMessage && <p className="match-success">{successMessage}</p>}

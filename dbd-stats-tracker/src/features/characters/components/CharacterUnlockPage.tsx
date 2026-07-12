@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect } from "react";
 import { KILLERS, SURVIVORS } from "../../../shared/data/characters";
 import { useCharactersStore } from "../stores/characters.store";
@@ -27,7 +28,7 @@ export function CharacterUnlockPage() {
       {error && <p className="characters-error">{error}</p>}
 
       {isLoadingInitial ? (
-        <p>Chargement...</p>
+        <LoadingSpinner />
       ) : (
         <>
           <CharacterSection

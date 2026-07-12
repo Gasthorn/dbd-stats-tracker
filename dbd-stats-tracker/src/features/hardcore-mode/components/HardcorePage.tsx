@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useState } from "react";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useCharactersStore } from "../../characters/stores/characters.store";
@@ -61,15 +62,15 @@ export function HardcorePage() {
     <div className="hardcore-page">
       <div className="hardcore-header">
         <div className="hardcore-season-info">{currentRun?.seasonId ?? getHardcoreSeasonId()}</div>
-        <button type="button" onClick={handleReset}>
+        <button type="button" className="btn-danger" onClick={handleReset}>
           Réinitialiser Mode
         </button>
       </div>
 
       <h1>Mode Hardcore - Saison</h1>
 
-      <div className="hardcore-rules">
-        <h3>Règles Hardcore</h3>
+      <details className="hardcore-rules">
+        <summary>Règles Hardcore</summary>
         <ul>
           <li>
             <strong>Progression :</strong> Gagnez des Pips pour monter de grade (Cendre à Iridescent).
@@ -83,10 +84,10 @@ export function HardcorePage() {
             l'équipe.
           </li>
         </ul>
-      </div>
+      </details>
 
       {error && <p className="match-error">{error}</p>}
-      {status === "loading" && !currentRun && <p>Chargement...</p>}
+      {status === "loading" && !currentRun && <LoadingSpinner />}
 
       <div className="hardcore-rank-row">
         <HardcoreRankCard title="Rang Tueur" pips={currentRun?.killerPips ?? 0} />

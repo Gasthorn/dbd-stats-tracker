@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFriendsStore } from "../../friends";
 import { useTeamsStore } from "../stores/teams.store";
 import type { Team } from "../types/team.types";
@@ -23,6 +24,7 @@ export function TeamsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (status === "idle") fetchTeams();
@@ -63,6 +65,10 @@ export function TeamsPage() {
     setMembers(padded as [string, string, string]);
     setFormError(null);
     setSuccessMessage(null);
+    // The edit form lives at the top of the page; bring the user to it.
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   async function handleSave() {
@@ -108,7 +114,7 @@ export function TeamsPage() {
         rapidement. Choisis parmi tes amis ou tape n'importe quel pseudo.
       </p>
 
-      <div className="teams-form">
+      <div className="teams-form" ref={formRef}>
         <h3>{editingTeamId ? "Modifier l'équipe" : "Nouvelle équipe"}</h3>
 
         <label htmlFor="team-name">Nom de l'équipe</label>
@@ -155,7 +161,7 @@ export function TeamsPage() {
         {successMessage && <p className="match-success">{successMessage}</p>}
       </div>
 
-      {status === "loading" && teams.length === 0 && <p>Chargement...</p>}
+      {status === "loading" && teams.length === 0 && <LoadingSpinner />}
       {status !== "loading" && teams.length === 0 && (
         <p className="statistics-empty">Aucune équipe enregistrée pour le moment.</p>
       )}
@@ -178,7 +184,7 @@ export function TeamsPage() {
                 <button type="button" onClick={() => handleEdit(team)}>
                   Modifier
                 </button>
-                <button type="button" className="btn-secondary" onClick={() => handleDelete(team)}>
+                <button type="button" className="btn-danger" onClick={() => handleDelete(team)}>
                   Supprimer
                 </button>
               </div>

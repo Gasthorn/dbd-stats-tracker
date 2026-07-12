@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
+import { useEffect, useRef, useState } from "react";
 import { useCharactersStore } from "../../characters/stores/characters.store";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
 import type { Match, MatchRole } from "../types/match.types";
@@ -21,6 +22,15 @@ export function MatchHistoryPage() {
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const editFormRef = useRef<HTMLDivElement | null>(null);
+
+  function handleEdit(match: Match) {
+    setEditingMatch(match);
+    // The edit form lives at the top of the page; bring the user to it.
+    requestAnimationFrame(() => {
+      editFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 
   useEffect(() => {
     if (charactersStatus === "idle") {
@@ -55,12 +65,14 @@ export function MatchHistoryPage() {
       <h1>Historique des parties</h1>
 
       {editingMatch && (
-        <MatchForm
-          key={editingMatch.id}
-          match={editingMatch}
-          onSuccess={() => setEditingMatch(null)}
-          onCancel={() => setEditingMatch(null)}
-        />
+        <div ref={editFormRef}>
+          <MatchForm
+            key={editingMatch.id}
+            match={editingMatch}
+            onSuccess={() => setEditingMatch(null)}
+            onCancel={() => setEditingMatch(null)}
+          />
+        </div>
       )}
 
       <label htmlFor="match-history-role-filter" className="match-history-filter">
@@ -78,13 +90,9 @@ export function MatchHistoryPage() {
 
       {error && <p className="match-error">{error}</p>}
       {deleteError && <p className="match-error">{deleteError}</p>}
-      {status === "loading" && <p>Chargement...</p>}
+      {status === "loading" && <LoadingSpinner />}
 
-      <MatchHistoryList
-        matches={matches}
-        onEdit={(match) => setEditingMatch(match)}
-        onDelete={handleDelete}
-      />
+      <MatchHistoryList matches={matches} onEdit={handleEdit} onDelete={handleDelete} />
       {deletingId && <p>Suppression en cours...</p>}
     </div>
   );

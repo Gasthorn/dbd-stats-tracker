@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect } from "react";
 import { groupLetter } from "../../../shared/lib/world-cup/groups";
 import { KNOCKOUT_ROUND_LABELS, KNOCKOUT_ROUND_ORDER } from "../../../shared/lib/world-cup/knockout";
@@ -166,7 +167,7 @@ export function WorldCupHistoryModal({ onClose }: WorldCupHistoryModalProps) {
           </button>
         </div>
 
-        {historyStatus === "loading" && <p>Chargement...</p>}
+        {historyStatus === "loading" && <LoadingSpinner />}
         {historyError && <p className="match-error">{historyError}</p>}
 
         {!selected &&

@@ -24,7 +24,7 @@ function App() {
   );
 }
 
-type DashboardView =
+export type DashboardView =
   | "home"
   | "matches"
   | "history"
@@ -37,24 +37,45 @@ type DashboardView =
   | "characters"
   | "icons-index";
 
-const TABS: { view: DashboardView; label: string }[] = [
-  { view: "home", label: "Accueil" },
-  { view: "matches", label: "Parties" },
-  { view: "history", label: "Historique" },
-  { view: "statistics", label: "Statistiques" },
-  { view: "teams", label: "Équipes" },
-  { view: "friends", label: "Amis" },
-  { view: "hardcore", label: "Hardcore" },
-  { view: "gauntlet", label: "Gauntlet" },
-  { view: "world-cup", label: "World Cup" },
-  { view: "characters", label: "Personnages" },
-  { view: "icons-index", label: "Index des icônes" },
+/** Nav tabs, split into logical groups rendered with a thin separator between them. */
+const TAB_GROUPS: { view: DashboardView; label: string }[][] = [
+  [
+    { view: "home", label: "Accueil" },
+    { view: "matches", label: "Parties" },
+    { view: "history", label: "Historique" },
+    { view: "statistics", label: "Statistiques" },
+  ],
+  [
+    { view: "hardcore", label: "Hardcore" },
+    { view: "gauntlet", label: "Gauntlet" },
+    { view: "world-cup", label: "World Cup" },
+  ],
+  [
+    { view: "teams", label: "Équipes" },
+    { view: "friends", label: "Amis" },
+  ],
+  [
+    { view: "characters", label: "Personnages" },
+    { view: "icons-index", label: "Index des icônes" },
+  ],
 ];
+
+const ALL_VIEWS = TAB_GROUPS.flat().map((tab) => tab.view);
+const VIEW_STORAGE_KEY = "dashboard-view";
+
+function loadInitialView(): DashboardView {
+  const stored = localStorage.getItem(VIEW_STORAGE_KEY);
+  return ALL_VIEWS.includes(stored as DashboardView) ? (stored as DashboardView) : "home";
+}
 
 function Dashboard() {
   const user = useAuthStore((state) => state.user);
   const signOut = useAuthStore((state) => state.signOut);
-  const [view, setView] = useState<DashboardView>("home");
+  const [view, setView] = useState<DashboardView>(loadInitialView);
+
+  useEffect(() => {
+    localStorage.setItem(VIEW_STORAGE_KEY, view);
+  }, [view]);
 
   useEffect(() => {
     useSettingsStore.getState().loadIconsFolderPath();
@@ -72,20 +93,25 @@ function Dashboard() {
       <FriendRequestPopup />
       <header className="app-header">
         <nav className="app-nav">
-          {TABS.map((tab) => (
-            <button
-              key={tab.view}
-              type="button"
-              className={view === tab.view ? "is-active" : ""}
-              onClick={() => setView(tab.view)}
-            >
-              {tab.label}
-            </button>
+          {TAB_GROUPS.map((group, groupIndex) => (
+            <div key={groupIndex} className="app-nav-group">
+              {groupIndex > 0 && <span className="app-nav-separator" aria-hidden="true" />}
+              {group.map((tab) => (
+                <button
+                  key={tab.view}
+                  type="button"
+                  className={view === tab.view ? "is-active" : ""}
+                  onClick={() => setView(tab.view)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="app-user">
-          <span>Connecté en tant que {user?.username}</span>
-          <button type="button" onClick={() => signOut()}>
+          <span title={`Connecté en tant que ${user?.username}`}>{user?.username}</span>
+          <button type="button" className="app-user-signout" onClick={() => signOut()}>
             Se déconnecter
           </button>
         </div>
@@ -102,7 +128,7 @@ function Dashboard() {
         {view === "hardcore" && <HardcorePage />}
         {view === "gauntlet" && <GauntletPage />}
         {view === "world-cup" && <WorldCupPage />}
-        {view === "home" && <HomePage />}
+        {view === "home" && <HomePage onNavigate={setView} />}
       </main>
     </>
   );

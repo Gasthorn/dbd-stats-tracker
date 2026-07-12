@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useState } from "react";
 import { isOnline } from "../lib/presence";
 import { useFriendsStore } from "../stores/friends.store";
@@ -93,7 +94,7 @@ export function FriendsPage() {
         {successMessage && <p className="match-success">{successMessage}</p>}
       </div>
 
-      {status === "loading" && friendships.length === 0 && <p>Chargement...</p>}
+      {status === "loading" && friendships.length === 0 && <LoadingSpinner />}
 
       {incoming.length > 0 && (
         <div className="friends-section">

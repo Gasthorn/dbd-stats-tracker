@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useState } from "react";
 import { isGroupComplete } from "../../../shared/lib/world-cup/standings";
 import { useCharactersStore } from "../../characters/stores/characters.store";
@@ -123,7 +124,7 @@ export function WorldCupPage() {
           </button>
         )}
         {run && run.status !== "completed" && (
-          <button type="button" onClick={handleReset}>
+          <button type="button" className="btn-danger" onClick={handleReset}>
             Abandonner ce World Cup
           </button>
         )}
@@ -132,7 +133,7 @@ export function WorldCupPage() {
       <h1>World Cup des Tueurs</h1>
 
       {error && <p className="match-error">{error}</p>}
-      {status === "loading" && !run && <p>Chargement...</p>}
+      {status === "loading" && !run && <LoadingSpinner />}
 
       {!run &&
         status !== "loading" &&

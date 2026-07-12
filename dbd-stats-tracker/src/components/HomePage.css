@@ -25,15 +25,39 @@
 
 .home-modules-list li {
   display: flex;
+}
+
+.home-module-card {
+  flex: 1;
+  display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.3rem;
   padding: 0.9rem 1rem;
   border-radius: var(--radius-md);
   background-color: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: normal;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
-.home-modules-list li span {
+.home-module-card:hover:not(:disabled) {
+  background-color: var(--color-bg-elevated);
+  border-color: var(--color-accent);
+  color: inherit;
+  box-shadow: none;
+  transform: translateY(-2px);
+}
+
+.home-module-card strong {
+  color: var(--color-text);
+}
+
+.home-module-card span {
   font-size: 0.9em;
   color: var(--color-text-muted);
 }

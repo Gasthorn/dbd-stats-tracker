@@ -12,9 +12,12 @@
   "app": {
     "windows": [
       {
-        "title": "dbd-stats-tracker",
-        "width": 800,
-        "height": 600
+        "title": "DbD Stats Tracker",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "center": true
       }
     ],
     "security": {

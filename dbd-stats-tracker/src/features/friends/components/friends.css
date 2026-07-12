@@ -80,16 +80,6 @@
   gap: 0.5rem;
 }
 
-.friends-card .btn-secondary {
-  border-color: var(--color-accent-hover);
-  color: var(--color-accent-hover);
-}
-
-.friends-card .btn-secondary:hover:not(:disabled) {
-  background-color: var(--color-accent-hover);
-  color: #fff;
-}
-
 /* ---- Friend request popup ---- */
 
 .friends-popup-overlay {

@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, type ReactNode } from "react";
 import { useAuthStore } from "../stores/auth.store";
 import { AuthPage } from "./AuthPage";
@@ -20,7 +21,7 @@ export function AuthGate({ children }: AuthGateProps) {
   if (isInitializing) {
     return (
       <div className="auth-loading">
-        <p>Chargement...</p>
+        <LoadingSpinner />
       </div>
     );
   }

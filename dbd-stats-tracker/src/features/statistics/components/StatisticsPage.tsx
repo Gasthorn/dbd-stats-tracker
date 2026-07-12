@@ -1,3 +1,4 @@
+import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo } from "react";
 import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
@@ -77,7 +78,7 @@ export function StatisticsPage() {
       <h1>Statistiques</h1>
 
       {error && <p className="match-error">{error}</p>}
-      {status === "loading" && matches.length === 0 && <p>Chargement...</p>}
+      {status === "loading" && matches.length === 0 && <LoadingSpinner />}
 
       {status !== "loading" && matches.length === 0 && !error && (
         <p className="statistics-empty">Aucune partie enregistrée pour le moment.</p>

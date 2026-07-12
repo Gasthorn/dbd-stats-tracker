@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.9rem 1.5rem;
+  padding: 0.9rem 1rem;
   background-color: var(--color-bg);
   border-bottom: 1px solid var(--color-border-strong);
 }
@@ -15,12 +15,28 @@
 .app-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.app-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.app-nav-separator {
+  width: 1px;
+  height: 1.4em;
+  background-color: var(--color-border-strong);
+  margin-right: 0.5rem;
 }
 
 .app-nav button {
   background-color: transparent;
   border-color: transparent;
+  font-size: 0.85em;
+  padding: 0.5em 0.8em;
 }
 
 .app-nav button:hover:not(.is-active) {
@@ -42,6 +58,11 @@
   gap: 1rem;
   font-size: 0.9em;
   color: var(--color-text-muted);
+}
+
+.app-user-signout {
+  font-size: 0.8em;
+  padding: 0.3em 0.7em;
 }
 
 .app-content {
