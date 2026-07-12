@@ -1,5 +1,4 @@
 import type { DashboardView } from "../App";
-import { IconsFolderSetting } from "../features/settings";
 import "./HomePage.css";
 
 const MODULES: { view: DashboardView; title: string; description: string }[] = [
@@ -49,6 +48,11 @@ const MODULES: { view: DashboardView; title: string; description: string }[] = [
     title: "Personnages",
     description: "Gère la liste des tueurs et survivants que tu possèdes, pour filtrer le reste de l'app.",
   },
+  {
+    view: "settings",
+    title: "Paramètres",
+    description: "Choisis le mode sombre ou clair et configure ton dossier d'icônes.",
+  },
 ];
 
 interface HomePageProps {
@@ -76,10 +80,6 @@ export function HomePage({ onNavigate }: HomePageProps) {
             </li>
           ))}
         </ul>
-      </section>
-
-      <section>
-        <IconsFolderSetting />
       </section>
     </div>
   );

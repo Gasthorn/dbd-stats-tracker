@@ -14,3 +14,11 @@
 .rarity-iridescent {
   border-color: #a91d1d !important;
 }
+
+/* The darkest rarity borders fade into a light background; brighten them there. */
+:root[data-theme="light"] .rarity-uncommon {
+  border-color: #2f7d31 !important;
+}
+:root[data-theme="light"] .rarity-rare {
+  border-color: #2a6b99 !important;
+}

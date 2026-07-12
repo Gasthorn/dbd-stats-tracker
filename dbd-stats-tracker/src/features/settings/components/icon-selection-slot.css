@@ -3,7 +3,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #333;
+  border: 2px solid var(--color-divider);
   border-radius: 8px;
   background-color: rgba(0, 0, 0, 0.15);
   overflow: hidden;

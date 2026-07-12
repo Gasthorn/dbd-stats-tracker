@@ -248,6 +248,11 @@
   box-shadow: 0 0 6px rgba(57, 135, 229, 0.7);
 }
 
+/* The near-transparent empty cell washes out on a light background. */
+:root[data-theme="light"] .heatmap-day-cell:not(.count-1):not(.count-3):not(.count-5):not(.count-max) {
+  background-color: rgba(57, 135, 229, 0.15);
+}
+
 /* ---- Performance bar charts ---- */
 
 .performance-chart {

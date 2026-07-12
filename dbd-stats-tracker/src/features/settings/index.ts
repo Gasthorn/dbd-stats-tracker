@@ -1,4 +1,4 @@
-export type { SettingsActions, SettingsState, SettingsStore } from "./stores/settings.store";
+export type { AppTheme, SettingsActions, SettingsState, SettingsStore } from "./stores/settings.store";
 export { useSettingsStore } from "./stores/settings.store";
 export type { SettingsService } from "./services/settings.service.types";
 export { settingsService } from "./services/settings.service";
@@ -8,3 +8,4 @@ export { Icon } from "./components/Icon";
 export { IconSelectionSlot } from "./components/IconSelectionSlot";
 export { IconsFolderSetting } from "./components/IconsFolderSetting";
 export { IconsIndexPage } from "./components/IconsIndexPage";
+export { SettingsPage } from "./components/SettingsPage";

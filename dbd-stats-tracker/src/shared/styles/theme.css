@@ -26,6 +26,11 @@
   --color-gold: #f1c40f;
   --color-success: #2ecc71;
 
+  --color-bg-gradient-from: #2a2a2a;
+  --color-bg-gradient-to: #1a1a1a;
+  --color-bg-disabled: #222222;
+  --color-divider: #333333;
+
   --font-family:
     "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   --radius-sm: 4px;
@@ -45,6 +50,35 @@
   -webkit-text-size-adjust: 100%;
 }
 
+/* Light theme: applied via document.documentElement.dataset.theme (see settings store). */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-bg: #f2f0ed;
+  --color-bg-elevated: #ffffff;
+  --color-bg-inset: #e8e6e2;
+  --color-bg-input: #ffffff;
+  --color-bg-button: #ffffff;
+
+  --color-border: #d4d0ca;
+  --color-border-strong: #b8b4ad;
+
+  --color-text: #26221f;
+  --color-text-muted: #6b6560;
+  --color-text-dim: #9b958e;
+
+  --color-accent: #a91d1d;
+  --color-accent-hover: #c22525; /* #ff4d4d is unreadable on white */
+  --color-accent-glow: rgba(169, 29, 29, 0.25);
+  --color-gold: #b8860b; /* #f1c40f is unreadable on white */
+  --color-success: #1e9e54;
+
+  --color-bg-gradient-from: #f7f5f2;
+  --color-bg-gradient-to: #e9e6e1;
+  --color-bg-disabled: #e0ddd8;
+  --color-divider: #d4d0ca;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -53,18 +87,24 @@ body {
   margin: 0;
   min-height: 100vh;
   background-color: var(--color-bg);
-  background-image: radial-gradient(circle at center, #2a2a2a 0%, #1a1a1a 100%);
+  background-image: radial-gradient(
+    circle at center,
+    var(--color-bg-gradient-from) 0%,
+    var(--color-bg-gradient-to) 100%
+  );
   background-attachment: fixed;
   color: var(--color-text);
 }
 
+/*
+ * Heading hierarchy: h1/h2 carry the DbD identity (red, uppercase);
+ * h3/h4 are calm text-colored titles so red stays a signal, not noise.
+ */
 h1,
-h2,
-h3,
-h4 {
+h2 {
   color: var(--color-accent);
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   margin-top: 1.5em;
 }
 
@@ -74,10 +114,19 @@ h1 {
   margin-top: 0;
 }
 
-h2,
+h2 {
+  border-bottom: 1px solid var(--color-accent);
+  padding-bottom: 0.3em;
+}
+
 h3,
 h4 {
-  border-bottom: 2px solid var(--color-accent);
+  color: var(--color-text);
+  margin-top: 1.5em;
+}
+
+h3 {
+  border-bottom: 1px solid var(--color-border-strong);
   padding-bottom: 0.3em;
 }
 
@@ -100,8 +149,6 @@ button {
   font-size: 0.95em;
   font-weight: bold;
   font-family: inherit;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -113,7 +160,7 @@ button:hover:not(:disabled) {
 }
 
 button:disabled {
-  background-color: #222222;
+  background-color: var(--color-bg-disabled);
   color: var(--color-text-dim);
   border-color: var(--color-border-strong);
   cursor: not-allowed;

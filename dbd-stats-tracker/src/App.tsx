@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AuthGate, useAuthStore } from "./features/auth";
 import { CharacterUnlockPage } from "./features/characters";
 import { MatchHistoryPage, MatchTrackerPage } from "./features/match-tracker";
-import { IconsIndexPage, useSettingsStore } from "./features/settings";
+import { IconsIndexPage, SettingsPage, useSettingsStore } from "./features/settings";
 import { HardcorePage } from "./features/hardcore-mode";
 import { FriendRequestPopup, FriendsPage, useFriendsStore } from "./features/friends";
 import { GauntletPage } from "./features/survivor-gauntlet";
@@ -35,7 +35,8 @@ export type DashboardView =
   | "gauntlet"
   | "world-cup"
   | "characters"
-  | "icons-index";
+  | "icons-index"
+  | "settings";
 
 /** Nav tabs, split into logical groups rendered with a thin separator between them. */
 const TAB_GROUPS: { view: DashboardView; label: string }[][] = [
@@ -57,6 +58,7 @@ const TAB_GROUPS: { view: DashboardView; label: string }[][] = [
   [
     { view: "characters", label: "Personnages" },
     { view: "icons-index", label: "Index des icônes" },
+    { view: "settings", label: "Paramètres" },
   ],
 ];
 
@@ -125,6 +127,7 @@ function Dashboard() {
         {view === "teams" && <TeamsPage />}
         {view === "friends" && <FriendsPage />}
         {view === "icons-index" && <IconsIndexPage />}
+        {view === "settings" && <SettingsPage />}
         {view === "hardcore" && <HardcorePage />}
         {view === "gauntlet" && <GauntletPage />}
         {view === "world-cup" && <WorldCupPage />}

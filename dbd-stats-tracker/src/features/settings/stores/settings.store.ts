@@ -14,11 +14,28 @@ function requireUserId(): string {
   return userId;
 }
 
+export type AppTheme = "dark" | "light";
+
+const THEME_STORAGE_KEY = "app-theme";
+
+/** Device-local preference (not per-account): it must also apply on the login screen, before any auth. */
+function loadInitialTheme(): AppTheme {
+  return localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
+}
+
+function applyTheme(theme: AppTheme) {
+  document.documentElement.dataset.theme = theme;
+}
+
+// Apply at module load (the store is imported by App.tsx) so there is no dark flash.
+applyTheme(loadInitialTheme());
+
 export interface SettingsState {
   /** Absolute path to the local "Icons" folder (CharPortraits/Perks/ItemAddons/Items) the player explicitly picked, persisted per account. Null until they choose one. */
   iconsFolderPath: string | null;
   /** Fallback Icons folder bundled with the project, used whenever `iconsFolderPath` is null. */
   defaultIconsFolderPath: string | null;
+  theme: AppTheme;
   status: AsyncStatus;
   error: string | null;
 }
@@ -27,6 +44,7 @@ export interface SettingsActions {
   loadIconsFolderPath: () => Promise<void>;
   loadDefaultIconsFolderPath: () => Promise<void>;
   setIconsFolderPath: (path: string | null) => Promise<void>;
+  setTheme: (theme: AppTheme) => void;
 }
 
 export type SettingsStore = SettingsState & SettingsActions;
@@ -39,6 +57,7 @@ export function selectEffectiveIconsFolderPath(state: SettingsState): string | n
 export const useSettingsStore = create<SettingsStore>((set, get) => ({
   iconsFolderPath: null,
   defaultIconsFolderPath: null,
+  theme: loadInitialTheme(),
   status: "idle",
   error: null,
 
@@ -65,5 +84,11 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     } catch (err) {
       set({ iconsFolderPath: previous, error: toErrorMessage(err) });
     }
+  },
+
+  setTheme: (theme) => {
+    set({ theme });
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    applyTheme(theme);
   },
 }));

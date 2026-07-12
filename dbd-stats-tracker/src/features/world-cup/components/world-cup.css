@@ -363,6 +363,10 @@
   box-shadow: 0 0 0 1px var(--color-success);
 }
 
+:root[data-theme="light"] .world-cup-fixture-side.is-winner {
+  background: rgba(46, 204, 113, 0.25);
+}
+
 .world-cup-fixture-killer-name {
   flex: 1;
   font-size: 0.9em;
@@ -531,6 +535,10 @@
 .bracket-match-side.is-winner {
   background: rgba(46, 204, 113, 0.15);
   box-shadow: 0 0 0 1px var(--color-success);
+}
+
+:root[data-theme="light"] .bracket-match-side.is-winner {
+  background: rgba(46, 204, 113, 0.25);
 }
 
 .bracket-match-score {
