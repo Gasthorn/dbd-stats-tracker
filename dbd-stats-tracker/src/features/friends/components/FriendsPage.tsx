@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { isOnline } from "../lib/presence";
 import { useFriendsStore } from "../stores/friends.store";
 import type { Friendship } from "../types/friend.types";
@@ -9,6 +10,7 @@ import "./friends.css";
 const PRESENCE_TICK_MS = 30_000;
 
 export function FriendsPage() {
+  const { t } = useTranslation();
   const friendships = useFriendsStore((state) => state.friendships);
   const status = useFriendsStore((state) => state.status);
   const storeError = useFriendsStore((state) => state.error);
@@ -46,17 +48,17 @@ export function FriendsPage() {
     setFormError(null);
     setSuccessMessage(null);
     if (!username.trim()) {
-      setFormError("Entrez un nom d'utilisateur.");
+      setFormError(t("friends.usernameRequired"));
       return;
     }
 
     setIsSending(true);
     try {
       await sendRequestByUsername(username.trim());
-      setSuccessMessage(`Demande envoyée à ${username.trim()} !`);
+      setSuccessMessage(t("friends.requestSent", { username: username.trim() }));
       setUsername("");
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'envoyer la demande.");
+      setFormError(err instanceof Error ? err.message : t("friends.sendFailed"));
     } finally {
       setIsSending(false);
     }
@@ -73,20 +75,20 @@ export function FriendsPage() {
 
   return (
     <div className="friends-page">
-      <h1>Amis</h1>
-      <p className="friends-hint">Ajoute des amis par leur nom d'utilisateur et retrouve-les ici.</p>
+      <h1>{t("friends.title")}</h1>
+      <p className="friends-hint">{t("friends.hint")}</p>
 
       <div className="friends-search-form">
-        <h3>Ajouter un ami</h3>
+        <h3>{t("friends.addTitle")}</h3>
         <div className="friends-search-row">
           <input
             type="text"
-            placeholder="Nom d'utilisateur"
+            placeholder={t("friends.usernamePlaceholder")}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
           <button type="button" onClick={handleSendRequest} disabled={isSending}>
-            {isSending ? "Envoi..." : "Envoyer une demande"}
+            {isSending ? t("friends.sendPending") : t("friends.sendRequest")}
           </button>
         </div>
         {formError && <p className="match-error">{formError}</p>}
@@ -98,21 +100,21 @@ export function FriendsPage() {
 
       {incoming.length > 0 && (
         <div className="friends-section">
-          <h3>Demandes reçues</h3>
+          <h3>{t("friends.incomingTitle")}</h3>
           <div className="friends-list">
             {incoming.map((friendship) =>
               renderFriendCard(
                 friendship,
                 <>
                   <button type="button" onClick={() => respondToRequest(friendship.id, true)}>
-                    Accepter
+                    {t("friends.accept")}
                   </button>
                   <button
                     type="button"
                     className="btn-secondary"
                     onClick={() => respondToRequest(friendship.id, false)}
                   >
-                    Refuser
+                    {t("friends.decline")}
                   </button>
                 </>,
               ),
@@ -123,13 +125,13 @@ export function FriendsPage() {
 
       {outgoing.length > 0 && (
         <div className="friends-section">
-          <h3>Demandes envoyées</h3>
+          <h3>{t("friends.outgoingTitle")}</h3>
           <div className="friends-list">
             {outgoing.map((friendship) =>
               renderFriendCard(
                 friendship,
                 <button type="button" className="btn-secondary" onClick={() => removeFriendship(friendship.id)}>
-                  Annuler
+                  {t("friends.cancelRequest")}
                 </button>,
               ),
             )}
@@ -138,9 +140,9 @@ export function FriendsPage() {
       )}
 
       <div className="friends-section">
-        <h3>Mes amis</h3>
+        <h3>{t("friends.myFriendsTitle")}</h3>
         {status !== "loading" && accepted.length === 0 && (
-          <p className="statistics-empty">Aucun ami pour le moment.</p>
+          <p className="statistics-empty">{t("friends.empty")}</p>
         )}
         {accepted.length > 0 && (
           <div className="friends-list">
@@ -149,13 +151,13 @@ export function FriendsPage() {
                 <div className="friends-card-name">
                   <span
                     className={`friend-status-dot ${isOnline(friendship.friendLastSeenAt) ? "is-online" : "is-offline"}`}
-                    title={isOnline(friendship.friendLastSeenAt) ? "En ligne" : "Hors ligne"}
+                    title={isOnline(friendship.friendLastSeenAt) ? t("friends.online") : t("friends.offline")}
                   />
                   {friendship.friendUsername}
                 </div>
                 <div className="friends-card-actions">
                   <button type="button" className="btn-secondary" onClick={() => removeFriendship(friendship.id)}>
-                    Retirer
+                    {t("friends.remove")}
                   </button>
                 </div>
               </div>

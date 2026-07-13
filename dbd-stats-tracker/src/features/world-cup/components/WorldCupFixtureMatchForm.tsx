@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { KILLER_ADDONS } from "../../../shared/data/equipment";
 import { KILLER_PERKS } from "../../../shared/data/perks";
 import { getCharacterUniquePerkNames } from "../../../shared/lib/gauntlet/tier";
@@ -30,6 +31,7 @@ interface WorldCupFixtureMatchFormProps {
 }
 
 export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: WorldCupFixtureMatchFormProps) {
+  const { t } = useTranslation();
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
 
   const [perks, setPerks] = useState<[string, string, string, string]>(EMPTY_PERKS);
@@ -79,14 +81,14 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
     setFormError(null);
 
     if (hooks === "") {
-      setFormError("Le nombre de crochets est requis pour départager ce duel.");
+      setFormError(t("worldCup.hooksRequired"));
       return;
     }
 
     const cleanedPerks = perks.filter((perk) => perk !== "");
     const ownedPerkCount = cleanedPerks.filter((perk) => uniquePerkNames.includes(perk)).length;
     if (ownedPerkCount < MIN_OWNED_PERKS) {
-      setFormError(`Le build doit inclure au moins ${MIN_OWNED_PERKS} perks propres à ${characterName}.`);
+      setFormError(t("worldCup.buildNeedsOwnPerks", { count: MIN_OWNED_PERKS, name: characterName }));
       return;
     }
 
@@ -102,7 +104,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
         generatorsCompleted: Number(generatorsCompleted),
       });
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'enregistrer la partie.");
+      setFormError(err instanceof Error ? err.message : t("matchForm.saveFailed"));
       setIsSubmitting(false);
     }
   }
@@ -119,7 +121,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
         onReset={handleResetBuild}
       />
 
-      <label>Perks</label>
+      <label>{t("matchForm.perks")}</label>
       <div className="match-perks-grid">
         {perks.map((perk, index) => (
           <IconSelectionSlot
@@ -128,7 +130,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
             value={perk}
             onChange={(value) => updatePerk(index, value)}
             listId={`world-cup-perks-options-${index}`}
-            placeholder={`Perk ${index + 1}`}
+            placeholder={t("matchForm.perkPlaceholder", { index: index + 1 })}
             diamond
             size={68}
           />
@@ -142,7 +144,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
         </datalist>
       ))}
 
-      <label>Accessoires</label>
+      <label>{t("worldCup.accessories")}</label>
       <div className="match-form-row">
         <IconSelectionSlot
           category="Addons"
@@ -150,7 +152,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
           onChange={(value) => updateEquipment(0, value)}
           manualOwner={characterName}
           listId="world-cup-killer-addon-options"
-          placeholder="Accessoire 1"
+          placeholder={t("matchForm.addonPlaceholder", { index: 1 })}
           size={84}
           className={rarityClassName(getKillerAddonRarity(characterName, equipment[0]))}
         />
@@ -160,7 +162,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
           onChange={(value) => updateEquipment(1, value)}
           manualOwner={characterName}
           listId="world-cup-killer-addon-options"
-          placeholder="Accessoire 2"
+          placeholder={t("matchForm.addonPlaceholder", { index: 2 })}
           size={84}
           className={rarityClassName(getKillerAddonRarity(characterName, equipment[1]))}
         />
@@ -171,7 +173,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
         </datalist>
       </div>
 
-      <label htmlFor="world-cup-hooks">Crochets (départage la confrontation)</label>
+      <label htmlFor="world-cup-hooks">{t("worldCup.hooksLabel")}</label>
       <input
         id="world-cup-hooks"
         type="number"
@@ -181,7 +183,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
         required
       />
 
-      <label htmlFor="world-cup-kills">Survivants sacrifiés (0-4)</label>
+      <label htmlFor="world-cup-kills">{t("matchForm.kills")}</label>
       <input
         id="world-cup-kills"
         type="number"
@@ -191,7 +193,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
         onChange={(e) => setKills(e.target.value)}
       />
 
-      <label htmlFor="world-cup-bloodpoints">Points de sang</label>
+      <label htmlFor="world-cup-bloodpoints">{t("matchForm.bloodpoints")}</label>
       <input
         id="world-cup-bloodpoints"
         type="number"
@@ -200,7 +202,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
         onChange={(e) => setBloodpoints(e.target.value)}
       />
 
-      <label htmlFor="world-cup-gens">Générateurs terminés ({generatorsCompleted})</label>
+      <label htmlFor="world-cup-gens">{t("matchForm.generatorsCompleted", { count: Number(generatorsCompleted) })}</label>
       <input
         id="world-cup-gens"
         type="range"
@@ -214,10 +216,10 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
 
       <div className="match-form-row">
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Enregistrement..." : "Valider la partie"}
+          {isSubmitting ? t("matchForm.submitPending") : t("worldCup.submitMatch")}
         </button>
         <button type="button" onClick={onCancel} disabled={isSubmitting}>
-          Annuler
+          {t("common.cancel")}
         </button>
       </div>
     </form>

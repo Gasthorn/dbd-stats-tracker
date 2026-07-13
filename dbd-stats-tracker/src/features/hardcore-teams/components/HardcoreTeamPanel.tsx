@@ -1,11 +1,13 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useFriendsStore } from "../../friends";
 import { useHardcoreTeamStore } from "../stores/hardcore-team.store";
 import "./hardcore-teams.css";
 
 export function HardcoreTeamPanel() {
+  const { t } = useTranslation();
   const members = useHardcoreTeamStore((state) => state.members);
   const status = useHardcoreTeamStore((state) => state.status);
   const storeError = useHardcoreTeamStore((state) => state.error);
@@ -47,9 +49,9 @@ export function HardcoreTeamPanel() {
     setIsBusy(true);
     try {
       await createTeam(seasonId);
-      setSuccessMessage("Équipe Hardcore créée !");
+      setSuccessMessage(t("hardcoreTeam.created"));
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible de créer l'équipe.");
+      setFormError(err instanceof Error ? err.message : t("hardcoreTeam.createFailed"));
     } finally {
       setIsBusy(false);
     }
@@ -62,10 +64,10 @@ export function HardcoreTeamPanel() {
     setIsBusy(true);
     try {
       await inviteFriend(myMembership.teamId, selectedFriendId, seasonId);
-      setSuccessMessage("Invitation envoyée !");
+      setSuccessMessage(t("hardcoreTeam.inviteSent"));
       setSelectedFriendId("");
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'inviter cet ami.");
+      setFormError(err instanceof Error ? err.message : t("hardcoreTeam.inviteFailed"));
     } finally {
       setIsBusy(false);
     }
@@ -77,7 +79,7 @@ export function HardcoreTeamPanel() {
     try {
       await acceptInvite(memberId, seasonId);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'accepter l'invitation.");
+      setFormError(err instanceof Error ? err.message : t("hardcoreTeam.acceptFailed"));
     }
   }
 
@@ -87,23 +89,20 @@ export function HardcoreTeamPanel() {
     try {
       await leaveOrDecline(memberId, seasonId);
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Une erreur est survenue.");
+      setFormError(err instanceof Error ? err.message : t("hardcoreTeam.genericError"));
     }
   }
 
   async function handleLeave() {
     if (!myMembership) return;
-    if (!confirm("Voulez-vous vraiment quitter cette équipe Hardcore ?")) return;
+    if (!confirm(t("hardcoreTeam.leaveConfirm"))) return;
     await handleDecline(myMembership.memberId);
   }
 
   return (
     <div className="hardcore-team-panel">
-      <h3>Hardcore Équipe</h3>
-      <p className="hardcore-team-hint">
-        Forme une équipe avec des amis : si le survivant de l'un de vous meurt, il devient indisponible pour
-        toute l'équipe. Vos points/rang personnels ne sont pas affectés par les parties des autres.
-      </p>
+      <h3>{t("hardcoreTeam.title")}</h3>
+      <p className="hardcore-team-hint">{t("hardcoreTeam.hint")}</p>
 
       {status === "loading" && members.length === 0 && <LoadingSpinner />}
       {storeError && <p className="match-error">{storeError}</p>}
@@ -112,17 +111,17 @@ export function HardcoreTeamPanel() {
 
       {pendingInvites.length > 0 && (
         <div className="hardcore-team-invites">
-          <h4>Invitations reçues</h4>
+          <h4>{t("hardcoreTeam.invitesTitle")}</h4>
           {pendingInvites.map((invite) => {
             const inviter = members.find(
               (m) => m.teamId === invite.teamId && m.memberUserId === invite.invitedBy,
             );
             return (
               <div key={invite.memberId} className="hardcore-team-invite-row">
-                <span>Invitation de {inviter?.memberUsername ?? "un ami"}</span>
+                <span>{inviter ? t("hardcoreTeam.invitationFrom", { name: inviter.memberUsername }) : t("hardcoreTeam.invitationFromFallback")}</span>
                 <div className="hardcore-team-invite-actions">
                   <button type="button" onClick={() => handleAccept(invite.memberId)} disabled={isBusy}>
-                    Accepter
+                    {t("hardcoreTeam.accept")}
                   </button>
                   <button
                     type="button"
@@ -130,7 +129,7 @@ export function HardcoreTeamPanel() {
                     onClick={() => handleDecline(invite.memberId)}
                     disabled={isBusy}
                   >
-                    Refuser
+                    {t("hardcoreTeam.decline")}
                   </button>
                 </div>
               </div>
@@ -141,24 +140,24 @@ export function HardcoreTeamPanel() {
 
       {!myMembership && (
         <button type="button" onClick={handleCreateTeam} disabled={isBusy}>
-          Créer une équipe Hardcore
+          {t("hardcoreTeam.createTeam")}
         </button>
       )}
 
       {myMembership && (
         <div className="hardcore-team-roster">
-          <h4>Mon équipe</h4>
+          <h4>{t("hardcoreTeam.myTeam")}</h4>
           <ul className="hardcore-team-member-list">
             {roster.map((member) => (
               <li key={member.memberId}>
                 {member.memberUsername}
-                {member.status === "pending" && <span className="hardcore-team-pending-badge"> (invitation envoyée)</span>}
+                {member.status === "pending" && <span className="hardcore-team-pending-badge">{t("hardcoreTeam.pendingBadge")}</span>}
               </li>
             ))}
           </ul>
 
           <div className="hardcore-team-dead-pool">
-            <strong>Survivants morts pour l'équipe ({myMembership.teamDeadSurvivors.length})</strong>
+            <strong>{t("hardcoreTeam.deadPool", { count: myMembership.teamDeadSurvivors.length })}</strong>
             {myMembership.teamDeadSurvivors.length > 0 && (
               <ul className="hardcore-team-member-list">
                 {myMembership.teamDeadSurvivors.map((name) => (
@@ -170,7 +169,7 @@ export function HardcoreTeamPanel() {
 
           <div className="hardcore-team-invite-form">
             <select value={selectedFriendId} onChange={(e) => setSelectedFriendId(e.target.value)}>
-              <option value="">-- Choisir un ami --</option>
+              <option value="">{t("hardcoreTeam.chooseFriend")}</option>
               {invitableFriends.map((friend) => (
                 <option key={friend.friendId} value={friend.friendId}>
                   {friend.friendUsername}
@@ -178,12 +177,12 @@ export function HardcoreTeamPanel() {
               ))}
             </select>
             <button type="button" onClick={handleInvite} disabled={isBusy || !selectedFriendId}>
-              Inviter
+              {t("hardcoreTeam.invite")}
             </button>
           </div>
 
           <button type="button" className="btn-secondary" onClick={handleLeave} disabled={isBusy}>
-            Quitter l'équipe
+            {t("hardcoreTeam.leaveTeam")}
           </button>
         </div>
       )}

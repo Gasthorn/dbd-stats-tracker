@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import "./update-banner.css";
@@ -11,6 +12,7 @@ type UpdateState = "idle" | "checking" | "available" | "downloading" | "installe
  * download, install, and relaunch with a single click.
  */
 export function UpdateBanner() {
+  const { t } = useTranslation();
   const [state, setState] = useState<UpdateState>("idle");
   const [update, setUpdate] = useState<Update | null>(null);
   const [progress, setProgress] = useState(0);
@@ -58,7 +60,7 @@ export function UpdateBanner() {
       await relaunch();
     } catch (err) {
       setState("error");
-      setError(err instanceof Error ? err.message : "Impossible d'installer la mise à jour.");
+      setError(err instanceof Error ? err.message : t("updater.installFailed"));
     }
   }
 
@@ -68,32 +70,31 @@ export function UpdateBanner() {
     <div className="update-banner">
       {state === "available" && update && (
         <>
-          <span>
-            Une mise à jour est disponible : <strong>v{update.version}</strong> (actuelle : v
-            {update.currentVersion}).
-          </span>
+          <span>{t("updater.available", { version: update.version, currentVersion: update.currentVersion })}</span>
           <div className="update-banner-actions">
             <button type="button" onClick={handleInstall}>
-              Installer et redémarrer
+              {t("updater.install")}
             </button>
             <button type="button" className="btn-secondary" onClick={() => setDismissed(true)}>
-              Plus tard
+              {t("updater.later")}
             </button>
           </div>
         </>
       )}
 
       {state === "downloading" && (
-        <span>Téléchargement de la mise à jour... {progress > 0 ? `${progress}%` : ""}</span>
+        <span>
+          {t("updater.downloading")} {progress > 0 ? `${progress}%` : ""}
+        </span>
       )}
 
-      {state === "installed" && <span>Mise à jour installée, redémarrage...</span>}
+      {state === "installed" && <span>{t("updater.installed")}</span>}
 
       {state === "error" && (
         <>
           <span className="update-banner-error">{error}</span>
           <button type="button" className="btn-secondary" onClick={() => setDismissed(true)}>
-            Fermer
+            {t("common.close")}
           </button>
         </>
       )}

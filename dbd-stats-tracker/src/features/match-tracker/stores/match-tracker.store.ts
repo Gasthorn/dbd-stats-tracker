@@ -1,9 +1,10 @@
 import { create } from "zustand";
+import { i18n } from "../../../shared/i18n";
 import { matchService } from "../services/match.service";
 import type { MatchTrackerStore } from "./match-tracker.store.types";
 
 function toErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
+  return err instanceof Error ? err.message : i18n.t("common.unexpectedError");
 }
 
 export const useMatchTrackerStore = create<MatchTrackerStore>((set, get) => ({

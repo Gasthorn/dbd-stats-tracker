@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AuthGate, useAuthStore } from "./features/auth";
 import { CharacterUnlockPage } from "./features/characters";
 import { MatchHistoryPage, MatchTrackerPage } from "./features/match-tracker";
@@ -38,27 +39,27 @@ export type DashboardView =
   | "icons-index"
   | "settings";
 
-/** Nav tabs, split into logical groups rendered with a thin separator between them. */
-const TAB_GROUPS: { view: DashboardView; label: string }[][] = [
+/** Nav tabs (as translation keys), split into logical groups rendered with a thin separator between them. */
+const TAB_GROUPS: { view: DashboardView; labelKey: string }[][] = [
   [
-    { view: "home", label: "Accueil" },
-    { view: "matches", label: "Parties" },
-    { view: "history", label: "Historique" },
-    { view: "statistics", label: "Statistiques" },
+    { view: "home", labelKey: "nav.home" },
+    { view: "matches", labelKey: "nav.matches" },
+    { view: "history", labelKey: "nav.history" },
+    { view: "statistics", labelKey: "nav.statistics" },
   ],
   [
-    { view: "hardcore", label: "Hardcore" },
-    { view: "gauntlet", label: "Gauntlet" },
-    { view: "world-cup", label: "World Cup" },
+    { view: "hardcore", labelKey: "nav.hardcore" },
+    { view: "gauntlet", labelKey: "nav.gauntlet" },
+    { view: "world-cup", labelKey: "nav.worldCup" },
   ],
   [
-    { view: "teams", label: "Équipes" },
-    { view: "friends", label: "Amis" },
+    { view: "teams", labelKey: "nav.teams" },
+    { view: "friends", labelKey: "nav.friends" },
   ],
   [
-    { view: "characters", label: "Personnages" },
-    { view: "icons-index", label: "Index des icônes" },
-    { view: "settings", label: "Paramètres" },
+    { view: "characters", labelKey: "nav.characters" },
+    { view: "icons-index", labelKey: "nav.iconsIndex" },
+    { view: "settings", labelKey: "nav.settings" },
   ],
 ];
 
@@ -71,6 +72,7 @@ function loadInitialView(): DashboardView {
 }
 
 function Dashboard() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const signOut = useAuthStore((state) => state.signOut);
   const [view, setView] = useState<DashboardView>(loadInitialView);
@@ -105,16 +107,16 @@ function Dashboard() {
                   className={view === tab.view ? "is-active" : ""}
                   onClick={() => setView(tab.view)}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </button>
               ))}
             </div>
           ))}
         </nav>
         <div className="app-user">
-          <span title={`Connecté en tant que ${user?.username}`}>{user?.username}</span>
+          <span title={t("nav.loggedInAs", { username: user?.username })}>{user?.username}</span>
           <button type="button" className="app-user-signout" onClick={() => signOut()}>
-            Se déconnecter
+            {t("nav.signOut")}
           </button>
         </div>
       </header>

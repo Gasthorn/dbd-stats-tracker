@@ -1,4 +1,5 @@
 import type { MatchRow } from "../../../shared/lib/supabase/database.types";
+import { i18n } from "../../../shared/i18n";
 import { supabase } from "../../../shared/lib/supabase/client";
 import type { PaginatedResult } from "../../../shared/types/common.types";
 import type { CreateMatchInput, Match, UpdateMatchInput } from "../types/match.types";
@@ -151,7 +152,7 @@ export const matchService: MatchService = {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) throw new Error("Utilisateur non connecté.");
+    if (!user) throw new Error(i18n.t("common.notLoggedIn"));
 
     const { data, error } = await supabase
       .from("matches")

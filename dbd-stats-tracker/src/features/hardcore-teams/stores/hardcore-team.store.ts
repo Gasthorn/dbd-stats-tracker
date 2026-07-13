@@ -1,16 +1,17 @@
 import { create } from "zustand";
+import { i18n } from "../../../shared/i18n";
 import { hardcoreTeamService } from "../services/hardcore-team.service";
 import type { HardcoreTeamStore } from "./hardcore-team.store.types";
 
 function toErrorMessage(err: unknown): string {
   const code = (err as { code?: string } | null)?.code;
   if (code === "23505") {
-    return "Vous êtes déjà dans une équipe Hardcore active. Quittez-la avant d'en rejoindre une autre.";
+    return i18n.t("hardcoreTeam.alreadyInTeam");
   }
   const message = err instanceof Error ? err.message : (err as { message?: string } | null)?.message;
-  if (message?.includes("not_a_friend")) return "Vous devez être ami avec cette personne pour l'inviter.";
-  if (message?.includes("not_a_team_member")) return "Vous ne faites plus partie de cette équipe.";
-  return message ?? "Une erreur inattendue est survenue.";
+  if (message?.includes("not_a_friend")) return i18n.t("hardcoreTeam.notAFriend");
+  if (message?.includes("not_a_team_member")) return i18n.t("hardcoreTeam.notAMember");
+  return message ?? i18n.t("common.unexpectedError");
 }
 
 export const useHardcoreTeamStore = create<HardcoreTeamStore>((set, get) => ({

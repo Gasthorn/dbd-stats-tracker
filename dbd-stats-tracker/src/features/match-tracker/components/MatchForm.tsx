@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
@@ -13,12 +14,12 @@ import { pickRandomItem, pickRandomPerks } from "../lib/chaosShuffle";
 import { useMatchTrackerStore } from "../stores/match-tracker.store";
 import type { CreateMatchInput, EscapeResult, Match, MatchRole } from "../types/match.types";
 
-const ESCAPE_RESULT_OPTIONS: { value: EscapeResult; label: string }[] = [
-  { value: "escaped_door", label: "Évadé par la porte" },
-  { value: "escaped_hatch", label: "Évadé par la trappe" },
-  { value: "sacrificed", label: "Sacrifié (crochet)" },
-  { value: "killed", label: "Tué (mori)" },
-  { value: "disconnected", label: "Déconnecté" },
+const ESCAPE_RESULT_OPTIONS: { value: EscapeResult; labelKey: string }[] = [
+  { value: "escaped_door", labelKey: "matchForm.escapedDoor" },
+  { value: "escaped_hatch", labelKey: "matchForm.escapedHatch" },
+  { value: "sacrificed", labelKey: "matchForm.sacrificed" },
+  { value: "killed", labelKey: "matchForm.killed" },
+  { value: "disconnected", labelKey: "matchForm.disconnected" },
 ];
 
 const EMPTY_PERKS: [string, string, string, string] = ["", "", "", ""];
@@ -46,6 +47,7 @@ interface MatchFormProps {
 }
 
 export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
+  const { t } = useTranslation();
   const isEditing = match !== undefined;
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
   const unlockedSurvivors = useCharactersStore((state) => state.unlockedSurvivors);
@@ -159,11 +161,11 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
     setSuccessMessage(null);
 
     if (!characterName) {
-      setFormError("Sélectionnez un personnage.");
+      setFormError(t("matchForm.selectCharacter"));
       return;
     }
     if (role === "survivor" && !opponentName) {
-      setFormError("Sélectionnez le tueur adverse.");
+      setFormError(t("matchForm.selectOpponent"));
       return;
     }
 
@@ -218,7 +220,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         onSuccess?.();
       } else {
         await createMatch(input);
-        setSuccessMessage("Partie enregistrée !");
+        setSuccessMessage(t("matchForm.saved"));
         setCharacterName("");
         setOpponentName("");
         setTeamId("");
@@ -232,7 +234,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         setBuildPanelKey((key) => key + 1);
       }
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'enregistrer la partie.");
+      setFormError(err instanceof Error ? err.message : t("matchForm.saveFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -240,10 +242,10 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
 
   return (
     <form className="match-form" onSubmit={handleSubmit}>
-      <h2>{isEditing ? "Modifier la partie" : "Ajouter une partie"}</h2>
+      <h2>{isEditing ? t("matchForm.editTitle") : t("matchForm.addTitle")}</h2>
 
       {isEditing ? (
-        <p className="match-role-label">{role === "killer" ? "Tueur" : "Survivant"}</p>
+        <p className="match-role-label">{role === "killer" ? t("common.killer") : t("common.survivor")}</p>
       ) : (
         <div className="match-role-toggle">
           <button
@@ -251,14 +253,14 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             className={role === "killer" ? "is-active" : ""}
             onClick={() => switchRole("killer")}
           >
-            Tueur
+            {t("common.killer")}
           </button>
           <button
             type="button"
             className={role === "survivor" ? "is-active" : ""}
             onClick={() => switchRole("survivor")}
           >
-            Survivant
+            {t("common.survivor")}
           </button>
         </div>
       )}
@@ -275,15 +277,15 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       />
 
       <div className="match-perks-label-row">
-        <label htmlFor="match-character">Personnage</label>
+        <label htmlFor="match-character">{t("matchForm.character")}</label>
         <button
           type="button"
           className="chaos-shuffle-button"
           onClick={handleRandomCharacter}
           disabled={unlockedCharacters.length === 0}
-          title="Sélectionne un personnage au hasard parmi vos personnages débloqués"
+          title={t("matchForm.randomCharacterTooltip")}
         >
-          🎲 Personnage aléatoire
+          {t("matchForm.randomCharacter")}
         </button>
       </div>
       <IconSelectionSlot
@@ -294,7 +296,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         onChange={setCharacterName}
         size={96}
       >
-        <option value="">-- Sélectionner --</option>
+        <option value="">{t("common.select")}</option>
         {unlockedCharacters.map((name) => (
           <option key={name} value={name}>
             {name}
@@ -304,7 +306,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
 
       {role === "survivor" && (
         <>
-          <label htmlFor="match-opponent">Tueur adverse</label>
+          <label htmlFor="match-opponent">{t("matchForm.opponentKiller")}</label>
           <IconSelectionSlot
             as="select"
             id="match-opponent"
@@ -313,7 +315,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             onChange={setOpponentName}
             size={96}
           >
-            <option value="">-- Sélectionner --</option>
+            <option value="">{t("common.select")}</option>
             {KILLERS.map((name) => (
               <option key={name} value={name}>
                 {name}
@@ -321,9 +323,9 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             ))}
           </IconSelectionSlot>
 
-          <label htmlFor="match-team">Équipe (optionnel)</label>
+          <label htmlFor="match-team">{t("matchForm.team")}</label>
           <select id="match-team" value={teamId} onChange={(e) => setTeamId(e.target.value)}>
-            <option value="">-- Aucune équipe --</option>
+            <option value="">{t("matchForm.noTeam")}</option>
             {teams.map((team) => (
               <option key={team.id} value={team.id}>
                 {team.name}
@@ -334,15 +336,15 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       )}
 
       <div className="match-perks-label-row">
-        <label>Perks</label>
+        <label>{t("matchForm.perks")}</label>
         <button
           type="button"
           className="chaos-shuffle-button"
           onClick={handleChaosShuffle}
           disabled={availablePerks.length === 0}
-          title="Tire 4 perks au hasard parmi ceux disponibles pour vos personnages débloqués"
+          title={t("matchForm.chaosShuffleTooltip")}
         >
-          🎲 Chaos Shuffle
+          {t("matchForm.chaosShuffle")}
         </button>
       </div>
       <div className="match-perks-grid">
@@ -353,7 +355,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             value={perk}
             onChange={(value) => updatePerk(index, value)}
             listId={`match-perks-options-${index}`}
-            placeholder={`Perk ${index + 1}`}
+            placeholder={t("matchForm.perkPlaceholder", { index: index + 1 })}
             diamond
             size={68}
           />
@@ -367,7 +369,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         </datalist>
       ))}
 
-      <label>Équipement</label>
+      <label>{t("matchForm.equipment")}</label>
       {role === "survivor" ? (
         <>
           <IconSelectionSlot
@@ -377,7 +379,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             onChange={(value) => updateEquipment(0, value)}
             size={84}
           >
-            <option value="">-- Objet --</option>
+            <option value="">{t("matchForm.itemPlaceholder")}</option>
             {SURVIVOR_ITEMS.map((item) => (
               <option key={item} value={item}>
                 {item}
@@ -390,7 +392,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
               value={equipment[1]}
               onChange={(value) => updateEquipment(1, value)}
               listId="match-survivor-addon-options"
-              placeholder="Accessoire 1"
+              placeholder={t("matchForm.addonPlaceholder", { index: 1 })}
               size={84}
             />
             <IconSelectionSlot
@@ -398,7 +400,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
               value={equipment[2]}
               onChange={(value) => updateEquipment(2, value)}
               listId="match-survivor-addon-options"
-              placeholder="Accessoire 2"
+              placeholder={t("matchForm.addonPlaceholder", { index: 2 })}
               size={84}
             />
           </div>
@@ -416,7 +418,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             onChange={(value) => updateEquipment(0, value)}
             manualOwner={characterName}
             listId="match-killer-addon-options"
-            placeholder="Accessoire 1"
+            placeholder={t("matchForm.addonPlaceholder", { index: 1 })}
             size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[0]))}
           />
@@ -426,7 +428,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             onChange={(value) => updateEquipment(1, value)}
             manualOwner={characterName}
             listId="match-killer-addon-options"
-            placeholder="Accessoire 2"
+            placeholder={t("matchForm.addonPlaceholder", { index: 2 })}
             size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[1]))}
           />
@@ -438,7 +440,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         </div>
       )}
 
-      <label htmlFor="match-bloodpoints">Points de sang</label>
+      <label htmlFor="match-bloodpoints">{t("matchForm.bloodpoints")}</label>
       <input
         id="match-bloodpoints"
         type="number"
@@ -447,7 +449,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         onChange={(e) => setBloodpoints(e.target.value)}
       />
 
-      <label htmlFor="match-gens">Générateurs terminés ({generatorsCompleted})</label>
+      <label htmlFor="match-gens">{t("matchForm.generatorsCompleted", { count: Number(generatorsCompleted) })}</label>
       <input
         id="match-gens"
         type="range"
@@ -459,7 +461,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
 
       {role === "killer" ? (
         <>
-          <label htmlFor="match-kills">Survivants sacrifiés (0-4)</label>
+          <label htmlFor="match-kills">{t("matchForm.kills")}</label>
           <input
             id="match-kills"
             type="number"
@@ -469,7 +471,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             onChange={(e) => setKills(e.target.value)}
           />
 
-          <label htmlFor="match-hooks">Crochets (optionnel)</label>
+          <label htmlFor="match-hooks">{t("matchForm.hooks")}</label>
           <input
             id="match-hooks"
             type="number"
@@ -480,7 +482,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         </>
       ) : (
         <>
-          <label htmlFor="match-escape-result">Issue du match</label>
+          <label htmlFor="match-escape-result">{t("matchForm.escapeResult")}</label>
           <select
             id="match-escape-result"
             value={escapeResult}
@@ -488,7 +490,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
           >
             {ESCAPE_RESULT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </option>
             ))}
           </select>
@@ -501,14 +503,14 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       <div className="match-form-row">
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting
-            ? "Enregistrement..."
+            ? t("matchForm.submitPending")
             : isEditing
-              ? "Enregistrer les modifications"
-              : "Enregistrer la partie"}
+              ? t("matchForm.submitEdit")
+              : t("matchForm.submit")}
         </button>
         {isEditing && (
           <button type="button" onClick={onCancel} disabled={isSubmitting}>
-            Annuler
+            {t("common.cancel")}
           </button>
         )}
       </div>

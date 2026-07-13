@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Icon } from "../../settings";
 
 interface HardcoreCharacterGridProps {
@@ -13,6 +14,7 @@ export function HardcoreCharacterGrid({
   selected,
   onSelect,
 }: HardcoreCharacterGridProps) {
+  const { t } = useTranslation();
   return (
     <div className="hardcore-char-grid">
       {characters.map((name) => {
@@ -23,7 +25,7 @@ export function HardcoreCharacterGrid({
             key={name}
             className={`hardcore-char-item${isDead ? " is-blocked" : ""}${selected === name ? " is-selected" : ""}`}
             disabled={isDead}
-            title={isDead ? `${name} (éliminé cette saison)` : name}
+            title={isDead ? t("hardcore.deadTooltip", { name }) : name}
             onClick={() => onSelect(name)}
           >
             <Icon category="Characters" name={name} alt={name} size={80} />

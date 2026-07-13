@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { isGroupComplete } from "../../../shared/lib/world-cup/standings";
 import { useCharactersStore } from "../../characters/stores/characters.store";
 import {
@@ -20,6 +21,7 @@ import { WorldCupSeedingSetup } from "./WorldCupSeedingSetup";
 import "./world-cup.css";
 
 export function WorldCupPage() {
+  const { t } = useTranslation();
   const charactersStatus = useCharactersStore((state) => state.status);
   const fetchCharacters = useCharactersStore((state) => state.fetch);
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
@@ -99,7 +101,7 @@ export function WorldCupPage() {
   async function handleReset() {
     if (
       !confirm(
-        "Voulez-vous abandonner ce World Cup en cours ? Les parties déjà enregistrées resteront dans l'historique.",
+        t("worldCup.abandonConfirm"),
       )
     ) {
       return;
@@ -111,26 +113,26 @@ export function WorldCupPage() {
     <div className="world-cup-page">
       <div className="world-cup-header">
         <button type="button" onClick={() => setShowCareerModal(true)}>
-          Voir le classement général
+          {t("worldCup.viewCareerStandings")}
         </button>
         {run && (run.status === "knockout" || run.status === "completed") && (
           <button type="button" onClick={() => setShowGroupsModal(true)}>
-            Voir les résultats des poules
+            {t("worldCup.viewGroupResults")}
           </button>
         )}
         {hasHistory && (
           <button type="button" onClick={() => setShowHistoryModal(true)}>
-            Voir les anciens World Cup
+            {t("worldCup.viewPastWorldCups")}
           </button>
         )}
         {run && run.status !== "completed" && (
           <button type="button" className="btn-danger" onClick={handleReset}>
-            Abandonner ce World Cup
+            {t("worldCup.abandon")}
           </button>
         )}
       </div>
 
-      <h1>World Cup des Tueurs</h1>
+      <h1>{t("worldCup.title")}</h1>
 
       {error && <p className="match-error">{error}</p>}
       {status === "loading" && !run && <LoadingSpinner />}
@@ -139,12 +141,9 @@ export function WorldCupPage() {
         status !== "loading" &&
         (hasHistory ? (
           <div className="stats-zone">
-            <p>
-              Un précédent World Cup a été terminé : le tirage des poules sera automatiquement basé sur son
-              classement final (chapeaux ajustés selon les résultats).
-            </p>
+            <p>{t("worldCup.previousCompleted")}</p>
             <button type="button" onClick={() => startRun()}>
-              Lancer le tirage du nouveau World Cup
+              {t("worldCup.startNewDraw")}
             </button>
           </div>
         ) : (
@@ -167,7 +166,7 @@ export function WorldCupPage() {
               onRecordSide={(fixtureId, side, input) => recordFixtureMatch(fixtureId, side, input)}
             />
           ) : (
-            <p className="world-cup-matchday-progress">Phase de poules terminée !</p>
+            <p className="world-cup-matchday-progress">{t("worldCup.groupStageDone")}</p>
           )}
 
           <div className="world-cup-groups-grid">
@@ -185,9 +184,7 @@ export function WorldCupPage() {
           </div>
 
           <button type="button" onClick={advanceToKnockout} disabled={!allGroupsComplete || status === "loading"}>
-            {allGroupsComplete
-              ? "Lancer la phase à élimination directe (Top 32)"
-              : "Terminez toutes les poules pour lancer la phase finale"}
+            {allGroupsComplete ? t("worldCup.launchKnockout") : t("worldCup.finishGroupsFirst")}
           </button>
         </>
       )}
@@ -206,7 +203,7 @@ export function WorldCupPage() {
 
       {run && run.status === "completed" && (
         <button type="button" onClick={() => startRun()} disabled={status === "loading"}>
-          Nouveau World Cup
+          {t("worldCup.newWorldCup")}
         </button>
       )}
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useCharactersStore } from "../../characters/stores/characters.store";
 import type { MatchRole } from "../../match-tracker/types/match.types";
 import { useGauntletStore } from "../stores/gauntlet.store";
@@ -9,6 +10,7 @@ import { GauntletTierProgress } from "./GauntletTierProgress";
 import "./gauntlet.css";
 
 export function GauntletPage() {
+  const { t } = useTranslation();
   const charactersStatus = useCharactersStore((state) => state.status);
   const fetchCharacters = useCharactersStore((state) => state.fetch);
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
@@ -37,12 +39,12 @@ export function GauntletPage() {
   async function handleRefresh() {
     if (!role) return;
     await refreshQueue(role);
-    alert("La liste du Gauntlet a été actualisée en fonction de vos personnages débloqués !");
+    alert(t("gauntlet.refreshDone"));
   }
 
   async function handleReset() {
     if (!role) return;
-    if (!confirm("Voulez-vous réinitialiser complètement le Gauntlet ? Toute votre progression sera perdue.")) {
+    if (!confirm(t("gauntlet.resetConfirm"))) {
       return;
     }
     await resetRole(role);
@@ -58,31 +60,31 @@ export function GauntletPage() {
         {role && (
           <>
             <button type="button" onClick={handleRefresh}>
-              Actualiser Liste
+              {t("gauntlet.refreshList")}
             </button>
             <button type="button" className="btn-danger" onClick={handleReset}>
-              Réinitialiser
+              {t("common.reset")}
             </button>
           </>
         )}
       </div>
 
-      <h1>{role ? (role === "killer" ? "Killer Gauntlet" : "Survivor Gauntlet") : "Gauntlet Challenge"}</h1>
+      <h1>{role ? (role === "killer" ? t("gauntlet.titleKiller") : t("gauntlet.titleSurvivor")) : t("gauntlet.titleDefault")}</h1>
 
       <details className="gauntlet-rules">
-        <summary>Règles Gauntlet</summary>
+        <summary>{t("gauntlet.rulesTitle")}</summary>
         <ul>
           <li>
-            <strong>Objectif :</strong> Réussir une partie avec chaque personnage de votre collection.
+            <strong>{t("gauntlet.ruleGoalLabel")}</strong> {t("gauntlet.ruleGoal")}
           </li>
           <li>
-            <strong>Difficulté :</strong> 5 Tiers de restriction (de 4 perks à "No Perks").
+            <strong>{t("gauntlet.ruleDifficultyLabel")}</strong> {t("gauntlet.ruleDifficulty")}
           </li>
           <li>
-            <strong>Échec :</strong> En cas de défaite, vous retournez au checkpoint du Tier actuel.
+            <strong>{t("gauntlet.ruleFailureLabel")}</strong> {t("gauntlet.ruleFailure")}
           </li>
           <li>
-            <strong>Validation :</strong> Évasion (Survivant) ou 3+ Sacrifices (Tueur).
+            <strong>{t("gauntlet.ruleValidationLabel")}</strong> {t("gauntlet.ruleValidation")}
           </li>
         </ul>
       </details>
@@ -91,14 +93,14 @@ export function GauntletPage() {
 
       <div className="match-role-toggle" style={{ justifyContent: "center" }}>
         <button type="button" className={role === "killer" ? "is-active" : ""} onClick={() => switchRole("killer")}>
-          Tueur
+          {t("common.killer")}
         </button>
         <button
           type="button"
           className={role === "survivor" ? "is-active" : ""}
           onClick={() => switchRole("survivor")}
         >
-          Survivant
+          {t("common.survivor")}
         </button>
       </div>
 
@@ -112,7 +114,7 @@ export function GauntletPage() {
 
           {isComplete ? (
             <p className="gauntlet-complete-message">
-              GAUNTLET {role.toUpperCase()} TERMINÉ ! Vous êtes une légende.
+              {t("gauntlet.completeMessage", { role: role.toUpperCase() })}
             </p>
           ) : roleProgress.currentCharacter ? (
             <div className="gauntlet-roll-zone">
@@ -128,7 +130,7 @@ export function GauntletPage() {
               />
             </div>
           ) : (
-            <p>Tirage en cours...</p>
+            <p>{t("gauntlet.rolling")}</p>
           )}
 
           <GauntletCompletedGrid characters={roleProgress.completedCharacters} />

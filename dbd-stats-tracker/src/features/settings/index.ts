@@ -1,4 +1,5 @@
 export type { AppTheme, SettingsActions, SettingsState, SettingsStore } from "./stores/settings.store";
+export type { AppLanguage } from "../../shared/i18n";
 export { useSettingsStore } from "./stores/settings.store";
 export type { SettingsService } from "./services/settings.service.types";
 export { settingsService } from "./services/settings.service";

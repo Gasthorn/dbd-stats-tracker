@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { i18n } from "../../../shared/i18n";
 import {
   DEFAULT_UNLOCKED_KILLERS,
   DEFAULT_UNLOCKED_SURVIVORS,
@@ -10,12 +11,12 @@ import { charactersService } from "../services/characters.service";
 import type { CharactersStore } from "./characters.store.types";
 
 function toErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
+  return err instanceof Error ? err.message : i18n.t("common.unexpectedError");
 }
 
 function requireUserId(): string {
   const userId = useAuthStore.getState().user?.id;
-  if (!userId) throw new Error("Utilisateur non connecté.");
+  if (!userId) throw new Error(i18n.t("common.notLoggedIn"));
   return userId;
 }
 

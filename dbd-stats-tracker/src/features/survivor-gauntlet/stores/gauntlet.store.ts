@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { i18n } from "../../../shared/i18n";
 import { drawNextGauntletCharacter, getGauntletTierInfo } from "../../../shared/lib/gauntlet/tier";
 import { useAuthStore } from "../../auth/stores/auth.store";
 import { useCharactersStore } from "../../characters/stores/characters.store";
@@ -9,12 +10,12 @@ import type { GauntletProgress } from "../types/gauntlet.types";
 import type { GauntletStore, RecordGauntletMatchInput } from "./gauntlet.store.types";
 
 function toErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
+  return err instanceof Error ? err.message : i18n.t("common.unexpectedError");
 }
 
 function requireUserId(): string {
   const userId = useAuthStore.getState().user?.id;
-  if (!userId) throw new Error("Utilisateur non connecté.");
+  if (!userId) throw new Error(i18n.t("common.notLoggedIn"));
   return userId;
 }
 

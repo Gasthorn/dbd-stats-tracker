@@ -1,4 +1,5 @@
 import type { Session } from "@supabase/supabase-js";
+import { i18n } from "../../../shared/i18n";
 import { supabase } from "../../../shared/lib/supabase/client";
 import {
   EmailConfirmationRequiredError,
@@ -21,7 +22,7 @@ async function fetchProfile(
     .single();
 
   if (error || !data) {
-    throw new Error("Impossible de récupérer le profil utilisateur.");
+    throw new Error(i18n.t("errors.profileFetchFailed"));
   }
 
   return {
@@ -54,7 +55,7 @@ export const authService: AuthService = {
   async signInWithPassword({ email, password }: LoginCredentials) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    if (!data.session) throw new Error("Connexion impossible : aucune session retournée.");
+    if (!data.session) throw new Error(i18n.t("errors.noSessionReturned"));
     return toAuthSession(data.session);
   },
 

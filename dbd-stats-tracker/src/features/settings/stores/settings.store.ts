@@ -1,16 +1,17 @@
 import { create } from "zustand";
+import { i18n, loadInitialLanguage, persistLanguage, type AppLanguage } from "../../../shared/i18n";
 import type { AsyncStatus } from "../../../shared/types/common.types";
 import { useAuthStore } from "../../auth/stores/auth.store";
 import { getDefaultIconsFolder } from "../lib/getDefaultIconsFolder";
 import { settingsService } from "../services/settings.service";
 
 function toErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
+  return err instanceof Error ? err.message : i18n.t("common.unexpectedError");
 }
 
 function requireUserId(): string {
   const userId = useAuthStore.getState().user?.id;
-  if (!userId) throw new Error("Utilisateur non connecté.");
+  if (!userId) throw new Error(i18n.t("common.notLoggedIn"));
   return userId;
 }
 
@@ -36,6 +37,7 @@ export interface SettingsState {
   /** Fallback Icons folder bundled with the project, used whenever `iconsFolderPath` is null. */
   defaultIconsFolderPath: string | null;
   theme: AppTheme;
+  language: AppLanguage;
   status: AsyncStatus;
   error: string | null;
 }
@@ -45,6 +47,7 @@ export interface SettingsActions {
   loadDefaultIconsFolderPath: () => Promise<void>;
   setIconsFolderPath: (path: string | null) => Promise<void>;
   setTheme: (theme: AppTheme) => void;
+  setLanguage: (language: AppLanguage) => void;
 }
 
 export type SettingsStore = SettingsState & SettingsActions;
@@ -58,6 +61,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   iconsFolderPath: null,
   defaultIconsFolderPath: null,
   theme: loadInitialTheme(),
+  language: loadInitialLanguage(),
   status: "idle",
   error: null,
 
@@ -90,5 +94,11 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     set({ theme });
     localStorage.setItem(THEME_STORAGE_KEY, theme);
     applyTheme(theme);
+  },
+
+  setLanguage: (language) => {
+    set({ language });
+    persistLanguage(language);
+    i18n.changeLanguage(language);
   },
 }));

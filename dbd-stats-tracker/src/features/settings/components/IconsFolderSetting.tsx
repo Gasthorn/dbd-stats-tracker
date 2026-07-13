@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { pickIconsFolder } from "../lib/pickIconsFolder";
 import { selectEffectiveIconsFolderPath, useSettingsStore } from "../stores/settings.store";
 import { Icon } from "./Icon";
 import "./settings.css";
 
 export function IconsFolderSetting() {
+  const { t } = useTranslation();
   const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
   const defaultIconsFolderPath = useSettingsStore((state) => state.defaultIconsFolderPath);
   const effectivePath = useSettingsStore(selectEffectiveIconsFolderPath);
@@ -19,37 +21,35 @@ export function IconsFolderSetting() {
       const path = await pickIconsFolder();
       if (path) await setIconsFolderPath(path);
     } catch {
-      setError(
-        "Sélection de dossier indisponible : cette fonctionnalité nécessite l'application de bureau.",
-      );
+      setError(t("settings.iconsFolder.pickerUnavailable"));
     }
   }
 
   return (
     <div className="icons-folder-setting">
-      <h3>Dossier d'icônes</h3>
-      <p>
-        Indique le dossier <code>Icons</code> (contenant <code>CharPortraits</code>,{" "}
-        <code>Perks</code>, <code>ItemAddons</code>, <code>Items</code>) pour afficher les icônes
-        des tueurs, survivants, perks et objets dans toute l'application.
-      </p>
+      <h3>{t("settings.iconsFolder.title")}</h3>
+      <p>{t("settings.iconsFolder.explanation")}</p>
 
       {effectivePath ? (
         <p className="icons-folder-path">
-          {isUsingDefault && <span className="icons-folder-path-badge">Par défaut</span>}
+          {isUsingDefault && (
+            <span className="icons-folder-path-badge">{t("settings.iconsFolder.defaultBadge")}</span>
+          )}
           {effectivePath}
         </p>
       ) : (
-        <p className="icons-folder-path icons-folder-path-empty">Aucun dossier sélectionné</p>
+        <p className="icons-folder-path icons-folder-path-empty">{t("settings.iconsFolder.noFolder")}</p>
       )}
 
       <div className="icons-folder-actions">
         <button type="button" onClick={handlePick}>
-          {effectivePath ? "Changer de dossier" : "Choisir un dossier"}
+          {effectivePath ? t("settings.iconsFolder.changeFolder") : t("settings.iconsFolder.chooseFolder")}
         </button>
         {iconsFolderPath && (
           <button type="button" onClick={() => setIconsFolderPath(null)}>
-            {defaultIconsFolderPath ? "Revenir au dossier par défaut" : "Effacer"}
+            {defaultIconsFolderPath
+              ? t("settings.iconsFolder.revertToDefault")
+              : t("settings.iconsFolder.clear")}
           </button>
         )}
       </div>

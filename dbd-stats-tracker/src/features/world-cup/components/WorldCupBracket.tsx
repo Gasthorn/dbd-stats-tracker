@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { KNOCKOUT_ROUND_LABELS, KNOCKOUT_ROUND_ORDER, type KnockoutRound } from "../../../shared/lib/world-cup/knockout";
+import { useTranslation } from "react-i18next";
+import { KNOCKOUT_ROUND_LABEL_KEYS, KNOCKOUT_ROUND_ORDER, type KnockoutRound } from "../../../shared/lib/world-cup/knockout";
 import { Icon } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
 import type { WorldCupFixture } from "../types/world-cup.types";
@@ -144,6 +145,7 @@ export function WorldCupBracket({
   onRecordSide,
   onManualTiebreak,
 }: WorldCupBracketProps) {
+  const { t } = useTranslation();
   const [selectedFixtureId, setSelectedFixtureId] = useState<string | null>(null);
 
   if (champion) {
@@ -151,7 +153,7 @@ export function WorldCupBracket({
       <div className="world-cup-champion">
         <Icon category="Characters" name={champion} alt={champion} size={170} />
         <h2>{champion}</h2>
-        <p>Champion du World Cup !</p>
+        <p>{t("worldCup.champion")}</p>
       </div>
     );
   }
@@ -161,7 +163,7 @@ export function WorldCupBracket({
 
   return (
     <div className="world-cup-bracket">
-      {currentRound && <h3>{KNOCKOUT_ROUND_LABELS[currentRound]}</h3>}
+      {currentRound && <h3>{t(KNOCKOUT_ROUND_LABEL_KEYS[currentRound])}</h3>}
 
       <div className="world-cup-bracket-tree">
         <div className="bracket-half is-left">
@@ -189,7 +191,7 @@ export function WorldCupBracket({
         </div>
       </div>
 
-      {isAdvancing && <p className="world-cup-bracket-advancing">Passage au tour suivant...</p>}
+      {isAdvancing && <p className="world-cup-bracket-advancing">{t("worldCup.advancing")}</p>}
 
       {selectedFixture && (
         <WorldCupFixtureModal

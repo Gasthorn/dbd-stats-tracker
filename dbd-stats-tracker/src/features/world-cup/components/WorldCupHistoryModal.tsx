@@ -1,7 +1,9 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { getDateLocale, i18n } from "../../../shared/i18n";
 import { groupLetter } from "../../../shared/lib/world-cup/groups";
-import { KNOCKOUT_ROUND_LABELS, KNOCKOUT_ROUND_ORDER } from "../../../shared/lib/world-cup/knockout";
+import { KNOCKOUT_ROUND_LABEL_KEYS, KNOCKOUT_ROUND_ORDER } from "../../../shared/lib/world-cup/knockout";
 import { computeGroupStandings, rankGroupStandings } from "../../../shared/lib/world-cup/standings";
 import { Icon } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
@@ -15,8 +17,8 @@ interface WorldCupHistoryModalProps {
 }
 
 function formatDate(iso: string | null): string {
-  if (!iso) return "date inconnue";
-  return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+  if (!iso) return i18n.t("worldCup.unknownDate");
+  return new Date(iso).toLocaleDateString(getDateLocale(), { day: "2-digit", month: "long", year: "numeric" });
 }
 
 function hooksOf(match: Match | undefined): number | null {
@@ -25,6 +27,7 @@ function hooksOf(match: Match | undefined): number | null {
 
 /** Read-only recap of one past, completed World Cup: final group standings, then every knockout round's results. */
 function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
+  const { t } = useTranslation();
   const finalFixture = detail.fixtures.find((fixture) => fixture.round === "final");
   const champion =
     finalFixture?.winner === "a" ? finalFixture.killerA : finalFixture?.winner === "b" ? finalFixture.killerB : null;
@@ -37,11 +40,11 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
     <>
       {champion && (
         <p className="world-cup-history-champion">
-          🏆 Champion : <b>{champion}</b>
+          {t("worldCup.championLabel")} <b>{champion}</b>
         </p>
       )}
 
-      <h4>Poules</h4>
+      <h4>{t("worldCup.groupsTitle")}</h4>
       <div className="world-cup-groups-grid">
         {detail.groups.map((group) => {
           const groupFixtures = detail.fixtures.filter((fixture) => fixture.groupId === group.id);
@@ -49,19 +52,19 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
           const standings = rankGroupStandings(computeGroupStandings(group.killers, standingsFixtures), standingsFixtures);
           return (
             <div key={group.id} className="world-cup-group-card">
-              <h3>Poule {groupLetter(group.groupIndex)}</h3>
+              <h3>{t("worldCup.groupTitle", { letter: groupLetter(group.groupIndex) })}</h3>
               <table className="world-cup-standings-table">
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Tueur</th>
-                    <th>J</th>
-                    <th>V</th>
-                    <th>N</th>
-                    <th>D</th>
-                    <th>Crochets +/-</th>
-                    <th>Diff</th>
-                    <th>Pts</th>
+                    <th>{t("worldCup.thKiller")}</th>
+                    <th>{t("worldCup.thPlayed")}</th>
+                    <th>{t("worldCup.thWins")}</th>
+                    <th>{t("worldCup.thDraws")}</th>
+                    <th>{t("worldCup.thLosses")}</th>
+                    <th>{t("worldCup.thHooks")}</th>
+                    <th>{t("worldCup.thDiff")}</th>
+                    <th>{t("worldCup.thPts")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -72,7 +75,7 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
                         <span className="world-cup-standings-killer">
                           <span
                             className={`world-cup-result-dot ${qualifiedKillers.has(standing.killer) ? "is-win" : "is-loss"}`}
-                            title={qualifiedKillers.has(standing.killer) ? "Qualifié pour les seizièmes de finale" : "Éliminé en poule"}
+                            title={qualifiedKillers.has(standing.killer) ? t("worldCup.qualifiedTooltip") : t("worldCup.eliminatedTooltip")}
                           />
                           <Icon category="Characters" name={standing.killer} alt={standing.killer} size={32} />
                           {standing.killer}
@@ -100,7 +103,7 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
 
       {knockoutRounds.map((round) => (
         <div key={round}>
-          <h4>{KNOCKOUT_ROUND_LABELS[round]}</h4>
+          <h4>{t(KNOCKOUT_ROUND_LABEL_KEYS[round])}</h4>
           <div className="world-cup-fixture-list">
             {detail.fixtures
               .filter((fixture): fixture is WorldCupFixture => fixture.round === round)
@@ -114,13 +117,13 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
                       <span className={`world-cup-fixture-side${fixture.winner === "a" ? " is-winner" : ""}`}>
                         <Icon category="Characters" name={fixture.killerA} alt={fixture.killerA} size={40} />
                         <span className="world-cup-fixture-killer-name">{fixture.killerA}</span>
-                        <span className="world-cup-fixture-hooks">{hooksOf(matchA) ?? "-"} crochets</span>
+                        <span className="world-cup-fixture-hooks">{t("worldCup.hooksCount", { count: hooksOf(matchA) ?? "-" })}</span>
                       </span>
-                      <span className="world-cup-fixture-vs">{fixture.winner === "draw" ? "Égalité" : "vs"}</span>
+                      <span className="world-cup-fixture-vs">{fixture.winner === "draw" ? t("worldCup.draw") : "vs"}</span>
                       <span className={`world-cup-fixture-side${fixture.winner === "b" ? " is-winner" : ""}`}>
                         <Icon category="Characters" name={fixture.killerB} alt={fixture.killerB} size={40} />
                         <span className="world-cup-fixture-killer-name">{fixture.killerB}</span>
-                        <span className="world-cup-fixture-hooks">{hooksOf(matchB) ?? "-"} crochets</span>
+                        <span className="world-cup-fixture-hooks">{t("worldCup.hooksCount", { count: hooksOf(matchB) ?? "-" })}</span>
                       </span>
                     </div>
                   </div>
@@ -135,6 +138,7 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
 
 /** Browse and review every past, completed World Cup: pick one from the list, see its full results. */
 export function WorldCupHistoryModal({ onClose }: WorldCupHistoryModalProps) {
+  const { t } = useTranslation();
   const historyRuns = useWorldCupStore((state) => state.historyRuns);
   const historyStatus = useWorldCupStore((state) => state.historyStatus);
   const historyError = useWorldCupStore((state) => state.historyError);
@@ -158,11 +162,11 @@ export function WorldCupHistoryModal({ onClose }: WorldCupHistoryModalProps) {
         <div className="world-cup-fixture-modal-header">
           {selected && (
             <button type="button" onClick={clearHistoryRunDetail}>
-              ← Retour
+              {t("worldCup.back")}
             </button>
           )}
-          <h3>{selected ? `World Cup du ${formatDate(selected.run.completedAt)}` : "Anciens World Cup"}</h3>
-          <button type="button" className="world-cup-killer-modal-close" onClick={handleClose} aria-label="Fermer">
+          <h3>{selected ? t("worldCup.historyItem", { date: formatDate(selected.run.completedAt) }) : t("worldCup.historyTitle")}</h3>
+          <button type="button" className="world-cup-killer-modal-close" onClick={handleClose} aria-label={t("common.close")}>
             ✕
           </button>
         </div>
@@ -173,13 +177,13 @@ export function WorldCupHistoryModal({ onClose }: WorldCupHistoryModalProps) {
         {!selected &&
           historyStatus !== "loading" &&
           (historyRuns.length === 0 ? (
-            <p className="statistics-empty">Aucun World Cup terminé pour le moment.</p>
+            <p className="statistics-empty">{t("worldCup.historyEmpty")}</p>
           ) : (
             <ul className="world-cup-history-list">
               {historyRuns.map((run) => (
                 <li key={run.id}>
                   <button type="button" onClick={() => loadHistoryRunDetail(run.id)}>
-                    World Cup du {formatDate(run.completedAt)}
+                    {t("worldCup.historyItem", { date: formatDate(run.completedAt) })}
                   </button>
                 </li>
               ))}

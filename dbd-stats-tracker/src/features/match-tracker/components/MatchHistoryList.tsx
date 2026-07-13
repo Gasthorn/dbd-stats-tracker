@@ -1,24 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getDateLocale } from "../../../shared/i18n";
 import { useAuthStore } from "../../auth/stores/auth.store";
 import { Icon } from "../../settings";
 import { useTeamsStore } from "../../teams";
 import { worldCupService } from "../../world-cup/services/world-cup.service";
 import type { Match, MatchMode } from "../types/match.types";
 
-const MODE_LABELS: Record<MatchMode, string> = {
-  normal: "Normal",
-  hardcore: "Hardcore",
-  gauntlet: "Gauntlet",
-  world_cup: "World Cup",
+const MODE_LABEL_KEYS: Record<MatchMode, string> = {
+  normal: "history.modeNormal",
+  hardcore: "history.modeHardcore",
+  gauntlet: "history.modeGauntlet",
+  world_cup: "history.modeWorldCup",
 };
 
 type MatchOutcome = "win" | "loss" | "draw" | "pending";
 
-const OUTCOME_LABELS: Record<MatchOutcome, string> = {
-  win: "Victoire",
-  loss: "Défaite",
-  draw: "Égalité",
-  pending: "Confrontation non terminée",
+const OUTCOME_LABEL_KEYS: Record<MatchOutcome, string> = {
+  win: "history.win",
+  loss: "history.loss",
+  draw: "history.draw",
+  pending: "history.pending",
 };
 
 interface WorldCupDuelInfo {
@@ -26,19 +28,13 @@ interface WorldCupDuelInfo {
   outcome: MatchOutcome;
 }
 
-function summarize(match: Match): string {
-  if (match.role === "killer") {
-    return `${match.kills} sacrifice(s)`;
-  }
-  const labels: Record<NonNullable<Match["escapeResult"]>, string> = {
-    escaped_door: "Évadé (porte)",
-    escaped_hatch: "Évadé (trappe)",
-    sacrificed: "Sacrifié (crochet)",
-    killed: "Tué (mori)",
-    disconnected: "Déconnecté",
-  };
-  return labels[match.escapeResult];
-}
+const ESCAPE_SUMMARY_KEYS: Record<NonNullable<Match["escapeResult"]>, string> = {
+  escaped_door: "history.escapedDoorShort",
+  escaped_hatch: "history.escapedHatchShort",
+  sacrificed: "matchForm.sacrificed",
+  killed: "matchForm.killed",
+  disconnected: "matchForm.disconnected",
+};
 
 /** Survivor win = escaped; killer win = 3+ sacrifices. */
 function isWin(match: Match): boolean {
@@ -59,6 +55,7 @@ interface MatchHistoryListProps {
 }
 
 export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryListProps) {
+  const { t } = useTranslation();
   const userId = useAuthStore((state) => state.user?.id);
   const [worldCupDuelByMatchId, setWorldCupDuelByMatchId] = useState<Map<string, WorldCupDuelInfo>>(new Map());
   const hasWorldCupMatches = useMemo(() => matches.some((match) => match.mode === "world_cup"), [matches]);
@@ -99,7 +96,7 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
   }, [userId, hasWorldCupMatches]);
 
   if (matches.length === 0) {
-    return <p>Aucune partie enregistrée pour le moment.</p>;
+    return <p>{t("history.empty")}</p>;
   }
 
   return (
@@ -111,20 +108,20 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
             <span className="match-history-tags">
               <span
                 className={`match-result-dot ${isWin(match) ? "is-win" : "is-loss"}`}
-                title={isWin(match) ? "Victoire" : "Défaite"}
+                title={isWin(match) ? t("history.win") : t("history.loss")}
               />
-              <span className={`match-mode-badge match-mode-badge--${match.mode}`}>{MODE_LABELS[match.mode]}</span>
+              <span className={`match-mode-badge match-mode-badge--${match.mode}`}>{t(MODE_LABEL_KEYS[match.mode])}</span>
             </span>
             <span className="match-field-with-icon">
               <Icon category="Characters" name={match.characterName} alt={match.characterName} size={32} />
-              [{match.role === "killer" ? "Tueur" : "Survivant"}] {match.characterName}
+              {match.role === "killer" ? t("history.killerTag") : t("history.survivorTag")} {match.characterName}
               {duel && (
                 <>
                   {" "}
                   (vs {duel.opponent})
                   <span
                     className={`match-result-dot is-${duel.outcome}`}
-                    title={`Issue du versus : ${OUTCOME_LABELS[duel.outcome]}`}
+                    title={t("history.duelOutcomeTooltip", { outcome: t(OUTCOME_LABEL_KEYS[duel.outcome]) })}
                   />
                 </>
               )}
@@ -136,21 +133,21 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
               </span>
             )}
             {match.role === "survivor" && match.teamId && teamNameById.get(match.teamId) && (
-              <span className="match-team-badge">Équipe : {teamNameById.get(match.teamId)}</span>
+              <span className="match-team-badge">{t("history.teamLabel", { name: teamNameById.get(match.teamId) })}</span>
             )}
-            <span>{summarize(match)}</span>
-            <span>{match.bloodpoints} PS</span>
-            <span>{new Date(match.playedAt).toLocaleString()}</span>
+            <span>{match.role === "killer" ? t("history.kills", { count: match.kills }) : t(ESCAPE_SUMMARY_KEYS[match.escapeResult])}</span>
+            <span>{match.bloodpoints} {t("history.bloodpointsUnit")}</span>
+            <span>{new Date(match.playedAt).toLocaleString(getDateLocale())}</span>
             {(onEdit || onDelete) && (
               <span className="match-history-actions">
                 {onEdit && (
                   <button type="button" onClick={() => onEdit(match)}>
-                    Modifier
+                    {t("common.edit")}
                   </button>
                 )}
                 {onDelete && (
                   <button type="button" className="btn-danger" onClick={() => onDelete(match)}>
-                    Supprimer
+                    {t("common.delete")}
                   </button>
                 )}
               </span>

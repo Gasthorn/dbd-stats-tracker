@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 interface PerformanceBarChartProps {
   title: string;
   labels: string[];
@@ -12,11 +13,12 @@ function formatDayLabel(isoDay: string): string {
 
 /** Thin vertical bars, 0-100%, with a value tooltip; null days render as an empty gap, not a zero bar. */
 export function PerformanceBarChart({ title, labels, values, seriesClassName }: PerformanceBarChartProps) {
+  const { t } = useTranslation();
   if (labels.length === 0) {
     return (
       <div className="performance-chart">
         <h3>{title}</h3>
-        <p className="performance-chart-empty">Pas encore de données.</p>
+        <p className="performance-chart-empty">{t("stats.noDataYet")}</p>
       </div>
     );
   }

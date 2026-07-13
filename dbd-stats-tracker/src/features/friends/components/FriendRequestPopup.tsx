@@ -1,9 +1,11 @@
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useFriendsStore } from "../stores/friends.store";
 import "./friends.css";
 
 /** Shown once per login if there are unseen incoming friend requests. Mounted unconditionally in Dashboard. */
 export function FriendRequestPopup() {
+  const { t } = useTranslation();
   const friendships = useFriendsStore((state) => state.friendships);
   const status = useFriendsStore((state) => state.status);
   const fetchFriendships = useFriendsStore((state) => state.fetchFriendships);
@@ -32,10 +34,10 @@ export function FriendRequestPopup() {
         <div className="friends-popup-header">
           <h3>
             {unseenIncoming.length === 1
-              ? "Nouvelle demande d'ami"
-              : `${unseenIncoming.length} nouvelles demandes d'ami`}
+              ? t("friends.popupTitleOne")
+              : t("friends.popupTitleMany", { count: unseenIncoming.length })}
           </h3>
-          <button type="button" className="friends-popup-close" onClick={handleClose} aria-label="Fermer">
+          <button type="button" className="friends-popup-close" onClick={handleClose} aria-label={t("common.close")}>
             ✕
           </button>
         </div>
@@ -44,10 +46,10 @@ export function FriendRequestPopup() {
             <span>{friendship.friendUsername}</span>
             <div className="friends-popup-request-actions">
               <button type="button" onClick={() => respondToRequest(friendship.id, true)}>
-                Accepter
+                {t("friends.accept")}
               </button>
               <button type="button" className="btn-secondary" onClick={() => respondToRequest(friendship.id, false)}>
-                Refuser
+                {t("friends.decline")}
               </button>
             </div>
           </div>

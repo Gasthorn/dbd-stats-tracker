@@ -8,13 +8,17 @@ export const KNOCKOUT_ROUND_ORDER: readonly KnockoutRound[] = [
   "final",
 ];
 
-/** French convention names rounds by their match count (32 competitors → 16 matches → "seizièmes"), not competitor count. */
-export const KNOCKOUT_ROUND_LABELS: Record<KnockoutRound, string> = {
-  round_of_32: "Seizièmes de finale",
-  round_of_16: "Huitièmes de finale",
-  quarterfinal: "Quarts de finale",
-  semifinal: "Demi-finales",
-  final: "Finale",
+/**
+ * Round labels live in the i18n resources (worldCup.rounds.*); resolve with
+ * t(KNOCKOUT_ROUND_LABEL_KEYS[round]). French names rounds by their match
+ * count (32 competitors → 16 matches → "seizièmes"), not competitor count.
+ */
+export const KNOCKOUT_ROUND_LABEL_KEYS: Record<KnockoutRound, string> = {
+  round_of_32: "worldCup.rounds.round_of_32",
+  round_of_16: "worldCup.rounds.round_of_16",
+  quarterfinal: "worldCup.rounds.quarterfinal",
+  semifinal: "worldCup.rounds.semifinal",
+  final: "worldCup.rounds.final",
 };
 
 export function nextKnockoutRound(round: KnockoutRound): KnockoutRound | null {

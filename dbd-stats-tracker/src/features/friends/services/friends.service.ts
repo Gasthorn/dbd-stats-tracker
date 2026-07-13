@@ -1,4 +1,5 @@
 import { supabase } from "../../../shared/lib/supabase/client";
+import { i18n } from "../../../shared/i18n";
 import type { Friendship, UserSearchResult } from "../types/friend.types";
 import type { FriendsService } from "./friends.service.types";
 
@@ -54,7 +55,7 @@ export const friendsService: FriendsService = {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) throw new Error("Utilisateur non connecté.");
+    if (!user) throw new Error(i18n.t("common.notLoggedIn"));
 
     const { error } = await supabase
       .from("friendships")

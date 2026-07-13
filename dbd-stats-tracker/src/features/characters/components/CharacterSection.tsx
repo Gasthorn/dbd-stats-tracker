@@ -1,4 +1,5 @@
 import { Icon } from "../../settings";
+import { useTranslation } from "react-i18next";
 
 interface CharacterSectionProps {
   title: string;
@@ -19,19 +20,18 @@ export function CharacterSection({
   onReset,
   disabled,
 }: CharacterSectionProps) {
+  const { t } = useTranslation();
   return (
     <section className="characters-section">
       <div className="characters-section-header">
         <h2>{title}</h2>
-        <span className="characters-count">
-          {unlockedNames.length} / {allNames.length} débloqués
-        </span>
+        <span className="characters-count">{t("characters.unlockedCount", { unlocked: unlockedNames.length, total: allNames.length })}</span>
         <div className="characters-section-actions">
           <button type="button" onClick={onUnlockAll} disabled={disabled}>
-            Tout débloquer
+            {t("characters.unlockAll")}
           </button>
           <button type="button" onClick={onReset} disabled={disabled}>
-            Réinitialiser
+            {t("common.reset")}
           </button>
         </div>
       </div>

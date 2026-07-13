@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { getDateLocale } from "../../../shared/i18n";
 import type { ActivityHeatmapDay } from "../types/statistics.types";
 
 interface ActivityHeatmapProps {
@@ -18,20 +20,21 @@ function countClass(count: number): string {
 }
 
 export function ActivityHeatmap({ days, month, year, onPrevMonth, onNextMonth, onToday }: ActivityHeatmapProps) {
-  const monthLabel = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(
+  const { t } = useTranslation();
+  const monthLabel = new Intl.DateTimeFormat(getDateLocale(), { month: "long", year: "numeric" }).format(
     new Date(year, month, 1),
   );
 
   return (
     <div>
       <div className="heatmap-header">
-        <h2>Activité</h2>
+        <h2>{t("stats.activity")}</h2>
         <div>
           <button type="button" onClick={onPrevMonth}>
             ◀
           </button>
           <button type="button" onClick={onToday}>
-            Aujourd'hui
+            {t("stats.today")}
           </button>
           <span className="heatmap-month-label">
             {monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)}
@@ -46,7 +49,7 @@ export function ActivityHeatmap({ days, month, year, onPrevMonth, onNextMonth, o
           <div key={day.day} className="heatmap-day">
             <div
               className={`heatmap-day-cell ${countClass(day.count)}`}
-              title={`Jour ${day.day} : ${day.count} match(es)`}
+              title={t("stats.heatmapDayTooltip", { day: day.day, count: day.count })}
             />
             <span>{day.day}</span>
           </div>

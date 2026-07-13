@@ -1,5 +1,7 @@
 import { useMemo } from "react";
-import { KNOCKOUT_ROUND_LABELS } from "../../../shared/lib/world-cup/knockout";
+import { useTranslation } from "react-i18next";
+import { i18n } from "../../../shared/i18n";
+import { KNOCKOUT_ROUND_LABEL_KEYS } from "../../../shared/lib/world-cup/knockout";
 import { groupLetter } from "../../../shared/lib/world-cup/groups";
 import { Icon } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
@@ -17,19 +19,21 @@ const ROUND_ORDER: Record<WorldCupRound, number> = {
 
 type KillerFixtureOutcome = "win" | "loss" | "draw" | "pending";
 
-const OUTCOME_LABELS: Record<KillerFixtureOutcome, string> = {
-  win: "Victoire",
-  loss: "Défaite",
-  draw: "Égalité",
-  pending: "À venir",
+const OUTCOME_LABEL_KEYS: Record<KillerFixtureOutcome, string> = {
+  win: "history.win",
+  loss: "history.loss",
+  draw: "history.draw",
+  pending: "worldCup.outcomePending",
 };
 
 function roundLabel(fixture: WorldCupFixture, groups: readonly WorldCupGroup[]): string {
   if (fixture.round === "group") {
     const group = groups.find((g) => g.id === fixture.groupId);
-    return group ? `Poule ${groupLetter(group.groupIndex)}` : "Poule";
+    return group
+      ? i18n.t("worldCup.groupTitle", { letter: groupLetter(group.groupIndex) })
+      : i18n.t("worldCup.roundGroup");
   }
-  return KNOCKOUT_ROUND_LABELS[fixture.round];
+  return i18n.t(KNOCKOUT_ROUND_LABEL_KEYS[fixture.round]);
 }
 
 function hooksLabel(match: Match | undefined): string {
@@ -51,6 +55,7 @@ export function WorldCupKillerHistoryModal({
   groups,
   onClose,
 }: WorldCupKillerHistoryModalProps) {
+  const { t } = useTranslation();
   const rows = useMemo(() => {
     return getKillerFixtures(killerName, fixtures)
       .map((fixture) => {
@@ -81,22 +86,20 @@ export function WorldCupKillerHistoryModal({
           <Icon category="Characters" name={killerName} alt={killerName} size={56} />
           <div className="world-cup-killer-modal-title">
             <h3>{killerName}</h3>
-            <p className="world-cup-killer-modal-record">
-              {wins}V - {draws}N - {losses}D
-            </p>
+            <p className="world-cup-killer-modal-record">{t("worldCup.recordLine", { wins, draws, losses })}</p>
           </div>
-          <button type="button" className="world-cup-killer-modal-close" onClick={onClose} aria-label="Fermer">
+          <button type="button" className="world-cup-killer-modal-close" onClick={onClose} aria-label={t("common.close")}>
             ✕
           </button>
         </div>
 
         {rows.length === 0 ? (
-          <p className="statistics-empty">Aucun match pour ce tueur pour le moment.</p>
+          <p className="statistics-empty">{t("worldCup.killerEmpty")}</p>
         ) : (
           <ul className="world-cup-killer-modal-list">
             {rows.map(({ fixture, opponent, ownMatch, opponentMatch, outcome }) => (
               <li key={fixture.id} className="world-cup-killer-modal-row">
-                <span className={`world-cup-result-dot is-${outcome}`} title={OUTCOME_LABELS[outcome]} />
+                <span className={`world-cup-result-dot is-${outcome}`} title={t(OUTCOME_LABEL_KEYS[outcome])} />
                 <span className="world-cup-killer-modal-round">{roundLabel(fixture, groups)}</span>
                 <span className="world-cup-killer-modal-opponent">
                   <Icon category="Characters" name={opponent} alt={opponent} size={28} />
@@ -105,7 +108,7 @@ export function WorldCupKillerHistoryModal({
                 <span className="world-cup-killer-modal-score">
                   {hooksLabel(ownMatch)} / {hooksLabel(opponentMatch)}
                 </span>
-                <span className="world-cup-killer-modal-outcome">{OUTCOME_LABELS[outcome]}</span>
+                <span className="world-cup-killer-modal-outcome">{t(OUTCOME_LABEL_KEYS[outcome])}</span>
               </li>
             ))}
           </ul>

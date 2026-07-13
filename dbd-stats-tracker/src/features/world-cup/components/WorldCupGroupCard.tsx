@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { groupLetter } from "../../../shared/lib/world-cup/groups";
 import { computeGroupStandings, rankGroupStandings } from "../../../shared/lib/world-cup/standings";
 import { Icon } from "../../settings";
@@ -27,6 +28,7 @@ export function WorldCupGroupCard({
   defaultOpen = false,
   qualifiedKillers = null,
 }: WorldCupGroupCardProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [selectedKiller, setSelectedKiller] = useState<string | null>(null);
   const allFixtures = useWorldCupStore((state) => state.fixtures);
@@ -46,10 +48,8 @@ export function WorldCupGroupCard({
   return (
     <div className={`world-cup-group-card${isCurrent ? " is-current" : ""}`}>
       <button type="button" className="world-cup-group-header" onClick={() => setIsOpen((prev) => !prev)}>
-        <h3>Poule {groupLetter(group.groupIndex)}</h3>
-        <span className="world-cup-group-progress">
-          {playedCount} / {fixtures.length} matchs
-        </span>
+        <h3>{t("worldCup.groupTitle", { letter: groupLetter(group.groupIndex) })}</h3>
+        <span className="world-cup-group-progress">{t("worldCup.groupProgress", { played: playedCount, total: fixtures.length })}</span>
         <span className="world-cup-group-toggle">{isOpen ? "▲" : "▼"}</span>
       </button>
 
@@ -58,14 +58,14 @@ export function WorldCupGroupCard({
           <thead>
             <tr>
               <th>#</th>
-              <th>Tueur</th>
-              <th>J</th>
-              <th>V</th>
-              <th>N</th>
-              <th>D</th>
-              <th>Crochets +/-</th>
-              <th>Diff</th>
-              <th>Pts</th>
+              <th>{t("worldCup.thKiller")}</th>
+              <th>{t("worldCup.thPlayed")}</th>
+              <th>{t("worldCup.thWins")}</th>
+              <th>{t("worldCup.thDraws")}</th>
+              <th>{t("worldCup.thLosses")}</th>
+              <th>{t("worldCup.thHooks")}</th>
+              <th>{t("worldCup.thDiff")}</th>
+              <th>{t("worldCup.thPts")}</th>
             </tr>
           </thead>
           <tbody>
@@ -81,7 +81,7 @@ export function WorldCupGroupCard({
                     {qualifiedKillers && (
                       <span
                         className={`world-cup-result-dot ${qualifiedKillers.has(standing.killer) ? "is-win" : "is-loss"}`}
-                        title={qualifiedKillers.has(standing.killer) ? "Qualifié pour les seizièmes de finale" : "Éliminé en poule"}
+                        title={qualifiedKillers.has(standing.killer) ? t("worldCup.qualifiedTooltip") : t("worldCup.eliminatedTooltip")}
                       />
                     )}
                     <Icon category="Characters" name={standing.killer} alt={standing.killer} size={32} />

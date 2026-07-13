@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { i18n } from "../../../shared/i18n";
 import { computeGroupStandings, isGroupComplete, rankOverallStandings } from "../../../shared/lib/world-cup/standings";
 import {
   generateFifaStyleSeeding,
@@ -27,12 +28,12 @@ import type { WorldCupStore } from "./world-cup.store.types";
 const GROUP_SIZE = 6;
 
 function toErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
+  return err instanceof Error ? err.message : i18n.t("common.unexpectedError");
 }
 
 function requireUserId(): string {
   const userId = useAuthStore.getState().user?.id;
-  if (!userId) throw new Error("Utilisateur non connecté.");
+  if (!userId) throw new Error(i18n.t("common.notLoggedIn"));
   return userId;
 }
 
@@ -134,7 +135,7 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
       if (drawnGroups.length === 0) {
         set({
           status: "error",
-          error: `Il faut au moins ${GROUP_SIZE * 6} tueurs débloqués pour lancer un World Cup (poules de ${GROUP_SIZE}, tableau final de ${KNOCKOUT_FIELD_SIZE}).`,
+          error: i18n.t("worldCup.errorNotEnoughKillers", { minKillers: GROUP_SIZE * 6, groupSize: GROUP_SIZE, fieldSize: KNOCKOUT_FIELD_SIZE }),
         });
         return;
       }
@@ -148,7 +149,7 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
 
   recordFixtureMatch: async (fixtureId, side, matchInput) => {
     const fixture = get().fixtures.find((f) => f.id === fixtureId);
-    if (!fixture) throw new Error("Affrontement introuvable.");
+    if (!fixture) throw new Error(i18n.t("worldCup.errorFixtureNotFound"));
 
     const createMatch = useMatchTrackerStore.getState().createMatch;
     const fullInput: CreateMatchInput = {
@@ -214,7 +215,7 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
 
       const allComplete = groupsWithFixtures.every((group) => isGroupComplete(group.killers, group.fixtures));
       if (!allComplete) {
-        set({ status: "error", error: "Toutes les poules doivent être terminées avant de lancer la phase finale." });
+        set({ status: "error", error: i18n.t("worldCup.errorGroupsNotDone") });
         return;
       }
 
@@ -223,7 +224,7 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
       // at a real World Cup) to reach the fixed knockout field size.
       const { qualifiers } = computeGroupQualification(groupsWithFixtures, AUTO_QUALIFIERS_PER_GROUP, KNOCKOUT_FIELD_SIZE);
       if (qualifiers.length < KNOCKOUT_FIELD_SIZE) {
-        set({ status: "error", error: "Pas assez de tueurs qualifiés pour former un tableau de 32." });
+        set({ status: "error", error: i18n.t("worldCup.errorNotEnoughQualified") });
         return;
       }
 
@@ -253,7 +254,7 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
       const currentFixtures = get().fixtures.filter((f) => f.round === run.currentRound);
       const unresolved = currentFixtures.filter((f) => f.winner === null);
       if (unresolved.length > 0) {
-        set({ status: "error", error: "Terminez tous les matchs de ce tour avant de continuer." });
+        set({ status: "error", error: i18n.t("worldCup.errorFinishRound") });
         return;
       }
 
@@ -311,7 +312,7 @@ export const useWorldCupStore = create<WorldCupStore>((set, get) => ({
     set({ historyStatus: "loading", historyError: null });
     try {
       const historyRun = get().historyRuns.find((r) => r.id === runId);
-      if (!historyRun) throw new Error("World Cup introuvable.");
+      if (!historyRun) throw new Error(i18n.t("worldCup.errorRunNotFound"));
 
       const [groups, fixtures, matches] = await Promise.all([
         worldCupService.listGroups(runId),

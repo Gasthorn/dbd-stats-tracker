@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Icon } from "../../settings";
 import { useWorldCupStore } from "../stores/world-cup.store";
 import { WorldCupKillerHistoryModal } from "./WorldCupKillerHistoryModal";
@@ -10,6 +11,7 @@ interface WorldCupCareerStandingsModalProps {
 
 /** Every killer's cumulative record across every match (group and knockout) from every World Cup ever played - available any time, even before starting a new one. */
 export function WorldCupCareerStandingsModal({ onClose }: WorldCupCareerStandingsModalProps) {
+  const { t } = useTranslation();
   const careerStandings = useWorldCupStore((state) => state.careerStandings);
   const careerFixtures = useWorldCupStore((state) => state.careerFixtures);
   const careerMatchesById = useWorldCupStore((state) => state.careerMatchesById);
@@ -27,21 +29,19 @@ export function WorldCupCareerStandingsModal({ onClose }: WorldCupCareerStanding
     <div className="world-cup-modal-overlay" onClick={onClose}>
       <div className="world-cup-modal world-cup-groups-modal" onClick={(event) => event.stopPropagation()}>
         <div className="world-cup-fixture-modal-header">
-          <h3>Classement général</h3>
-          <button type="button" className="world-cup-killer-modal-close" onClick={onClose} aria-label="Fermer">
+          <h3>{t("worldCup.careerTitle")}</h3>
+          <button type="button" className="world-cup-killer-modal-close" onClick={onClose} aria-label={t("common.close")}>
             ✕
           </button>
         </div>
 
-        <p className="world-cup-seeding-hint">
-          Cumul de tous les matchs (poules et phases finales) de tous les World Cup joués.
-        </p>
+        <p className="world-cup-seeding-hint">{t("worldCup.careerHint")}</p>
 
         {careerStatus === "loading" && <LoadingSpinner />}
         {careerError && <p className="match-error">{careerError}</p>}
 
         {careerStatus !== "loading" && careerStandings.length === 0 && (
-          <p className="statistics-empty">Aucun match de World Cup enregistré pour le moment.</p>
+          <p className="statistics-empty">{t("worldCup.careerEmpty")}</p>
         )}
 
         {careerStandings.length > 0 && (
@@ -49,14 +49,14 @@ export function WorldCupCareerStandingsModal({ onClose }: WorldCupCareerStanding
             <thead>
               <tr>
                 <th>#</th>
-                <th>Tueur</th>
-                <th>J</th>
-                <th>V</th>
-                <th>N</th>
-                <th>D</th>
-                <th>Crochets +/-</th>
-                <th>Diff</th>
-                <th>Pts</th>
+                <th>{t("worldCup.thKiller")}</th>
+                <th>{t("worldCup.thPlayed")}</th>
+                <th>{t("worldCup.thWins")}</th>
+                <th>{t("worldCup.thDraws")}</th>
+                <th>{t("worldCup.thLosses")}</th>
+                <th>{t("worldCup.thHooks")}</th>
+                <th>{t("worldCup.thDiff")}</th>
+                <th>{t("worldCup.thPts")}</th>
               </tr>
             </thead>
             <tbody>

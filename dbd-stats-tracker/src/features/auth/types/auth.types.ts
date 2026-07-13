@@ -1,4 +1,5 @@
 import type { ISODateString, UUID } from "../../../shared/types/common.types";
+import { i18n } from "../../../shared/i18n";
 
 export interface AuthUser {
   id: UUID;
@@ -55,7 +56,7 @@ export interface AuthState {
 /** Thrown by signUp when Supabase requires email confirmation before a session is issued. */
 export class EmailConfirmationRequiredError extends Error {
   constructor() {
-    super("Veuillez confirmer votre adresse email avant de vous connecter.");
+    super(i18n.t("errors.emailConfirmationRequired"));
     this.name = "EmailConfirmationRequiredError";
   }
 }

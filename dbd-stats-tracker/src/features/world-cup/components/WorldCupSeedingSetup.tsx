@@ -1,4 +1,5 @@
 import { useState, type PointerEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { Icon } from "../../settings";
 
 const GROUP_SIZE = 6;
@@ -27,6 +28,7 @@ function reorderItem<T>(items: T[], fromIndex: number, toIndex: number): T[] {
 }
 
 export function WorldCupSeedingSetup({ eligibleKillers, onStart, isSubmitting, error }: WorldCupSeedingSetupProps) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<"choice" | "manual">("choice");
   const [order, setOrder] = useState<string[]>(eligibleKillers);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -63,18 +65,16 @@ export function WorldCupSeedingSetup({ eligibleKillers, onStart, isSubmitting, e
 
   return (
     <div className="stats-zone world-cup-seeding-setup">
-      <h2>Premier World Cup</h2>
+      <h2>{t("worldCup.seedingFirstTitle")}</h2>
       <p>
-        {eligibleKillers.length} tueurs débloqués — {groupCount} poule(s) de {GROUP_SIZE} seront formées
+        {t("worldCup.seedingSummary", { count: eligibleKillers.length, groups: groupCount, size: GROUP_SIZE })}
         {eligibleKillers.length % GROUP_SIZE !== 0 &&
-          ` (${eligibleKillers.length % GROUP_SIZE} tueur(s) tiré(s) au sort resteront hors tournoi)`}
+          t("worldCup.seedingLeftover", { count: eligibleKillers.length % GROUP_SIZE })}
         .
       </p>
 
       {!canStart && (
-        <p className="match-error">
-          Il faut au moins {GROUP_SIZE * 6} tueurs débloqués pour former assez de poules et qualifier 32 tueurs.
-        </p>
+        <p className="match-error">{t("worldCup.needMoreKillers", { count: GROUP_SIZE * 6 })}</p>
       )}
 
       {error && <p className="match-error">{error}</p>}
@@ -82,21 +82,17 @@ export function WorldCupSeedingSetup({ eligibleKillers, onStart, isSubmitting, e
       {mode === "choice" && canStart && (
         <div className="world-cup-seeding-choice">
           <button type="button" onClick={() => onStart()} disabled={isSubmitting}>
-            Tirage aléatoire
+            {t("worldCup.randomDraw")}
           </button>
           <button type="button" onClick={() => setMode("manual")} disabled={isSubmitting}>
-            Classer moi-même les tueurs (chapeaux)
+            {t("worldCup.manualRank")}
           </button>
         </div>
       )}
 
       {mode === "manual" && (
         <>
-          <p className="world-cup-seeding-hint">
-            Classe les tueurs du plus fort (1er) au plus faible : les meilleurs seront répartis un par poule
-            (comme les chapeaux de la Coupe du Monde), pour équilibrer le tirage. Glisse-dépose pour réordonner,
-            ou utilise les flèches.
-          </p>
+          <p className="world-cup-seeding-hint">{t("worldCup.seedingHint")}</p>
           <ol className="world-cup-seeding-list">
             {order.map((killer, index) => (
               <li
@@ -137,10 +133,10 @@ export function WorldCupSeedingSetup({ eligibleKillers, onStart, isSubmitting, e
           </ol>
           <div className="match-form-row">
             <button type="button" onClick={() => onStart({ manualSeedOrder: order })} disabled={isSubmitting}>
-              {isSubmitting ? "Tirage en cours..." : "Lancer le tirage"}
+              {isSubmitting ? t("worldCup.drawPending") : t("worldCup.startDraw")}
             </button>
             <button type="button" onClick={() => setMode("choice")} disabled={isSubmitting}>
-              Annuler
+              {t("common.cancel")}
             </button>
           </div>
         </>

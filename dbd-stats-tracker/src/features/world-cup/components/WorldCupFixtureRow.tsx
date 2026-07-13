@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Icon } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
 import type { WorldCupFixture } from "../types/world-cup.types";
@@ -18,6 +19,7 @@ function hooksOf(match: Match | undefined): number | null {
 }
 
 export function WorldCupFixtureRow({ fixture, matchesById, onRecordSide, onManualTiebreak }: WorldCupFixtureRowProps) {
+  const { t } = useTranslation();
   const [recordingSide, setRecordingSide] = useState<"a" | "b" | null>(null);
 
   const matchA = fixture.killerAMatchId ? matchesById[fixture.killerAMatchId] : undefined;
@@ -44,10 +46,10 @@ export function WorldCupFixtureRow({ fixture, matchesById, onRecordSide, onManua
         <Icon category="Characters" name={killerName} alt={killerName} size={56} />
         <span className="world-cup-fixture-killer-name">{killerName}</span>
         {hasPlayed ? (
-          <span className="world-cup-fixture-hooks">{hooks} crochets</span>
+          <span className="world-cup-fixture-hooks">{t("worldCup.hooksCount", { count: hooks })}</span>
         ) : (
           <button type="button" onClick={() => setRecordingSide(side)} disabled={recordingSide !== null}>
-            Enregistrer
+            {t("worldCup.record")}
           </button>
         )}
       </div>
@@ -59,19 +61,19 @@ export function WorldCupFixtureRow({ fixture, matchesById, onRecordSide, onManua
       <div className="world-cup-fixture-matchup">
         {renderSide("a")}
         <span className="world-cup-fixture-vs">
-          {fixture.winner === "draw" ? "Égalité" : "vs"}
+          {fixture.winner === "draw" ? t("worldCup.draw") : "vs"}
         </span>
         {renderSide("b")}
       </div>
 
       {needsManualTiebreak && (
         <div className="world-cup-fixture-tiebreak">
-          <p>Égalité totale (crochets, sacrifices, générateurs terminés et points de sang) : désignez le vainqueur.</p>
+          <p>{t("worldCup.tiebreakPrompt")}</p>
           <button type="button" onClick={() => onManualTiebreak("a")}>
-            {fixture.killerA} gagne
+            {t("worldCup.sideWins", { name: fixture.killerA })}
           </button>
           <button type="button" onClick={() => onManualTiebreak("b")}>
-            {fixture.killerB} gagne
+            {t("worldCup.sideWins", { name: fixture.killerB })}
           </button>
         </div>
       )}

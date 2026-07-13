@@ -1,11 +1,13 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { KILLERS, SURVIVORS } from "../../../shared/data/characters";
 import { useCharactersStore } from "../stores/characters.store";
 import { CharacterSection } from "./CharacterSection";
 import "./characters.css";
 
 export function CharacterUnlockPage() {
+  const { t } = useTranslation();
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
   const unlockedSurvivors = useCharactersStore((state) => state.unlockedSurvivors);
   const status = useCharactersStore((state) => state.status);
@@ -24,7 +26,7 @@ export function CharacterUnlockPage() {
 
   return (
     <div className="characters-page">
-      <h1>Personnages débloqués</h1>
+      <h1>{t("characters.title")}</h1>
       {error && <p className="characters-error">{error}</p>}
 
       {isLoadingInitial ? (
@@ -32,7 +34,7 @@ export function CharacterUnlockPage() {
       ) : (
         <>
           <CharacterSection
-            title="Tueurs"
+            title={t("characters.killers")}
             allNames={KILLERS}
             unlockedNames={unlockedKillers}
             onToggle={toggleKiller}
@@ -42,7 +44,7 @@ export function CharacterUnlockPage() {
           />
 
           <CharacterSection
-            title="Survivants"
+            title={t("characters.survivors")}
             allNames={SURVIVORS}
             unlockedNames={unlockedSurvivors}
             onToggle={toggleSurvivor}

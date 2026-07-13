@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
@@ -45,6 +46,7 @@ export function HardcoreMatchForm({
   onDone,
   onCancel,
 }: HardcoreMatchFormProps) {
+  const { t } = useTranslation();
   const recordMatch = useHardcoreStore((state) => state.recordMatch);
 
   const [opponentName, setOpponentName] = useState("");
@@ -98,7 +100,7 @@ export function HardcoreMatchForm({
   async function submit(ignoreChallenge: boolean, event?: FormEvent) {
     event?.preventDefault();
     if (role === "survivor" && !opponentName) {
-      setFormError("Sélectionnez le tueur adverse.");
+      setFormError(t("matchForm.selectOpponent"));
       return;
     }
     setFormError(null);
@@ -143,13 +145,13 @@ export function HardcoreMatchForm({
       });
       onDone();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'enregistrer le match.");
+      setFormError(err instanceof Error ? err.message : t("hardcore.saveFailed"));
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  const deathLabel = role === "killer" ? "Évasion par la porte ?" : "Mort en partie ?";
+  const deathLabel = role === "killer" ? t("hardcore.escapedByDoor") : t("hardcore.diedInMatch");
 
   return (
     <form className="match-form hardcore-match-form" onSubmit={(e) => submit(false, e)}>
@@ -167,7 +169,7 @@ export function HardcoreMatchForm({
 
       {role === "survivor" && (
         <>
-          <label htmlFor="hc-opponent">Tueur affronté</label>
+          <label htmlFor="hc-opponent">{t("hardcore.opponentFaced")}</label>
           <IconSelectionSlot
             as="select"
             id="hc-opponent"
@@ -176,7 +178,7 @@ export function HardcoreMatchForm({
             onChange={setOpponentName}
             size={96}
           >
-            <option value="">-- Sélectionner --</option>
+            <option value="">{t("common.select")}</option>
             {KILLERS.map((name) => (
               <option key={name} value={name}>
                 {name}
@@ -186,7 +188,7 @@ export function HardcoreMatchForm({
         </>
       )}
 
-      <label>Perks</label>
+      <label>{t("matchForm.perks")}</label>
       <div className="match-perks-grid">
         {perks.map((perk, index) => (
           <IconSelectionSlot
@@ -195,7 +197,7 @@ export function HardcoreMatchForm({
             value={perk}
             onChange={(value) => updatePerk(index, value)}
             listId={`hc-perks-options-${index}`}
-            placeholder={`Perk ${index + 1}`}
+            placeholder={t("matchForm.perkPlaceholder", { index: index + 1 })}
             diamond
             size={68}
           />
@@ -209,7 +211,7 @@ export function HardcoreMatchForm({
         </datalist>
       ))}
 
-      <label>Équipement</label>
+      <label>{t("matchForm.equipment")}</label>
       {role === "survivor" ? (
         <>
           <IconSelectionSlot
@@ -219,7 +221,7 @@ export function HardcoreMatchForm({
             onChange={(value) => updateEquipment(0, value)}
             size={84}
           >
-            <option value="">-- Objet --</option>
+            <option value="">{t("matchForm.itemPlaceholder")}</option>
             {SURVIVOR_ITEMS.map((item) => (
               <option key={item} value={item}>
                 {item}
@@ -232,7 +234,7 @@ export function HardcoreMatchForm({
               value={equipment[1]}
               onChange={(value) => updateEquipment(1, value)}
               listId="hc-survivor-addon-options"
-              placeholder="Accessoire 1"
+              placeholder={t("matchForm.addonPlaceholder", { index: 1 })}
               size={84}
             />
             <IconSelectionSlot
@@ -240,7 +242,7 @@ export function HardcoreMatchForm({
               value={equipment[2]}
               onChange={(value) => updateEquipment(2, value)}
               listId="hc-survivor-addon-options"
-              placeholder="Accessoire 2"
+              placeholder={t("matchForm.addonPlaceholder", { index: 2 })}
               size={84}
             />
           </div>
@@ -258,7 +260,7 @@ export function HardcoreMatchForm({
             onChange={(value) => updateEquipment(0, value)}
             manualOwner={characterName}
             listId="hc-killer-addon-options"
-            placeholder="Accessoire 1"
+            placeholder={t("matchForm.addonPlaceholder", { index: 1 })}
             size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[0]))}
           />
@@ -268,7 +270,7 @@ export function HardcoreMatchForm({
             onChange={(value) => updateEquipment(1, value)}
             manualOwner={characterName}
             listId="hc-killer-addon-options"
-            placeholder="Accessoire 2"
+            placeholder={t("matchForm.addonPlaceholder", { index: 2 })}
             size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[1]))}
           />
@@ -280,7 +282,7 @@ export function HardcoreMatchForm({
         </div>
       )}
 
-      <label htmlFor="hc-bloodpoints">Points de sang</label>
+      <label htmlFor="hc-bloodpoints">{t("matchForm.bloodpoints")}</label>
       <input
         id="hc-bloodpoints"
         type="number"
@@ -289,7 +291,7 @@ export function HardcoreMatchForm({
         onChange={(e) => setBloodpoints(e.target.value)}
       />
 
-      <label htmlFor="hc-gens">Générateurs terminés ({generatorsCompleted})</label>
+      <label htmlFor="hc-gens">{t("matchForm.generatorsCompleted", { count: Number(generatorsCompleted) })}</label>
       <input
         id="hc-gens"
         type="range"
@@ -301,7 +303,7 @@ export function HardcoreMatchForm({
 
       <div className="match-form-row">
         <div>
-          <label htmlFor="hc-pips">Pips gagnés</label>
+          <label htmlFor="hc-pips">{t("hardcore.pipsEarned")}</label>
           <select id="hc-pips" value={pips} onChange={(e) => setPips(e.target.value)}>
             <option value="0">0</option>
             <option value="1">1</option>
@@ -324,13 +326,13 @@ export function HardcoreMatchForm({
 
       <div className="match-form-row">
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Enregistrement..." : "Valider le résultat"}
+          {isSubmitting ? t("hardcore.submitPending") : t("hardcore.submitResult")}
         </button>
-        <button type="button" disabled={isSubmitting} onClick={() => submit(true)} title="Enregistre dans l'historique mais ignore pour le défi">
-          Enregistrer & ignorer défi
+        <button type="button" disabled={isSubmitting} onClick={() => submit(true)} title={t("hardcore.ignoreChallengeTooltip")}>
+          {t("hardcore.ignoreChallenge")}
         </button>
         <button type="button" disabled={isSubmitting} onClick={onCancel}>
-          Annuler
+          {t("common.cancel")}
         </button>
       </div>
     </form>

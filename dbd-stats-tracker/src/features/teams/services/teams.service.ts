@@ -1,4 +1,5 @@
 import type { TeamRow } from "../../../shared/lib/supabase/database.types";
+import { i18n } from "../../../shared/i18n";
 import { supabase } from "../../../shared/lib/supabase/client";
 import type { Team } from "../types/team.types";
 import type { TeamsService } from "./teams.service.types";
@@ -25,7 +26,7 @@ export const teamsService: TeamsService = {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) throw new Error("Utilisateur non connecté.");
+    if (!user) throw new Error(i18n.t("common.notLoggedIn"));
 
     const { data, error } = await supabase
       .from("teams")

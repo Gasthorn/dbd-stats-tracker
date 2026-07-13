@@ -1,4 +1,5 @@
 import { supabase } from "../../../shared/lib/supabase/client";
+import { i18n } from "../../../shared/i18n";
 import type { CharactersService } from "./characters.service.types";
 
 export const charactersService: CharactersService = {
@@ -10,7 +11,7 @@ export const charactersService: CharactersService = {
       .single();
 
     if (error || !data) {
-      throw new Error("Impossible de récupérer les personnages débloqués.");
+      throw new Error(i18n.t("errors.charactersFetchFailed"));
     }
 
     return {

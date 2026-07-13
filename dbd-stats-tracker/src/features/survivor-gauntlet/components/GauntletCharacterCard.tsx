@@ -1,4 +1,5 @@
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
+import { useTranslation } from "react-i18next";
 import { getCharacterUniquePerkNames } from "../../../shared/lib/gauntlet/tier";
 import { Icon } from "../../settings";
 import type { MatchRole } from "../../match-tracker/types/match.types";
@@ -9,10 +10,10 @@ interface GauntletCharacterCardProps {
 }
 
 export function GauntletCharacterCard({ role, characterName }: GauntletCharacterCardProps) {
+  const { t } = useTranslation();
   const catalog = role === "killer" ? KILLER_PERKS : SURVIVOR_PERKS;
   const uniquePerkNames = getCharacterUniquePerkNames(catalog, characterName);
-  const winCondition =
-    role === "killer" ? "Condition : Au moins 3 sacrifices." : "Condition : Évadez-vous de la partie.";
+  const winCondition = role === "killer" ? t("gauntlet.winConditionKiller") : t("gauntlet.winConditionSurvivor");
 
   return (
     <div className="gauntlet-rolled-char">
@@ -32,12 +33,10 @@ export function GauntletCharacterCard({ role, characterName }: GauntletCharacter
 
       <div className="gauntlet-instructions">
         <p className="gauntlet-instructions-title">
-          Comment valider ce {role === "killer" ? "tueur" : "survivant"} ?
+          {role === "killer" ? t("gauntlet.howToValidateKiller") : t("gauntlet.howToValidateSurvivor")}
         </p>
-        <p>
-          1. Jouez <strong>{characterName}</strong> avec les restrictions de perks indiquées ci-dessus.
-        </p>
-        <p>2. Enregistrez le résultat ci-dessous : le Gauntlet se met à jour automatiquement.</p>
+        <p>{t("gauntlet.step1", { name: characterName })}</p>
+        <p>{t("gauntlet.step2")}</p>
         <p className="gauntlet-win-condition">{winCondition}</p>
       </div>
     </div>

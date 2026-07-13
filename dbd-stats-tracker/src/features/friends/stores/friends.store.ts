@@ -1,12 +1,13 @@
 import { create } from "zustand";
+import { i18n } from "../../../shared/i18n";
 import { friendsService } from "../services/friends.service";
 import type { FriendsStore } from "./friends.store.types";
 
 function toErrorMessage(err: unknown): string {
   const code = (err as { code?: string } | null)?.code;
-  if (code === "23505") return "Une demande existe déjà entre vous deux.";
+  if (code === "23505") return i18n.t("friends.duplicateRequest");
   const message = err instanceof Error ? err.message : (err as { message?: string } | null)?.message;
-  return message ?? "Une erreur inattendue est survenue.";
+  return message ?? i18n.t("common.unexpectedError");
 }
 
 export const useFriendsStore = create<FriendsStore>((set, get) => ({
@@ -28,15 +29,15 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
     try {
       const found = await friendsService.findUserByUsername(username);
       if (!found) {
-        throw new Error("Aucun utilisateur trouvé avec ce nom d'utilisateur.");
+        throw new Error(i18n.t("friends.userNotFound"));
       }
 
       const existing = get().friendships.find((f) => f.friendId === found.id);
       if (existing?.status === "accepted") {
-        throw new Error("Vous êtes déjà amis.");
+        throw new Error(i18n.t("friends.alreadyFriends"));
       }
       if (existing?.status === "pending" && existing.isRequester) {
-        throw new Error("Demande déjà envoyée.");
+        throw new Error(i18n.t("friends.alreadySent"));
       }
       if (existing?.status === "pending" && !existing.isRequester) {
         await friendsService.acceptRequest(existing.id);

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../stores/auth.store";
 import { EmailConfirmationRequiredError } from "../types/auth.types";
 
@@ -9,6 +10,7 @@ interface RegisterFormProps {
 const MIN_PASSWORD_LENGTH = 6;
 
 export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
+  const { t } = useTranslation();
   const signUp = useAuthStore((state) => state.signUp);
   const status = useAuthStore((state) => state.status);
   const [username, setUsername] = useState("");
@@ -26,11 +28,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setInfoMessage(null);
 
     if (password !== confirmPassword) {
-      setFormError("Les mots de passe ne correspondent pas.");
+      setFormError(t("auth.passwordMismatch"));
       return;
     }
     if (password.length < MIN_PASSWORD_LENGTH) {
-      setFormError(`Le mot de passe doit contenir au moins ${MIN_PASSWORD_LENGTH} caractères.`);
+      setFormError(t("auth.passwordTooShort", { count: MIN_PASSWORD_LENGTH }));
       return;
     }
 
@@ -41,15 +43,15 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         setInfoMessage(err.message);
         return;
       }
-      setFormError(err instanceof Error ? err.message : "Inscription impossible.");
+      setFormError(err instanceof Error ? err.message : t("auth.signUpFailed"));
     }
   }
 
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
-      <h2>Créer un compte</h2>
+      <h2>{t("auth.registerTitle")}</h2>
 
-      <label htmlFor="register-username">Pseudo</label>
+      <label htmlFor="register-username">{t("auth.username")}</label>
       <input
         id="register-username"
         type="text"
@@ -61,7 +63,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         onChange={(e) => setUsername(e.target.value)}
       />
 
-      <label htmlFor="register-email">Email</label>
+      <label htmlFor="register-email">{t("auth.email")}</label>
       <input
         id="register-email"
         type="email"
@@ -71,7 +73,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         onChange={(e) => setEmail(e.target.value)}
       />
 
-      <label htmlFor="register-password">Mot de passe</label>
+      <label htmlFor="register-password">{t("auth.password")}</label>
       <input
         id="register-password"
         type="password"
@@ -82,7 +84,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <label htmlFor="register-confirm-password">Confirmer le mot de passe</label>
+      <label htmlFor="register-confirm-password">{t("auth.confirmPassword")}</label>
       <input
         id="register-confirm-password"
         type="password"
@@ -97,10 +99,10 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
       {infoMessage && <p className="auth-info">{infoMessage}</p>}
 
       <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Création..." : "Créer mon compte"}
+        {isSubmitting ? t("auth.signUpPending") : t("auth.signUpAction")}
       </button>
       <button type="button" className="auth-link" onClick={onSwitchToLogin}>
-        Déjà un compte ? Se connecter
+        {t("auth.switchToLogin")}
       </button>
     </form>
   );

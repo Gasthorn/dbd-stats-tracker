@@ -1,10 +1,11 @@
 import { create } from "zustand";
+import { i18n } from "../../../shared/i18n";
 import type { AsyncStatus } from "../../../shared/types/common.types";
 import { matchService } from "../../match-tracker";
 import type { Match } from "../../match-tracker/types/match.types";
 
 function toErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
+  return err instanceof Error ? err.message : i18n.t("common.unexpectedError");
 }
 
 export interface StatisticsState {

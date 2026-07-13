@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useFriendsStore } from "../../friends";
 import { useTeamsStore } from "../stores/teams.store";
 import type { Team } from "../types/team.types";
@@ -8,6 +9,7 @@ import "./teams.css";
 const EMPTY_MEMBERS: [string, string, string] = ["", "", ""];
 
 export function TeamsPage() {
+  const { t } = useTranslation();
   const teams = useTeamsStore((state) => state.teams);
   const status = useTeamsStore((state) => state.status);
   const storeError = useTeamsStore((state) => state.error);
@@ -75,7 +77,7 @@ export function TeamsPage() {
     setFormError(null);
     setSuccessMessage(null);
     if (!name.trim()) {
-      setFormError("Veuillez donner un nom à l'équipe.");
+      setFormError(t("teams.nameRequired"));
       return;
     }
 
@@ -86,42 +88,39 @@ export function TeamsPage() {
         memberNames: members.map((member) => member.trim()).filter((member) => member !== ""),
       });
       setEditingTeamId(team.id);
-      setSuccessMessage(`Équipe "${team.name}" enregistrée !`);
+      setSuccessMessage(t("teams.saved", { name: team.name }));
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'enregistrer l'équipe.");
+      setFormError(err instanceof Error ? err.message : t("teams.saveFailed"));
     } finally {
       setIsSaving(false);
     }
   }
 
   async function handleDelete(team: Team) {
-    if (!confirm(`Voulez-vous vraiment supprimer l'équipe "${team.name}" ?`)) return;
+    if (!confirm(t("teams.deleteConfirm", { name: team.name }))) return;
     setFormError(null);
     try {
       await deleteTeamAction(team.id);
-      setSuccessMessage(`Équipe "${team.name}" supprimée.`);
+      setSuccessMessage(t("teams.deleted", { name: team.name }));
       if (editingTeamId === team.id) handleReset();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible de supprimer l'équipe.");
+      setFormError(err instanceof Error ? err.message : t("teams.deleteFailed"));
     }
   }
 
   return (
     <div className="teams-page">
-      <h1>Équipes</h1>
-      <p className="teams-hint">
-        Enregistre tes groupes Survive With Friends (jusqu'à 3 coéquipiers par équipe) pour les retrouver
-        rapidement. Choisis parmi tes amis ou tape n'importe quel pseudo.
-      </p>
+      <h1>{t("teams.title")}</h1>
+      <p className="teams-hint">{t("teams.hint")}</p>
 
       <div className="teams-form" ref={formRef}>
-        <h3>{editingTeamId ? "Modifier l'équipe" : "Nouvelle équipe"}</h3>
+        <h3>{editingTeamId ? t("teams.editTitle") : t("teams.newTitle")}</h3>
 
-        <label htmlFor="team-name">Nom de l'équipe</label>
+        <label htmlFor="team-name">{t("teams.nameLabel")}</label>
         <input
           id="team-name"
           type="text"
-          placeholder="Ex: Squad du dimanche"
+          placeholder={t("teams.namePlaceholder")}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -129,11 +128,11 @@ export function TeamsPage() {
         <div className="teams-members-grid">
           {members.map((member, index) => (
             <div key={index}>
-              <label htmlFor={`team-member-${index}`}>Coéquipier {index + 1}</label>
+              <label htmlFor={`team-member-${index}`}>{t("teams.memberLabel", { index: index + 1 })}</label>
               <input
                 id={`team-member-${index}`}
                 type="text"
-                placeholder="Pseudo (ami ou non)"
+                placeholder={t("teams.memberPlaceholder")}
                 list="team-member-options"
                 value={member}
                 onChange={(e) => updateMember(index, e.target.value)}
@@ -149,10 +148,10 @@ export function TeamsPage() {
 
         <div className="teams-form-actions">
           <button type="button" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Enregistrement..." : editingTeamId ? "Mettre à jour" : "Enregistrer cette équipe"}
+            {isSaving ? t("teams.savePending") : editingTeamId ? t("teams.update") : t("teams.save")}
           </button>
           <button type="button" onClick={handleReset}>
-            {editingTeamId ? "Annuler" : "Réinitialiser"}
+            {editingTeamId ? t("common.cancel") : t("common.reset")}
           </button>
         </div>
 
@@ -163,7 +162,7 @@ export function TeamsPage() {
 
       {status === "loading" && teams.length === 0 && <LoadingSpinner />}
       {status !== "loading" && teams.length === 0 && (
-        <p className="statistics-empty">Aucune équipe enregistrée pour le moment.</p>
+        <p className="statistics-empty">{t("teams.empty")}</p>
       )}
 
       {teams.length > 0 && (
@@ -178,14 +177,14 @@ export function TeamsPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="teams-no-members">Aucun coéquipier renseigné.</p>
+                <p className="teams-no-members">{t("teams.noMembers")}</p>
               )}
               <div className="teams-card-actions">
                 <button type="button" onClick={() => handleEdit(team)}>
-                  Modifier
+                  {t("common.edit")}
                 </button>
                 <button type="button" className="btn-danger" onClick={() => handleDelete(team)}>
-                  Supprimer
+                  {t("common.delete")}
                 </button>
               </div>
             </div>

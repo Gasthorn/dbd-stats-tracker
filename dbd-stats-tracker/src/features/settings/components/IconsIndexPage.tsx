@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { KILLERS, SURVIVORS } from "../../../shared/data/characters";
 import { SURVIVOR_ADDONS, SURVIVOR_ITEMS, KILLER_ADDONS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
@@ -25,36 +26,37 @@ function slugify(text: string): string {
 }
 
 export function IconsIndexPage() {
+  const { t } = useTranslation();
   const iconsFolderPath = useSettingsStore(selectEffectiveIconsFolderPath);
 
   const sections = useMemo<IconIndexSection[]>(() => {
     const result: IconIndexSection[] = [
-      { id: "killers", title: "Portraits : Tueurs", category: "Characters", items: [...KILLERS] },
+      { id: "killers", title: t("iconsIndex.killerPortraits"), category: "Characters", items: [...KILLERS] },
       {
         id: "survivors",
-        title: "Portraits : Survivants",
+        title: t("iconsIndex.survivorPortraits"),
         category: "Characters",
         items: [...SURVIVORS],
       },
       {
         id: "killer-perks",
-        title: "Compétences : Tueurs",
+        title: t("iconsIndex.killerPerks"),
         category: "Perks",
         items: KILLER_PERKS.map((p) => p.name),
       },
       {
         id: "survivor-perks",
-        title: "Compétences : Survivants",
+        title: t("iconsIndex.survivorPerks"),
         category: "Perks",
         items: SURVIVOR_PERKS.map((p) => p.name),
       },
-      { id: "items", title: "Objets", category: "Items", items: [...SURVIVOR_ITEMS] },
+      { id: "items", title: t("iconsIndex.items"), category: "Items", items: [...SURVIVOR_ITEMS] },
     ];
 
     for (const group of SURVIVOR_ADDONS) {
       result.push({
         id: `addons-${slugify(group.itemType)}`,
-        title: `Addons : ${group.itemType}`,
+        title: t("iconsIndex.addonsFor", { name: group.itemType }),
         category: "Addons",
         items: [...group.addons],
       });
@@ -63,7 +65,7 @@ export function IconsIndexPage() {
     for (const killer of Object.keys(KILLER_ADDONS)) {
       result.push({
         id: `addons-${slugify(killer)}`,
-        title: `Addons : ${killer}`,
+        title: t("iconsIndex.addonsFor", { name: killer }),
         category: "Addons",
         items: [...KILLER_ADDONS[killer]],
         owner: killer,
@@ -71,22 +73,14 @@ export function IconsIndexPage() {
     }
 
     return result;
-  }, []);
+  }, [t]);
 
   return (
     <div className="icon-index-page">
-      <h1>Index des icônes</h1>
-      <p>
-        Toutes les icônes du jeu affichées d'un coup : une icône qui retombe sur le placeholder
-        vide (encadré en rouge) signale un chemin mal résolu pour ce nom.
-      </p>
+      <h1>{t("iconsIndex.title")}</h1>
+      <p>{t("iconsIndex.explanation")}</p>
 
-      {!iconsFolderPath && (
-        <p className="icon-index-warning">
-          Aucun dossier Icons configuré : va sur la page Accueil pour en choisir un, sinon toutes
-          les icônes ci-dessous resteront vides.
-        </p>
-      )}
+      {!iconsFolderPath && <p className="icon-index-warning">{t("iconsIndex.noFolderWarning")}</p>}
 
       <nav className="icon-index-nav">
         {sections.map((section) => (

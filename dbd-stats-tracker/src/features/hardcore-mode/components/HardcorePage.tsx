@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useCharactersStore } from "../../characters/stores/characters.store";
 import { HardcoreTeamPanel, useHardcoreTeamStore } from "../../hardcore-teams";
@@ -12,6 +13,7 @@ import { HardcoreRankCard } from "./HardcoreRankCard";
 import "./hardcore-mode.css";
 
 export function HardcorePage() {
+  const { t } = useTranslation();
   const charactersStatus = useCharactersStore((state) => state.status);
   const fetchCharacters = useCharactersStore((state) => state.fetch);
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
@@ -33,7 +35,7 @@ export function HardcorePage() {
   }, []);
 
   async function handleReset() {
-    if (!confirm("Voulez-vous réinitialiser votre progression Hardcore pour cette saison (Pips et personnages morts) ?")) {
+    if (!confirm(t("hardcore.resetConfirm"))) {
       return;
     }
     await resetSeason();
@@ -63,25 +65,23 @@ export function HardcorePage() {
       <div className="hardcore-header">
         <div className="hardcore-season-info">{currentRun?.seasonId ?? getHardcoreSeasonId()}</div>
         <button type="button" className="btn-danger" onClick={handleReset}>
-          Réinitialiser Mode
+          {t("hardcore.resetMode")}
         </button>
       </div>
 
-      <h1>Mode Hardcore - Saison</h1>
+      <h1>{t("hardcore.title")}</h1>
 
       <details className="hardcore-rules">
-        <summary>Règles Hardcore</summary>
+        <summary>{t("hardcore.rulesTitle")}</summary>
         <ul>
           <li>
-            <strong>Progression :</strong> Gagnez des Pips pour monter de grade (Cendre à Iridescent).
+            <strong>{t("hardcore.ruleProgressionLabel")}</strong> {t("hardcore.ruleProgression")}
           </li>
           <li>
-            <strong>Mort permanente :</strong> Si un personnage meurt (ou évasion totale vs Tueur), il est éliminé
-            pour la saison.
+            <strong>{t("hardcore.rulePermadeathLabel")}</strong> {t("hardcore.rulePermadeath")}
           </li>
           <li>
-            <strong>Restrictions :</strong> Les compétences des personnages éliminés sont bloquées pour le reste de
-            l'équipe.
+            <strong>{t("hardcore.ruleRestrictionsLabel")}</strong> {t("hardcore.ruleRestrictions")}
           </li>
         </ul>
       </details>
@@ -90,20 +90,20 @@ export function HardcorePage() {
       {status === "loading" && !currentRun && <LoadingSpinner />}
 
       <div className="hardcore-rank-row">
-        <HardcoreRankCard title="Rang Tueur" pips={currentRun?.killerPips ?? 0} />
-        <HardcoreRankCard title="Rang Survivant" pips={currentRun?.survivorPips ?? 0} />
+        <HardcoreRankCard title={t("hardcore.killerRank")} pips={currentRun?.killerPips ?? 0} />
+        <HardcoreRankCard title={t("hardcore.survivorRank")} pips={currentRun?.survivorPips ?? 0} />
       </div>
 
       <div className="match-role-toggle" style={{ justifyContent: "center" }}>
         <button type="button" className={role === "killer" ? "is-active" : ""} onClick={() => switchRole("killer")}>
-          Tueur
+          {t("common.killer")}
         </button>
         <button
           type="button"
           className={role === "survivor" ? "is-active" : ""}
           onClick={() => switchRole("survivor")}
         >
-          Survivant
+          {t("common.survivor")}
         </button>
       </div>
 
@@ -111,7 +111,7 @@ export function HardcorePage() {
 
       {role && !selectedCharacter && (
         <>
-          <p className="hardcore-selected-char">Aucun personnage sélectionné</p>
+          <p className="hardcore-selected-char">{t("hardcore.noCharacterSelected")}</p>
           <HardcoreCharacterGrid
             characters={unlockedCharacters}
             deadCharacters={deadCharacters}
@@ -127,7 +127,7 @@ export function HardcorePage() {
             <Icon category="Characters" name={selectedCharacter} alt={selectedCharacter} size={64} />
             <span>{selectedCharacter}</span>
             <button type="button" onClick={() => setSelectedCharacter(null)}>
-              Changer de personnage
+              {t("hardcore.changeCharacter")}
             </button>
           </div>
           <HardcoreMatchForm

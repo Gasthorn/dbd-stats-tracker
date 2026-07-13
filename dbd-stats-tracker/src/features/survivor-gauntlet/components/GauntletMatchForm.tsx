@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
@@ -16,10 +17,10 @@ import type { EscapeResult, MatchRole } from "../../match-tracker/types/match.ty
 import { useGauntletStore } from "../stores/gauntlet.store";
 
 const KILLS_OPTIONS = [0, 1, 2, 3, 4];
-const ESCAPE_OPTIONS: { value: "died" | "escaped_hatch" | "escaped_door"; label: string }[] = [
-  { value: "died", label: "Mort" },
-  { value: "escaped_hatch", label: "Trappe" },
-  { value: "escaped_door", label: "Porte" },
+const ESCAPE_OPTIONS: { value: "died" | "escaped_hatch" | "escaped_door"; labelKey: string }[] = [
+  { value: "died", labelKey: "gauntlet.outcomeDied" },
+  { value: "escaped_hatch", labelKey: "gauntlet.outcomeHatch" },
+  { value: "escaped_door", labelKey: "gauntlet.outcomeDoor" },
 ];
 
 const EMPTY_PERKS: [string, string, string, string] = ["", "", "", ""];
@@ -58,6 +59,7 @@ export function GauntletMatchForm({
   onDone,
   onCancel,
 }: GauntletMatchFormProps) {
+  const { t } = useTranslation();
   const recordMatch = useGauntletStore((state) => state.recordMatch);
 
   const [opponentName, setOpponentName] = useState("");
@@ -122,15 +124,15 @@ export function GauntletMatchForm({
     setFormError(null);
 
     if (!bloodpoints) {
-      setFormError("Veuillez saisir les points de sang.");
+      setFormError(t("gauntlet.bloodpointsRequired"));
       return;
     }
     if (role === "survivor" && !opponentName) {
-      setFormError("Sélectionnez le tueur adverse.");
+      setFormError(t("matchForm.selectOpponent"));
       return;
     }
     if (!ignoreChallenge && !isGauntletBuildValid(perks, uniquePerkNames, tier)) {
-      setFormError(`Votre build ne respecte pas les restrictions du Gauntlet (${tier.perksLabel}).`);
+      setFormError(t("gauntlet.buildInvalid", { label: tier.perksLabel }));
       return;
     }
 
@@ -185,7 +187,7 @@ export function GauntletMatchForm({
       });
       onDone();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'enregistrer le match.");
+      setFormError(err instanceof Error ? err.message : t("gauntlet.saveFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -193,7 +195,7 @@ export function GauntletMatchForm({
 
   return (
     <form className="match-form gauntlet-match-form" onSubmit={(e) => submit(false, e)}>
-      <h4>Enregistrer le résultat</h4>
+      <h4>{t("gauntlet.recordResult")}</h4>
 
       <BuildManagerPanel
         idPrefix="gauntlet"
@@ -207,7 +209,7 @@ export function GauntletMatchForm({
 
       {role === "survivor" && (
         <>
-          <label htmlFor="gauntlet-opponent">Tueur affronté</label>
+          <label htmlFor="gauntlet-opponent">{t("gauntlet.opponentFaced")}</label>
           <IconSelectionSlot
             as="select"
             id="gauntlet-opponent"
@@ -216,7 +218,7 @@ export function GauntletMatchForm({
             onChange={setOpponentName}
             size={96}
           >
-            <option value="">-- Sélectionner --</option>
+            <option value="">{t("common.select")}</option>
             {KILLERS.map((name) => (
               <option key={name} value={name}>
                 {name}
@@ -226,7 +228,7 @@ export function GauntletMatchForm({
         </>
       )}
 
-      <label>Perks</label>
+      <label>{t("matchForm.perks")}</label>
       <div className="match-perks-grid">
         {perks.map((perk, index) => (
           <IconSelectionSlot
@@ -235,7 +237,7 @@ export function GauntletMatchForm({
             value={perk}
             onChange={(value) => updatePerk(index, value)}
             listId={index === 0 ? "gauntlet-unique-perks-options" : "gauntlet-perks-options"}
-            placeholder={`Perk ${index + 1}`}
+            placeholder={t("matchForm.perkPlaceholder", { index: index + 1 })}
             diamond
             size={68}
           />
@@ -252,7 +254,7 @@ export function GauntletMatchForm({
         ))}
       </datalist>
 
-      <label>Équipement</label>
+      <label>{t("matchForm.equipment")}</label>
       {role === "survivor" ? (
         <>
           <IconSelectionSlot
@@ -262,7 +264,7 @@ export function GauntletMatchForm({
             onChange={(value) => updateEquipment(0, value)}
             size={84}
           >
-            <option value="">-- Objet --</option>
+            <option value="">{t("matchForm.itemPlaceholder")}</option>
             {SURVIVOR_ITEMS.map((item) => (
               <option key={item} value={item}>
                 {item}
@@ -275,7 +277,7 @@ export function GauntletMatchForm({
               value={equipment[1]}
               onChange={(value) => updateEquipment(1, value)}
               listId="gauntlet-survivor-addon-options"
-              placeholder="Accessoire 1"
+              placeholder={t("matchForm.addonPlaceholder", { index: 1 })}
               size={84}
             />
             <IconSelectionSlot
@@ -283,7 +285,7 @@ export function GauntletMatchForm({
               value={equipment[2]}
               onChange={(value) => updateEquipment(2, value)}
               listId="gauntlet-survivor-addon-options"
-              placeholder="Accessoire 2"
+              placeholder={t("matchForm.addonPlaceholder", { index: 2 })}
               size={84}
             />
           </div>
@@ -301,7 +303,7 @@ export function GauntletMatchForm({
             onChange={(value) => updateEquipment(0, value)}
             manualOwner={characterName}
             listId="gauntlet-killer-addon-options"
-            placeholder="Accessoire 1"
+            placeholder={t("matchForm.addonPlaceholder", { index: 1 })}
             size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[0]))}
           />
@@ -311,7 +313,7 @@ export function GauntletMatchForm({
             onChange={(value) => updateEquipment(1, value)}
             manualOwner={characterName}
             listId="gauntlet-killer-addon-options"
-            placeholder="Accessoire 2"
+            placeholder={t("matchForm.addonPlaceholder", { index: 2 })}
             size={84}
             className={rarityClassName(getKillerAddonRarity(characterName, equipment[1]))}
           />
@@ -323,7 +325,7 @@ export function GauntletMatchForm({
         </div>
       )}
 
-      <label htmlFor="gauntlet-bloodpoints">Points de sang</label>
+      <label htmlFor="gauntlet-bloodpoints">{t("matchForm.bloodpoints")}</label>
       <input
         id="gauntlet-bloodpoints"
         type="number"
@@ -332,7 +334,7 @@ export function GauntletMatchForm({
         onChange={(e) => setBloodpoints(e.target.value)}
       />
 
-      <label htmlFor="gauntlet-gens">Générateurs terminés ({generatorsCompleted})</label>
+      <label htmlFor="gauntlet-gens">{t("matchForm.generatorsCompleted", { count: Number(generatorsCompleted) })}</label>
       <input
         id="gauntlet-gens"
         type="range"
@@ -344,7 +346,7 @@ export function GauntletMatchForm({
 
       {role === "killer" ? (
         <>
-          <label htmlFor="gauntlet-kills">Survivants éliminés (0-4)</label>
+          <label htmlFor="gauntlet-kills">{t("gauntlet.killsLabel")}</label>
           <select id="gauntlet-kills" value={kills} onChange={(e) => setKills(e.target.value)}>
             {KILLS_OPTIONS.map((value) => (
               <option key={value} value={value}>
@@ -355,7 +357,7 @@ export function GauntletMatchForm({
         </>
       ) : (
         <>
-          <label htmlFor="gauntlet-outcome">Issue</label>
+          <label htmlFor="gauntlet-outcome">{t("gauntlet.outcomeLabel")}</label>
           <select
             id="gauntlet-outcome"
             value={outcome}
@@ -363,7 +365,7 @@ export function GauntletMatchForm({
           >
             {ESCAPE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </option>
             ))}
           </select>
@@ -374,18 +376,18 @@ export function GauntletMatchForm({
 
       <div className="match-form-row">
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Enregistrement..." : "Valider Match"}
+          {isSubmitting ? t("matchForm.submitPending") : t("gauntlet.submitMatch")}
         </button>
         <button
           type="button"
           disabled={isSubmitting}
           onClick={() => submit(true)}
-          title="Enregistre dans l'historique mais ignore pour le défi"
+          title={t("hardcore.ignoreChallengeTooltip")}
         >
-          Enregistrer & ignorer défi
+          {t("hardcore.ignoreChallenge")}
         </button>
         <button type="button" disabled={isSubmitting} onClick={onCancel}>
-          Annuler
+          {t("common.cancel")}
         </button>
       </div>
     </form>

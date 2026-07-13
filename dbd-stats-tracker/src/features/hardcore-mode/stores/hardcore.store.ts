@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { i18n } from "../../../shared/i18n";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useAuthStore } from "../../auth/stores/auth.store";
 import { useHardcoreTeamStore } from "../../hardcore-teams";
@@ -8,12 +9,12 @@ import type { CreateMatchInput } from "../../match-tracker/types/match.types";
 import type { HardcoreStore, RecordHardcoreMatchInput } from "./hardcore.store.types";
 
 function toErrorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : "Une erreur inattendue est survenue.";
+  return err instanceof Error ? err.message : i18n.t("common.unexpectedError");
 }
 
 function requireUserId(): string {
   const userId = useAuthStore.getState().user?.id;
-  if (!userId) throw new Error("Utilisateur non connecté.");
+  if (!userId) throw new Error(i18n.t("common.notLoggedIn"));
   return userId;
 }
 
@@ -34,7 +35,7 @@ export const useHardcoreStore = create<HardcoreStore>((set, get) => ({
 
   recordMatch: async ({ match, pips, died, ignoreChallenge }: RecordHardcoreMatchInput) => {
     const run = get().currentRun;
-    if (!run) throw new Error("Aucune saison Hardcore active.");
+    if (!run) throw new Error(i18n.t("hardcore.noActiveSeason"));
 
     const activeTeamMembership = useHardcoreTeamStore
       .getState()

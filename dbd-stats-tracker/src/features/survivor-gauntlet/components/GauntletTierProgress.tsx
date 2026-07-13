@@ -1,4 +1,5 @@
 import { getGauntletTierInfo } from "../../../shared/lib/gauntlet/tier";
+import { useTranslation } from "react-i18next";
 import type { MatchRole } from "../../match-tracker/types/match.types";
 
 interface GauntletTierProgressProps {
@@ -8,6 +9,7 @@ interface GauntletTierProgressProps {
 }
 
 export function GauntletTierProgress({ role, completedCount, totalUnlocked }: GauntletTierProgressProps) {
+  const { t } = useTranslation();
   const total = Math.max(1, totalUnlocked);
   const tier = getGauntletTierInfo(completedCount, total);
   const percent = (completedCount / total) * 100;
@@ -17,7 +19,7 @@ export function GauntletTierProgress({ role, completedCount, totalUnlocked }: Ga
       <h3 className="gauntlet-tier-name">
         Tier {tier.tier}: {tier.name}
       </h3>
-      <div className="gauntlet-perk-restriction">Restriction : {tier.perksLabel}</div>
+      <div className="gauntlet-perk-restriction">{t("gauntlet.restriction", { label: tier.perksLabel })}</div>
       <div className="gauntlet-progress-bar">
         <div className="gauntlet-progress-fill" style={{ width: `${percent}%` }} />
         <div className="gauntlet-markers">
@@ -27,7 +29,7 @@ export function GauntletTierProgress({ role, completedCount, totalUnlocked }: Ga
         </div>
       </div>
       <div className="gauntlet-count">
-        {completedCount} / {total} {role === "killer" ? "Tueurs" : "Survivants"}
+        {role === "killer" ? t("gauntlet.countKillers", { completed: completedCount, total }) : t("gauntlet.countSurvivors", { completed: completedCount, total })}
       </div>
     </div>
   );

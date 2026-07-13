@@ -1,4 +1,5 @@
 import type { Match } from "../../match-tracker/types/match.types";
+import { useTranslation } from "react-i18next";
 import type { WorldCupFixture, WorldCupGroup } from "../types/world-cup.types";
 import { WorldCupGroupCard } from "./WorldCupGroupCard";
 
@@ -16,12 +17,13 @@ export function WorldCupGroupsResultsModal({
   qualifiedKillers = null,
   onClose,
 }: WorldCupGroupsResultsModalProps) {
+  const { t } = useTranslation();
   return (
     <div className="world-cup-modal-overlay" onClick={onClose}>
       <div className="world-cup-modal world-cup-groups-modal" onClick={(event) => event.stopPropagation()}>
         <div className="world-cup-fixture-modal-header">
-          <h3>Résultats des poules</h3>
-          <button type="button" className="world-cup-killer-modal-close" onClick={onClose} aria-label="Fermer">
+          <h3>{t("worldCup.groupsResultsTitle")}</h3>
+          <button type="button" className="world-cup-killer-modal-close" onClick={onClose} aria-label={t("common.close")}>
             ✕
           </button>
         </div>

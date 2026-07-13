@@ -1,5 +1,7 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { getDateLocale } from "../../../shared/i18n";
 import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import { useBuildsStore } from "../../builds";
@@ -24,10 +26,11 @@ import { WinStreakCard } from "./WinStreakCard";
 import "./statistics.css";
 
 function formatBloodpoints(value: number): string {
-  return value.toLocaleString("fr-FR");
+  return value.toLocaleString(getDateLocale());
 }
 
 export function StatisticsPage() {
+  const { t } = useTranslation();
   const matches = useStatisticsStore((state) => state.matches);
   const status = useStatisticsStore((state) => state.status);
   const error = useStatisticsStore((state) => state.error);
@@ -75,50 +78,50 @@ export function StatisticsPage() {
 
   return (
     <div className="statistics-page">
-      <h1>Statistiques</h1>
+      <h1>{t("stats.title")}</h1>
 
       {error && <p className="match-error">{error}</p>}
       {status === "loading" && matches.length === 0 && <LoadingSpinner />}
 
       {status !== "loading" && matches.length === 0 && !error && (
-        <p className="statistics-empty">Aucune partie enregistrée pour le moment.</p>
+        <p className="statistics-empty">{t("stats.empty")}</p>
       )}
 
       {matches.length > 0 && (
         <div className="statistics-grid">
           <div className="stats-zone stats-zone-wide">
-            <h2>Favoris & Records</h2>
+            <h2>{t("stats.favoritesTitle")}</h2>
             <div className="top-stats-row">
-              <TopCharacterCard label="Survivant le plus joué" stat={summary.topSurvivor} />
-              <TopCharacterCard label="Tueur le plus affronté" stat={summary.topOpponentKiller} />
-              <TopCharacterCard label="Tueur le plus joué" stat={summary.topKiller} />
+              <TopCharacterCard label={t("stats.topSurvivor")} stat={summary.topSurvivor} />
+              <TopCharacterCard label={t("stats.topOpponentKiller")} stat={summary.topOpponentKiller} />
+              <TopCharacterCard label={t("stats.topKiller")} stat={summary.topKiller} />
             </div>
             <div className="top-stats-row">
-              <TopBuildCard label="Build Survivant favori" stat={summary.topSurvivorBuild} />
-              <TopBuildCard label="Build Tueur favori" stat={summary.topKillerBuild} />
+              <TopBuildCard label={t("stats.topSurvivorBuild")} stat={summary.topSurvivorBuild} />
+              <TopBuildCard label={t("stats.topKillerBuild")} stat={summary.topKillerBuild} />
             </div>
             <div className="top-stats-row">
-              <WinStreakCard label="Série Survivant (évasions)" streak={winStreaks.survivor} seriesClassName="is-survivor" />
-              <WinStreakCard label="Série Tueur (3+ sacrifices)" streak={winStreaks.killer} seriesClassName="is-killer" />
+              <WinStreakCard label={t("stats.survivorStreak")} streak={winStreaks.survivor} seriesClassName="is-survivor" />
+              <WinStreakCard label={t("stats.killerStreak")} streak={winStreaks.killer} seriesClassName="is-killer" />
             </div>
             <div className="top-stats-row">
               <div className="top-stat-card">
-                <p>Moyenne Survivant BP</p>
+                <p>{t("stats.avgSurvivorBp")}</p>
                 <b className="top-stat-value is-survivor">{formatBloodpoints(summary.avgBloodpointsSurvivor)}</b>
               </div>
               <div className="top-stat-card">
-                <p>Moyenne Globale BP</p>
+                <p>{t("stats.avgGlobalBp")}</p>
                 <b className="top-stat-value is-global">{formatBloodpoints(summary.avgBloodpointsGlobal)}</b>
               </div>
               <div className="top-stat-card">
-                <p>Moyenne Tueur BP</p>
+                <p>{t("stats.avgKillerBp")}</p>
                 <b className="top-stat-value is-killer">{formatBloodpoints(summary.avgBloodpointsKiller)}</b>
               </div>
             </div>
           </div>
 
           <div className="stats-zone">
-            <h2>Répartition des Rôles</h2>
+            <h2>{t("stats.roleDistribution")}</h2>
             <RoleDistributionBar
               killerMatches={summary.killerMatchCount}
               survivorMatches={summary.survivorMatchCount}
@@ -137,154 +140,154 @@ export function StatisticsPage() {
           </div>
 
           <div className="stats-zone stats-zone-wide">
-            <h2>Face aux tueurs</h2>
+            <h2>{t("stats.vsKillersTitle")}</h2>
             <div className="entity-section-row">
               <EntityPerformanceTable
-                title="Tueurs les plus affrontés"
-                entityColumnLabel="Tueur"
-                secondaryColumnLabel="Évasions"
-                rateColumnLabel="Taux d'évasion"
+                title={t("stats.mostFacedKillers")}
+                entityColumnLabel={t("stats.killerColumn")}
+                secondaryColumnLabel={t("stats.escapes")}
+                rateColumnLabel={t("stats.escapeRate")}
                 stats={opponentStats}
                 seriesClassName="is-survivor"
                 iconCategory="Characters"
-                emptyMessage="Aucune partie en survivant enregistrée pour le moment."
+                emptyMessage={t("stats.noSurvivorMatches")}
               />
               <EntityPerformanceLookup
-                title="Face à un tueur en particulier"
-                selectLabel="Choisir un tueur"
+                title={t("stats.vsSpecificKiller")}
+                selectLabel={t("stats.chooseKiller")}
                 stats={opponentStats}
                 options={KILLERS}
-                matchesLabel="Matchs joués"
-                secondaryLabel="Évasions"
-                rateLabel="Taux d'évasion"
+                matchesLabel={t("stats.matchesPlayed")}
+                secondaryLabel={t("stats.escapes")}
+                rateLabel={t("stats.escapeRate")}
                 seriesClassName="is-survivor"
                 iconCategory="Characters"
-                emptyOptionsMessage="Aucun tueur disponible."
+                emptyOptionsMessage={t("stats.noKillersAvailable")}
               />
             </div>
           </div>
 
           <div className="stats-zone stats-zone-wide">
-            <h2>Builds</h2>
+            <h2>{t("stats.buildsTitle")}</h2>
             <div className="entity-section-row">
               <div className="entity-role-column">
-                <h3 className="entity-role-heading is-survivor">Survivant</h3>
+                <h3 className="entity-role-heading is-survivor">{t("common.survivor")}</h3>
                 <EntityPerformanceTable
-                  title="Builds les plus joués"
-                  entityColumnLabel="Build"
-                  secondaryColumnLabel="Évasions"
-                  rateColumnLabel="Taux d'évasion"
+                  title={t("stats.mostPlayedBuilds")}
+                  entityColumnLabel={t("stats.buildColumn")}
+                  secondaryColumnLabel={t("stats.escapes")}
+                  rateColumnLabel={t("stats.escapeRate")}
                   stats={survivorBuildStats}
                   seriesClassName="is-survivor"
-                  emptyMessage="Aucun build survivant enregistré n'a encore été rejoué."
+                  emptyMessage={t("stats.noSurvivorBuildReplayed")}
                 />
                 <EntityPerformanceLookup
-                  title="Build en particulier"
-                  selectLabel="Choisir un build"
+                  title={t("stats.specificBuild")}
+                  selectLabel={t("stats.chooseBuild")}
                   stats={survivorBuildStats}
                   options={survivorBuildNames}
-                  matchesLabel="Matchs joués"
-                  secondaryLabel="Évasions"
-                  rateLabel="Taux d'évasion"
+                  matchesLabel={t("stats.matchesPlayed")}
+                  secondaryLabel={t("stats.escapes")}
+                  rateLabel={t("stats.escapeRate")}
                   seriesClassName="is-survivor"
-                  emptyOptionsMessage="Aucun build survivant enregistré."
+                  emptyOptionsMessage={t("stats.noSurvivorBuilds")}
                 />
               </div>
               <div className="entity-role-column">
-                <h3 className="entity-role-heading is-killer">Tueur</h3>
+                <h3 className="entity-role-heading is-killer">{t("common.killer")}</h3>
                 <EntityPerformanceTable
-                  title="Builds les plus joués"
-                  entityColumnLabel="Build"
-                  secondaryColumnLabel="Sacrifices"
-                  rateColumnLabel="Taux de kill"
+                  title={t("stats.mostPlayedBuilds")}
+                  entityColumnLabel={t("stats.buildColumn")}
+                  secondaryColumnLabel={t("stats.sacrifices")}
+                  rateColumnLabel={t("stats.killRate")}
                   stats={killerBuildStats}
                   seriesClassName="is-killer"
-                  emptyMessage="Aucun build tueur enregistré n'a encore été rejoué."
+                  emptyMessage={t("stats.noKillerBuildReplayed")}
                 />
                 <EntityPerformanceLookup
-                  title="Build en particulier"
-                  selectLabel="Choisir un build"
+                  title={t("stats.specificBuild")}
+                  selectLabel={t("stats.chooseBuild")}
                   stats={killerBuildStats}
                   options={killerBuildNames}
-                  matchesLabel="Matchs joués"
-                  secondaryLabel="Sacrifices"
-                  rateLabel="Taux de kill"
+                  matchesLabel={t("stats.matchesPlayed")}
+                  secondaryLabel={t("stats.sacrifices")}
+                  rateLabel={t("stats.killRate")}
                   seriesClassName="is-killer"
-                  emptyOptionsMessage="Aucun build tueur enregistré."
+                  emptyOptionsMessage={t("stats.noKillerBuilds")}
                 />
               </div>
             </div>
           </div>
 
           <div className="stats-zone stats-zone-wide">
-            <h2>Perks</h2>
+            <h2>{t("stats.perksTitle")}</h2>
             <div className="entity-section-row">
               <div className="entity-role-column">
-                <h3 className="entity-role-heading is-survivor">Survivant</h3>
+                <h3 className="entity-role-heading is-survivor">{t("common.survivor")}</h3>
                 <EntityPerformanceTable
-                  title="Perks les plus joués"
-                  entityColumnLabel="Perk"
-                  secondaryColumnLabel="Évasions"
-                  rateColumnLabel="Taux d'évasion"
+                  title={t("stats.mostPlayedPerks")}
+                  entityColumnLabel={t("stats.perkColumn")}
+                  secondaryColumnLabel={t("stats.escapes")}
+                  rateColumnLabel={t("stats.escapeRate")}
                   stats={survivorPerkStats}
                   seriesClassName="is-survivor"
                   iconCategory="Perks"
                   diamondIcon
-                  emptyMessage="Aucune partie en survivant enregistrée pour le moment."
+                  emptyMessage={t("stats.noSurvivorMatches")}
                 />
                 <EntityPerformanceLookup
-                  title="Perk en particulier"
-                  selectLabel="Choisir un perk"
+                  title={t("stats.specificPerk")}
+                  selectLabel={t("stats.choosePerk")}
                   stats={survivorPerkStats}
                   options={SURVIVOR_PERKS.map((perk) => perk.name)}
-                  matchesLabel="Matchs joués"
-                  secondaryLabel="Évasions"
-                  rateLabel="Taux d'évasion"
+                  matchesLabel={t("stats.matchesPlayed")}
+                  secondaryLabel={t("stats.escapes")}
+                  rateLabel={t("stats.escapeRate")}
                   seriesClassName="is-survivor"
                   iconCategory="Perks"
-                  emptyOptionsMessage="Aucun perk disponible."
+                  emptyOptionsMessage={t("stats.noPerksAvailable")}
                 />
               </div>
               <div className="entity-role-column">
-                <h3 className="entity-role-heading is-killer">Tueur</h3>
+                <h3 className="entity-role-heading is-killer">{t("common.killer")}</h3>
                 <EntityPerformanceTable
-                  title="Perks les plus joués"
-                  entityColumnLabel="Perk"
-                  secondaryColumnLabel="Sacrifices"
-                  rateColumnLabel="Taux de kill"
+                  title={t("stats.mostPlayedPerks")}
+                  entityColumnLabel={t("stats.perkColumn")}
+                  secondaryColumnLabel={t("stats.sacrifices")}
+                  rateColumnLabel={t("stats.killRate")}
                   stats={killerPerkStats}
                   seriesClassName="is-killer"
                   iconCategory="Perks"
                   diamondIcon
-                  emptyMessage="Aucune partie en tueur enregistrée pour le moment."
+                  emptyMessage={t("stats.noKillerMatches")}
                 />
                 <EntityPerformanceLookup
-                  title="Perk en particulier"
-                  selectLabel="Choisir un perk"
+                  title={t("stats.specificPerk")}
+                  selectLabel={t("stats.choosePerk")}
                   stats={killerPerkStats}
                   options={KILLER_PERKS.map((perk) => perk.name)}
-                  matchesLabel="Matchs joués"
-                  secondaryLabel="Sacrifices"
-                  rateLabel="Taux de kill"
+                  matchesLabel={t("stats.matchesPlayed")}
+                  secondaryLabel={t("stats.sacrifices")}
+                  rateLabel={t("stats.killRate")}
                   seriesClassName="is-killer"
                   iconCategory="Perks"
-                  emptyOptionsMessage="Aucun perk disponible."
+                  emptyOptionsMessage={t("stats.noPerksAvailable")}
                 />
               </div>
             </div>
           </div>
 
           <div className="stats-zone stats-zone-wide">
-            <h2>Performances (Taux de réussite %)</h2>
+            <h2>{t("stats.performanceTitle")}</h2>
             <div className="performance-charts-row">
               <PerformanceBarChart
-                title="Tueur — Kill Rate"
+                title={t("stats.killerKillRate")}
                 labels={performance.labels}
                 values={performance.killRate}
                 seriesClassName="is-killer"
               />
               <PerformanceBarChart
-                title="Survivant — Escape Rate"
+                title={t("stats.survivorEscapeRate")}
                 labels={performance.labels}
                 values={performance.escapeRate}
                 seriesClassName="is-survivor"

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useBuildsStore } from "../stores/builds.store";
 import type { Build } from "../types/build.types";
 import type { MatchRole } from "../../match-tracker/types/match.types";
@@ -25,6 +26,7 @@ export function BuildManagerPanel({
   onApply,
   onReset,
 }: BuildManagerPanelProps) {
+  const { t } = useTranslation();
   const builds = useBuildsStore((state) => state.builds);
   const status = useBuildsStore((state) => state.status);
   const storeError = useBuildsStore((state) => state.error);
@@ -48,11 +50,11 @@ export function BuildManagerPanel({
     setFormError(null);
     setSuccessMessage(null);
     if (!name.trim()) {
-      setFormError("Veuillez donner un nom à votre build.");
+      setFormError(t("builds.nameRequired"));
       return;
     }
     if (!characterName) {
-      setFormError("Sélectionnez un personnage avant d'enregistrer un build.");
+      setFormError(t("builds.characterRequired"));
       return;
     }
 
@@ -66,9 +68,9 @@ export function BuildManagerPanel({
         equipment: equipment.filter((item) => item !== ""),
       });
       setSelectedBuildId(build.id);
-      setSuccessMessage(`Build "${build.name}" enregistré !`);
+      setSuccessMessage(t("builds.saved", { name: build.name }));
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible d'enregistrer le build.");
+      setFormError(err instanceof Error ? err.message : t("builds.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -88,22 +90,22 @@ export function BuildManagerPanel({
 
   async function handleDelete() {
     if (!selectedBuildId) {
-      setFormError("Veuillez sélectionner un build à supprimer.");
+      setFormError(t("builds.selectToDelete"));
       return;
     }
     const build = availableBuilds.find((b) => b.id === selectedBuildId);
     if (!build) return;
-    if (!confirm(`Voulez-vous vraiment supprimer le build "${build.name}" ?`)) return;
+    if (!confirm(t("builds.deleteConfirm", { name: build.name }))) return;
 
     setFormError(null);
     try {
       await deleteBuildAction(build.id);
-      setSuccessMessage(`Build "${build.name}" supprimé.`);
+      setSuccessMessage(t("builds.deleted", { name: build.name }));
       setName("");
       setSelectedBuildId("");
       onReset();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Impossible de supprimer le build.");
+      setFormError(err instanceof Error ? err.message : t("builds.deleteFailed"));
     }
   }
 
@@ -117,34 +119,34 @@ export function BuildManagerPanel({
 
   return (
     <div className="build-manager-panel">
-      <h3>Gestion du Build</h3>
+      <h3>{t("builds.panelTitle")}</h3>
 
       <div className="build-manager-row">
         <input
           id={`${idPrefix}-build-name`}
           type="text"
-          placeholder="Nom du build (ex: Genrush, Anti-Loop)"
+          placeholder={t("builds.namePlaceholder")}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <button type="button" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Enregistrement..." : "Enregistrer ce build"}
+          {isSaving ? t("builds.savePending") : t("builds.save")}
         </button>
         <button type="button" onClick={handleReset}>
-          Réinitialiser le build
+          {t("builds.resetBuild")}
         </button>
         <button type="button" className="btn-danger" onClick={handleDelete}>
-          Supprimer le build
+          {t("builds.deleteBuild")}
         </button>
       </div>
 
-      <label htmlFor={`${idPrefix}-load-build-select`}>Charger un build :</label>
+      <label htmlFor={`${idPrefix}-load-build-select`}>{t("builds.load")}</label>
       <select
         id={`${idPrefix}-load-build-select`}
         value={selectedBuildId}
         onChange={(e) => handleLoad(e.target.value)}
       >
-        <option value="">-- Sélectionner --</option>
+        <option value="">{t("common.select")}</option>
         {availableBuilds.map((build) => (
           <option key={build.id} value={build.id}>
             {build.name}
