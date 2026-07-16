@@ -8,7 +8,23 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 
 * Enregistrement détaillé des parties en Tueur ou Survivant.
 * Saisie complète : personnage, build (perks/équipement), points de sang, générateurs, sacrifices, évasions, etc.
+* Sélection aléatoire du personnage en un clic (comme pour les perks en Chaos Shuffle).
+* Distinction du sort du survivant : sacrifié (crochet) ou tué (mori).
+* Association d'une équipe SWF à une partie survivant.
 * Interface inspirée de Dead by Daylight avec portraits de personnages et emplacements de perks fidèles à l'expérience du jeu.
+
+### 👥 Social
+
+#### Amis
+
+* Demandes d'ami par nom d'utilisateur, avec notification à l'ouverture de l'app chez le destinataire.
+* Liste d'amis avec statut en ligne approximatif (dernière activité).
+
+#### Équipes (SWF)
+
+* Carnet d'équipes de jeu : jusqu'à 3 coéquipiers par équipe, en texte libre.
+* Suggestions automatiques depuis la liste d'amis lors de la saisie des pseudos.
+* Sélection de l'équipe au moment d'enregistrer une partie survivant, pour des statistiques par équipe.
 
 ### 🏆 Modes de Jeu Spécifiques
 
@@ -17,6 +33,7 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 * Progression par grades et pips.
 * Mort permanente des personnages pour la saison en cours.
 * Restrictions automatiques des perks selon les personnages encore disponibles.
+* **Variante en équipe (survivant)** : formez une escouade avec des amis utilisant l'app (invitation + acceptation, une équipe active par joueur). Les morts de chaque coéquipier retirent le survivant du pool commun de l'équipe, sans jamais affecter les pips ni le classement personnel. Même cycle de saisons que le mode solo.
 
 #### Survivor Gauntlet
 
@@ -44,6 +61,14 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 * Création et sauvegarde de builds personnalisés.
 * Bibliothèque de builds favoris.
 * Chargement rapide dans le formulaire de suivi de match.
+
+### 🌍 Langues & Apparence
+
+* Interface disponible en 5 langues : Français, English, Deutsch, Italiano, Español.
+* Mode sombre / mode clair, au choix dans les Paramètres.
+* **Langue des noms du jeu** (réglage séparé) : affichez les noms de tueurs, perks, objets et add-ons dans la langue de votre choix, avec repli automatique sur l'anglais pour les noms sans traduction. Le nom anglais canonique reste utilisé en interne (stockage et icônes), le changement est purement visuel.
+* Saisie multilingue : tapez un nom de perk ou d'add-on dans n'importe quelle langue supportée, l'app le reconnaît via une table d'équivalences (ex. « Fluch: Verderben » ⇒ Hex: Ruin).
+* Préférences locales à l'appareil (thème, langue, langue des noms), appliquées sans redémarrage.
 
 ### ☁️ Synchronisation des Données
 
@@ -73,14 +98,16 @@ Les mises à jour sont publiées via GitHub Releases : un tag `v*` déclenche un
 
 * Frontend : React + TypeScript (architecture par feature) + Zustand
 * Desktop : Tauri (Rust)
-* Backend & Base de données : Supabase (Postgres, Auth, RLS)
+* Backend & Base de données : Supabase (Postgres, Auth, RLS, fonctions SQL `security definer` pour les fonctionnalités sociales)
+* Internationalisation : i18next + react-i18next (5 langues), dictionnaires de noms du jeu maison
 * Graphiques : composants maison (SVG/CSS), sans librairie externe
 * Gestion de version & CI : GitHub / GitHub Actions
 
 ## 📁 Structure du projet
 
 * `/dbd-stats-tracker` : application Tauri.
-  * `/src` : interface utilisateur et logique métier, organisées par feature (auth, match-tracker, builds, hardcore-mode, survivor-gauntlet, world-cup, statistics, settings...).
+  * `/src` : interface utilisateur et logique métier, organisées par feature (auth, match-tracker, builds, hardcore-mode, hardcore-teams, survivor-gauntlet, world-cup, statistics, teams, friends, settings...).
+  * `/src/shared/i18n` : ressources de traduction de l'interface (`locales/`) et dictionnaires des noms du jeu (`gameNames.ts`).
   * `/src-tauri` : backend Tauri (Rust), configuration de l'app et ressources embarquées dans le build (dont le dossier d'icônes par défaut).
   * `/supabase/migrations` : schéma et migrations de la base de données.
 * `/.github/workflows` : pipeline de build, signature et publication des releases.
@@ -89,7 +116,7 @@ Les mises à jour sont publiées via GitHub Releases : un tag `v*` déclenche un
 
 L'application embarque un dossier d'icônes par défaut (personnages, perks, objets, add-ons), utilisable sans aucune configuration.
 
-Tu peux pointer vers ton propre dossier `Icons` depuis la page d'accueil de l'app pour le remplacer. Structure attendue :
+Tu peux pointer vers ton propre dossier `Icons` depuis l'onglet Paramètres de l'app pour le remplacer. Structure attendue :
 
 * `Icons/CharPortraits/`
 * `Icons/Perks/`
