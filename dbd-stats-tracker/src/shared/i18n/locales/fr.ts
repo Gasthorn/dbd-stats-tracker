@@ -119,6 +119,10 @@ export const fr = {
     themeDark: "🌙 Sombre",
     themeLight: "☀️ Clair",
     language: "Langue",
+    gameNames: "Langue des noms du jeu",
+    gameNamesHint:
+      "Langue d'affichage des noms du jeu (tueurs, perks, objets...). Les noms originaux anglais restent utilisés pour les icônes et la sauvegarde ; un nom sans traduction s'affiche en anglais, et tu peux taper les noms dans n'importe quelle langue dans les champs de saisie.",
+    gameNamesOriginal: "English (originaux)",
     iconsFolder: {
       title: "Dossier d'icônes",
       explanation:

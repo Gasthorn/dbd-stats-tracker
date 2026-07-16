@@ -8,7 +8,7 @@ import "../../../shared/styles/rarity.css";
 import { BuildManagerPanel } from "../../builds";
 import type { Build } from "../../builds";
 import { useCharactersStore } from "../../characters/stores/characters.store";
-import { IconSelectionSlot } from "../../settings";
+import { IconSelectionSlot, useGameNames } from "../../settings";
 import type { WorldCupMatchInput } from "../stores/world-cup.store.types";
 
 const EMPTY_PERKS: [string, string, string, string] = ["", "", "", ""];
@@ -32,6 +32,7 @@ interface WorldCupFixtureMatchFormProps {
 
 export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: WorldCupFixtureMatchFormProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
 
   const [perks, setPerks] = useState<[string, string, string, string]>(EMPTY_PERKS);
@@ -88,7 +89,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
     const cleanedPerks = perks.filter((perk) => perk !== "");
     const ownedPerkCount = cleanedPerks.filter((perk) => uniquePerkNames.includes(perk)).length;
     if (ownedPerkCount < MIN_OWNED_PERKS) {
-      setFormError(t("worldCup.buildNeedsOwnPerks", { count: MIN_OWNED_PERKS, name: characterName }));
+      setFormError(t("worldCup.buildNeedsOwnPerks", { count: MIN_OWNED_PERKS, name: tGameName(characterName) }));
       return;
     }
 
@@ -139,7 +140,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
       {perks.map((_, index) => (
         <datalist id={`world-cup-perks-options-${index}`} key={index}>
           {availablePerks.map((perk) => (
-            <option key={perk.name} value={perk.name} />
+            <option key={perk.name} value={tGameName(perk.name)} />
           ))}
         </datalist>
       ))}
@@ -168,7 +169,7 @@ export function WorldCupFixtureMatchForm({ characterName, onSubmit, onCancel }: 
         />
         <datalist id="world-cup-killer-addon-options">
           {killerAddonOptions.map((addon) => (
-            <option key={addon} value={addon} />
+            <option key={addon} value={tGameName(addon)} />
           ))}
         </datalist>
       </div>

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useGameNames } from "../hooks/useGameNames";
 import { useTranslation } from "react-i18next";
 import { KILLERS, SURVIVORS } from "../../../shared/data/characters";
 import { SURVIVOR_ADDONS, SURVIVOR_ITEMS, KILLER_ADDONS } from "../../../shared/data/equipment";
@@ -27,6 +28,7 @@ function slugify(text: string): string {
 
 export function IconsIndexPage() {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const iconsFolderPath = useSettingsStore(selectEffectiveIconsFolderPath);
 
   const sections = useMemo<IconIndexSection[]>(() => {
@@ -56,7 +58,7 @@ export function IconsIndexPage() {
     for (const group of SURVIVOR_ADDONS) {
       result.push({
         id: `addons-${slugify(group.itemType)}`,
-        title: t("iconsIndex.addonsFor", { name: group.itemType }),
+        title: t("iconsIndex.addonsFor", { name: tGameName(group.itemType) }),
         category: "Addons",
         items: [...group.addons],
       });
@@ -65,7 +67,7 @@ export function IconsIndexPage() {
     for (const killer of Object.keys(KILLER_ADDONS)) {
       result.push({
         id: `addons-${slugify(killer)}`,
-        title: t("iconsIndex.addonsFor", { name: killer }),
+        title: t("iconsIndex.addonsFor", { name: tGameName(killer) }),
         category: "Addons",
         items: [...KILLER_ADDONS[killer]],
         owner: killer,
@@ -73,7 +75,7 @@ export function IconsIndexPage() {
     }
 
     return result;
-  }, [t]);
+  }, [t, tGameName]);
 
   return (
     <div className="icon-index-page">

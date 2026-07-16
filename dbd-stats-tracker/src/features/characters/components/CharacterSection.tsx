@@ -1,4 +1,4 @@
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import { useTranslation } from "react-i18next";
 
 interface CharacterSectionProps {
@@ -21,6 +21,7 @@ export function CharacterSection({
   disabled,
 }: CharacterSectionProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   return (
     <section className="characters-section">
       <div className="characters-section-header">
@@ -49,7 +50,7 @@ export function CharacterSection({
               onClick={() => onToggle(name)}
             >
               <Icon category="Characters" name={name} alt={name} size={56} />
-              <span>{name}</span>
+              <span>{tGameName(name)}</span>
             </button>
           );
         })}

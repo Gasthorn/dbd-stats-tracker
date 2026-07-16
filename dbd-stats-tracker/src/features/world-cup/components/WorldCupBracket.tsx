@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { KNOCKOUT_ROUND_LABEL_KEYS, KNOCKOUT_ROUND_ORDER, type KnockoutRound } from "../../../shared/lib/world-cup/knockout";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
 import type { WorldCupFixture } from "../types/world-cup.types";
 import type { WorldCupMatchInput } from "../stores/world-cup.store.types";
@@ -108,11 +108,12 @@ interface BracketMatchCardProps {
 }
 
 function BracketMatchCard({ fixture, matchesById, onSelect }: BracketMatchCardProps) {
+  const tGameName = useGameNames();
   const matchA = fixture.killerAMatchId ? matchesById[fixture.killerAMatchId] : undefined;
   const matchB = fixture.killerBMatchId ? matchesById[fixture.killerBMatchId] : undefined;
 
   return (
-    <button type="button" className="bracket-match-card" onClick={onSelect} title={`${fixture.killerA} vs ${fixture.killerB}`}>
+    <button type="button" className="bracket-match-card" onClick={onSelect} title={`${tGameName(fixture.killerA)} vs ${tGameName(fixture.killerB)}`}>
       <span className={`bracket-match-side${fixture.winner === "a" ? " is-winner" : ""}`}>
         <Icon category="Characters" name={fixture.killerA} alt={fixture.killerA} size={40} />
         <span className="bracket-match-score">{hooksOf(matchA) ?? "-"}</span>
@@ -146,13 +147,14 @@ export function WorldCupBracket({
   onManualTiebreak,
 }: WorldCupBracketProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const [selectedFixtureId, setSelectedFixtureId] = useState<string | null>(null);
 
   if (champion) {
     return (
       <div className="world-cup-champion">
         <Icon category="Characters" name={champion} alt={champion} size={170} />
-        <h2>{champion}</h2>
+        <h2>{tGameName(champion)}</h2>
         <p>{t("worldCup.champion")}</p>
       </div>
     );

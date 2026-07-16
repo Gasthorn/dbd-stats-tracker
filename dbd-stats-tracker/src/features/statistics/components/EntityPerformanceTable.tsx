@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import type { KeyedPerformanceStat } from "../types/statistics.types";
 
 interface EntityPerformanceTableProps {
@@ -29,6 +29,7 @@ export function EntityPerformanceTable({
   diamondIcon = false,
   emptyMessage,
 }: EntityPerformanceTableProps) {
+  const tGameName = useGameNames();
   const [topN, setTopN] = useState<(typeof TOP_N_OPTIONS)[number]>(3);
 
   const topEntities = useMemo(
@@ -70,7 +71,7 @@ export function EntityPerformanceTable({
                       <Icon category={iconCategory} name={entity.key} alt={entity.key} size={diamondIcon ? 30 : 40} />
                     </span>
                   )}
-                  {entity.key}
+                  {tGameName(entity.key)}
                 </td>
                 <td>{entity.matches}</td>
                 <td>{entity.secondaryCount}</td>

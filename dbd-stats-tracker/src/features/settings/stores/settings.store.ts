@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { i18n, loadInitialLanguage, persistLanguage, type AppLanguage } from "../../../shared/i18n";
+import { GAME_NAME_LANGUAGES, type GameNameLanguage } from "../../../shared/i18n/gameNames";
 import type { AsyncStatus } from "../../../shared/types/common.types";
 import { useAuthStore } from "../../auth/stores/auth.store";
 import { getDefaultIconsFolder } from "../lib/getDefaultIconsFolder";
@@ -18,6 +19,13 @@ function requireUserId(): string {
 export type AppTheme = "dark" | "light";
 
 const THEME_STORAGE_KEY = "app-theme";
+const GAME_NAME_LANGUAGE_STORAGE_KEY = "game-name-language";
+
+/** Display language for game-entity names (killers etc.). "en" = original names, the storage/icon keys. */
+function loadInitialGameNameLanguage(): GameNameLanguage {
+  const stored = localStorage.getItem(GAME_NAME_LANGUAGE_STORAGE_KEY);
+  return GAME_NAME_LANGUAGES.includes(stored as GameNameLanguage) ? (stored as GameNameLanguage) : "en";
+}
 
 /** Device-local preference (not per-account): it must also apply on the login screen, before any auth. */
 function loadInitialTheme(): AppTheme {
@@ -38,6 +46,7 @@ export interface SettingsState {
   defaultIconsFolderPath: string | null;
   theme: AppTheme;
   language: AppLanguage;
+  gameNameLanguage: GameNameLanguage;
   status: AsyncStatus;
   error: string | null;
 }
@@ -48,6 +57,7 @@ export interface SettingsActions {
   setIconsFolderPath: (path: string | null) => Promise<void>;
   setTheme: (theme: AppTheme) => void;
   setLanguage: (language: AppLanguage) => void;
+  setGameNameLanguage: (language: GameNameLanguage) => void;
 }
 
 export type SettingsStore = SettingsState & SettingsActions;
@@ -62,6 +72,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   defaultIconsFolderPath: null,
   theme: loadInitialTheme(),
   language: loadInitialLanguage(),
+  gameNameLanguage: loadInitialGameNameLanguage(),
   status: "idle",
   error: null,
 
@@ -100,5 +111,10 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     set({ language });
     persistLanguage(language);
     i18n.changeLanguage(language);
+  },
+
+  setGameNameLanguage: (gameNameLanguage) => {
+    set({ gameNameLanguage });
+    localStorage.setItem(GAME_NAME_LANGUAGE_STORAGE_KEY, gameNameLanguage);
   },
 }));

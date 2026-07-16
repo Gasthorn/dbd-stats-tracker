@@ -8,7 +8,7 @@ import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons
 import "../../../shared/styles/rarity.css";
 import { BuildManagerPanel } from "../../builds";
 import type { Build } from "../../builds";
-import { IconSelectionSlot } from "../../settings";
+import { IconSelectionSlot, useGameNames } from "../../settings";
 import type { MatchRole } from "../../match-tracker/types/match.types";
 import { useHardcoreStore } from "../stores/hardcore.store";
 
@@ -47,6 +47,7 @@ export function HardcoreMatchForm({
   onCancel,
 }: HardcoreMatchFormProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const recordMatch = useHardcoreStore((state) => state.recordMatch);
 
   const [opponentName, setOpponentName] = useState("");
@@ -155,7 +156,7 @@ export function HardcoreMatchForm({
 
   return (
     <form className="match-form hardcore-match-form" onSubmit={(e) => submit(false, e)}>
-      <h3>{characterName}</h3>
+      <h3>{tGameName(characterName)}</h3>
 
       <BuildManagerPanel
         idPrefix="hc"
@@ -181,7 +182,7 @@ export function HardcoreMatchForm({
             <option value="">{t("common.select")}</option>
             {KILLERS.map((name) => (
               <option key={name} value={name}>
-                {name}
+                {tGameName(name)}
               </option>
             ))}
           </IconSelectionSlot>
@@ -206,7 +207,7 @@ export function HardcoreMatchForm({
       {perks.map((_, index) => (
         <datalist id={`hc-perks-options-${index}`} key={index}>
           {availablePerks.map((perk) => (
-            <option key={perk.name} value={perk.name} />
+            <option key={perk.name} value={tGameName(perk.name)} />
           ))}
         </datalist>
       ))}
@@ -224,7 +225,7 @@ export function HardcoreMatchForm({
             <option value="">{t("matchForm.itemPlaceholder")}</option>
             {SURVIVOR_ITEMS.map((item) => (
               <option key={item} value={item}>
-                {item}
+                {tGameName(item)}
               </option>
             ))}
           </IconSelectionSlot>
@@ -248,7 +249,7 @@ export function HardcoreMatchForm({
           </div>
           <datalist id="hc-survivor-addon-options">
             {survivorAddonOptions.map((addon) => (
-              <option key={addon} value={addon} />
+              <option key={addon} value={tGameName(addon)} />
             ))}
           </datalist>
         </>
@@ -276,7 +277,7 @@ export function HardcoreMatchForm({
           />
           <datalist id="hc-killer-addon-options">
             {killerAddonOptions.map((addon) => (
-              <option key={addon} value={addon} />
+              <option key={addon} value={tGameName(addon)} />
             ))}
           </datalist>
         </div>

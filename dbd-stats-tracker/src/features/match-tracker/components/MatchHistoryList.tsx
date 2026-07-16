@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getDateLocale } from "../../../shared/i18n";
 import { useAuthStore } from "../../auth/stores/auth.store";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import { useTeamsStore } from "../../teams";
 import { worldCupService } from "../../world-cup/services/world-cup.service";
 import type { Match, MatchMode } from "../types/match.types";
@@ -56,6 +56,7 @@ interface MatchHistoryListProps {
 
 export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryListProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const userId = useAuthStore((state) => state.user?.id);
   const [worldCupDuelByMatchId, setWorldCupDuelByMatchId] = useState<Map<string, WorldCupDuelInfo>>(new Map());
   const hasWorldCupMatches = useMemo(() => matches.some((match) => match.mode === "world_cup"), [matches]);
@@ -114,11 +115,11 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
             </span>
             <span className="match-field-with-icon">
               <Icon category="Characters" name={match.characterName} alt={match.characterName} size={32} />
-              {match.role === "killer" ? t("history.killerTag") : t("history.survivorTag")} {match.characterName}
+              {match.role === "killer" ? t("history.killerTag") : t("history.survivorTag")} {tGameName(match.characterName)}
               {duel && (
                 <>
                   {" "}
-                  (vs {duel.opponent})
+                  (vs {tGameName(duel.opponent)})
                   <span
                     className={`match-result-dot is-${duel.outcome}`}
                     title={t("history.duelOutcomeTooltip", { outcome: t(OUTCOME_LABEL_KEYS[duel.outcome]) })}
@@ -129,7 +130,7 @@ export function MatchHistoryList({ matches, onEdit, onDelete }: MatchHistoryList
             {match.role === "survivor" && match.opponentName && (
               <span className="match-field-with-icon">
                 <Icon category="Characters" name={match.opponentName} alt={match.opponentName} size={32} />
-                vs {match.opponentName}
+                vs {tGameName(match.opponentName)}
               </span>
             )}
             {match.role === "survivor" && match.teamId && teamNameById.get(match.teamId) && (

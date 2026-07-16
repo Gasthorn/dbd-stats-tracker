@@ -4,7 +4,7 @@ import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_ADDONS, SURVIVOR_ADDONS, SURVIVOR_ITEMS } from "../../../shared/data/equipment";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import { useCharactersStore } from "../../characters/stores/characters.store";
-import { IconSelectionSlot } from "../../settings";
+import { IconSelectionSlot, useGameNames } from "../../settings";
 import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons/rarity";
 import "../../../shared/styles/rarity.css";
 import { BuildManagerPanel } from "../../builds";
@@ -48,6 +48,7 @@ interface MatchFormProps {
 
 export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const isEditing = match !== undefined;
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
   const unlockedSurvivors = useCharactersStore((state) => state.unlockedSurvivors);
@@ -299,7 +300,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
         <option value="">{t("common.select")}</option>
         {unlockedCharacters.map((name) => (
           <option key={name} value={name}>
-            {name}
+            {tGameName(name)}
           </option>
         ))}
       </IconSelectionSlot>
@@ -318,7 +319,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             <option value="">{t("common.select")}</option>
             {KILLERS.map((name) => (
               <option key={name} value={name}>
-                {name}
+                {tGameName(name)}
               </option>
             ))}
           </IconSelectionSlot>
@@ -364,7 +365,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
       {perks.map((_, index) => (
         <datalist id={`match-perks-options-${index}`} key={index}>
           {availablePerks.map((perk) => (
-            <option key={perk.name} value={perk.name} />
+            <option key={perk.name} value={tGameName(perk.name)} />
           ))}
         </datalist>
       ))}
@@ -382,7 +383,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
             <option value="">{t("matchForm.itemPlaceholder")}</option>
             {SURVIVOR_ITEMS.map((item) => (
               <option key={item} value={item}>
-                {item}
+                {tGameName(item)}
               </option>
             ))}
           </IconSelectionSlot>
@@ -406,7 +407,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
           </div>
           <datalist id="match-survivor-addon-options">
             {survivorAddonOptions.map((addon) => (
-              <option key={addon} value={addon} />
+              <option key={addon} value={tGameName(addon)} />
             ))}
           </datalist>
         </>
@@ -434,7 +435,7 @@ export function MatchForm({ match, onSuccess, onCancel }: MatchFormProps) {
           />
           <datalist id="match-killer-addon-options">
             {killerAddonOptions.map((addon) => (
-              <option key={addon} value={addon} />
+              <option key={addon} value={tGameName(addon)} />
             ))}
           </datalist>
         </div>

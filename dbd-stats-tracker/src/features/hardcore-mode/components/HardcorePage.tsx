@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
 import { useCharactersStore } from "../../characters/stores/characters.store";
 import { HardcoreTeamPanel, useHardcoreTeamStore } from "../../hardcore-teams";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import type { MatchRole } from "../../match-tracker/types/match.types";
 import { useHardcoreStore } from "../stores/hardcore.store";
 import { HardcoreCharacterGrid } from "./HardcoreCharacterGrid";
@@ -14,6 +14,7 @@ import "./hardcore-mode.css";
 
 export function HardcorePage() {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const charactersStatus = useCharactersStore((state) => state.status);
   const fetchCharacters = useCharactersStore((state) => state.fetch);
   const unlockedKillers = useCharactersStore((state) => state.unlockedKillers);
@@ -125,7 +126,7 @@ export function HardcorePage() {
         <>
           <div className="hardcore-selected-character-bar">
             <Icon category="Characters" name={selectedCharacter} alt={selectedCharacter} size={64} />
-            <span>{selectedCharacter}</span>
+            <span>{tGameName(selectedCharacter)}</span>
             <button type="button" onClick={() => setSelectedCharacter(null)}>
               {t("hardcore.changeCharacter")}
             </button>

@@ -116,6 +116,10 @@ export const es: typeof fr = {
     themeDark: "🌙 Oscuro",
     themeLight: "☀️ Claro",
     language: "Idioma",
+    gameNames: "Idioma de los nombres del juego",
+    gameNamesHint:
+      "Idioma de visualización de los nombres del juego (asesinos, perks, objetos...). Los nombres originales en inglés se siguen usando para los iconos y el guardado; un nombre sin traducción se muestra en inglés, y en los campos de texto puedes escribir los nombres en cualquier idioma compatible.",
+    gameNamesOriginal: "English (originales)",
     iconsFolder: {
       title: "Carpeta de iconos",
       explanation:

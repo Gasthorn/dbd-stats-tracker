@@ -1,4 +1,5 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
+import { useGameNames } from "../../settings";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getHardcoreSeasonId } from "../../../shared/lib/hardcore/rank";
@@ -8,6 +9,7 @@ import "./hardcore-teams.css";
 
 export function HardcoreTeamPanel() {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const members = useHardcoreTeamStore((state) => state.members);
   const status = useHardcoreTeamStore((state) => state.status);
   const storeError = useHardcoreTeamStore((state) => state.error);
@@ -161,7 +163,7 @@ export function HardcoreTeamPanel() {
             {myMembership.teamDeadSurvivors.length > 0 && (
               <ul className="hardcore-team-member-list">
                 {myMembership.teamDeadSurvivors.map((name) => (
-                  <li key={name}>{name}</li>
+                  <li key={name}>{tGameName(name)}</li>
                 ))}
               </ul>
             )}

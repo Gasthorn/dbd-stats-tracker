@@ -1,4 +1,5 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
+import { useGameNames } from "../../settings";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getDateLocale } from "../../../shared/i18n";
@@ -13,6 +14,7 @@ type RoleFilter = MatchRole | "all";
 
 export function MatchHistoryPage() {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const charactersStatus = useCharactersStore((state) => state.status);
   const fetchCharacters = useCharactersStore((state) => state.fetch);
   const matches = useMatchTrackerStore((state) => state.matches);
@@ -46,7 +48,7 @@ export function MatchHistoryPage() {
   }, [roleFilter, fetchMatches]);
 
   async function handleDelete(match: Match) {
-    if (!confirm(t("history.deleteConfirm", { character: match.characterName, date: new Date(match.playedAt).toLocaleString(getDateLocale()) }))) {
+    if (!confirm(t("history.deleteConfirm", { character: tGameName(match.characterName), date: new Date(match.playedAt).toLocaleString(getDateLocale()) }))) {
       return;
     }
     setDeleteError(null);

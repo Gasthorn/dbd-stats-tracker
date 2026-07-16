@@ -1,6 +1,6 @@
 import { useState, type PointerEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 
 const GROUP_SIZE = 6;
 
@@ -29,6 +29,7 @@ function reorderItem<T>(items: T[], fromIndex: number, toIndex: number): T[] {
 
 export function WorldCupSeedingSetup({ eligibleKillers, onStart, isSubmitting, error }: WorldCupSeedingSetupProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const [mode, setMode] = useState<"choice" | "manual">("choice");
   const [order, setOrder] = useState<string[]>(eligibleKillers);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -111,7 +112,7 @@ export function WorldCupSeedingSetup({ eligibleKillers, onStart, isSubmitting, e
                 </span>
                 <span className="world-cup-seeding-rank">{index + 1}</span>
                 <Icon category="Characters" name={killer} alt={killer} size={32} />
-                <span className="world-cup-seeding-name">{killer}</span>
+                <span className="world-cup-seeding-name">{tGameName(killer)}</span>
                 <span className="world-cup-seeding-controls">
                   <button
                     type="button"

@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { canonicalGameName, translateGameName } from "../../../shared/i18n/gameNames";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
 import { resolveIconSrcCandidates } from "../lib/resolveIconSrc";
 import { useIconCandidateSrc } from "../lib/useIconCandidateSrc";
@@ -41,6 +42,7 @@ type IconSelectionSlotProps = InputSlotProps | SelectSlotProps;
 export function IconSelectionSlot(props: IconSelectionSlotProps) {
   const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
   const defaultIconsFolderPath = useSettingsStore((state) => state.defaultIconsFolderPath);
+  const gameNameLanguage = useSettingsStore((state) => state.gameNameLanguage);
   const [isFocused, setIsFocused] = useState(false);
 
   const candidates = props.value
@@ -80,12 +82,15 @@ export function IconSelectionSlot(props: IconSelectionSlotProps) {
           {props.children}
         </select>
       ) : (
+        // The parent's value stays canonical English (storage/icon key); the input DISPLAYS
+        // the translated name and typed text is mapped back through the cross-language
+        // equivalence table, so names can be typed in any supported language.
         <input
           id={props.id}
-          value={props.value}
+          value={translateGameName(props.value, gameNameLanguage)}
           list={props.listId}
           placeholder={props.placeholder}
-          onChange={(e) => props.onChange(e.target.value)}
+          onChange={(e) => props.onChange(canonicalGameName(e.target.value))}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />

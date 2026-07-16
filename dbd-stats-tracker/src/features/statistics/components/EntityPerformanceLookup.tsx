@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import type { KeyedPerformanceStat } from "../types/statistics.types";
 
 interface EntityPerformanceLookupProps {
@@ -35,6 +35,7 @@ export function EntityPerformanceLookup({
   emptyOptionsMessage,
 }: EntityPerformanceLookupProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const statsByKey = useMemo(() => new Map(stats.map((stat) => [stat.key, stat])), [stats]);
   const mostPlayed = useMemo(() => [...stats].sort((a, b) => b.matches - a.matches)[0]?.key ?? "", [stats]);
   const [selected, setSelected] = useState(mostPlayed);
@@ -54,7 +55,7 @@ export function EntityPerformanceLookup({
             <option value="">{t("common.select")}</option>
             {options.map((name) => (
               <option key={name} value={name}>
-                {name}
+                {tGameName(name)}
               </option>
             ))}
           </select>

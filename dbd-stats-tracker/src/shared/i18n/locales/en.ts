@@ -116,6 +116,10 @@ export const en: typeof fr = {
     themeDark: "🌙 Dark",
     themeLight: "☀️ Light",
     language: "Language",
+    gameNames: "Game names language",
+    gameNamesHint:
+      "Display language for game names (killers, perks, items...). The original English names are still used for icons and storage; any untranslated name shows in English, and input fields accept names typed in any supported language.",
+    gameNamesOriginal: "English (original)",
     iconsFolder: {
       title: "Icons folder",
       explanation:

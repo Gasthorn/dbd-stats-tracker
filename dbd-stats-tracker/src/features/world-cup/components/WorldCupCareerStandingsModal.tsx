@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "../../../shared/components/LoadingSpinner";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import { useWorldCupStore } from "../stores/world-cup.store";
 import { WorldCupKillerHistoryModal } from "./WorldCupKillerHistoryModal";
 
@@ -12,6 +12,7 @@ interface WorldCupCareerStandingsModalProps {
 /** Every killer's cumulative record across every match (group and knockout) from every World Cup ever played - available any time, even before starting a new one. */
 export function WorldCupCareerStandingsModal({ onClose }: WorldCupCareerStandingsModalProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const careerStandings = useWorldCupStore((state) => state.careerStandings);
   const careerFixtures = useWorldCupStore((state) => state.careerFixtures);
   const careerMatchesById = useWorldCupStore((state) => state.careerMatchesById);
@@ -70,7 +71,7 @@ export function WorldCupCareerStandingsModal({ onClose }: WorldCupCareerStanding
                       onClick={() => setSelectedKiller(standing.killer)}
                     >
                       <Icon category="Characters" name={standing.killer} alt={standing.killer} size={32} />
-                      {standing.killer}
+                      {tGameName(standing.killer)}
                     </button>
                   </td>
                   <td>{standing.played}</td>

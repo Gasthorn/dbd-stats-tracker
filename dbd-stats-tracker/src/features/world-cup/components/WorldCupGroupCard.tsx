@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { groupLetter } from "../../../shared/lib/world-cup/groups";
 import { computeGroupStandings, rankGroupStandings } from "../../../shared/lib/world-cup/standings";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
 import { useWorldCupStore } from "../stores/world-cup.store";
 import { toStandingsFixture } from "../lib/deriveState";
@@ -28,6 +28,7 @@ export function WorldCupGroupCard({
   defaultOpen = false,
   qualifiedKillers = null,
 }: WorldCupGroupCardProps) {
+  const tGameName = useGameNames();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [selectedKiller, setSelectedKiller] = useState<string | null>(null);
@@ -85,7 +86,7 @@ export function WorldCupGroupCard({
                       />
                     )}
                     <Icon category="Characters" name={standing.killer} alt={standing.killer} size={32} />
-                    {standing.killer}
+                    {tGameName(standing.killer)}
                   </button>
                 </td>
                 <td>{standing.played}</td>

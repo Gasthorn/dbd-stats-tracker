@@ -5,7 +5,7 @@ import { getDateLocale, i18n } from "../../../shared/i18n";
 import { groupLetter } from "../../../shared/lib/world-cup/groups";
 import { KNOCKOUT_ROUND_LABEL_KEYS, KNOCKOUT_ROUND_ORDER } from "../../../shared/lib/world-cup/knockout";
 import { computeGroupStandings, rankGroupStandings } from "../../../shared/lib/world-cup/standings";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
 import { toStandingsFixture } from "../lib/deriveState";
 import { useWorldCupStore } from "../stores/world-cup.store";
@@ -28,6 +28,7 @@ function hooksOf(match: Match | undefined): number | null {
 /** Read-only recap of one past, completed World Cup: final group standings, then every knockout round's results. */
 function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const finalFixture = detail.fixtures.find((fixture) => fixture.round === "final");
   const champion =
     finalFixture?.winner === "a" ? finalFixture.killerA : finalFixture?.winner === "b" ? finalFixture.killerB : null;
@@ -40,7 +41,7 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
     <>
       {champion && (
         <p className="world-cup-history-champion">
-          {t("worldCup.championLabel")} <b>{champion}</b>
+          {t("worldCup.championLabel")} <b>{tGameName(champion)}</b>
         </p>
       )}
 
@@ -78,7 +79,7 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
                             title={qualifiedKillers.has(standing.killer) ? t("worldCup.qualifiedTooltip") : t("worldCup.eliminatedTooltip")}
                           />
                           <Icon category="Characters" name={standing.killer} alt={standing.killer} size={32} />
-                          {standing.killer}
+                          {tGameName(standing.killer)}
                         </span>
                       </td>
                       <td>{standing.played}</td>
@@ -116,13 +117,13 @@ function WorldCupHistoryDetail({ detail }: { detail: WorldCupRunDetail }) {
                     <div className="world-cup-fixture-matchup">
                       <span className={`world-cup-fixture-side${fixture.winner === "a" ? " is-winner" : ""}`}>
                         <Icon category="Characters" name={fixture.killerA} alt={fixture.killerA} size={40} />
-                        <span className="world-cup-fixture-killer-name">{fixture.killerA}</span>
+                        <span className="world-cup-fixture-killer-name">{tGameName(fixture.killerA)}</span>
                         <span className="world-cup-fixture-hooks">{t("worldCup.hooksCount", { count: hooksOf(matchA) ?? "-" })}</span>
                       </span>
                       <span className="world-cup-fixture-vs">{fixture.winner === "draw" ? t("worldCup.draw") : "vs"}</span>
                       <span className={`world-cup-fixture-side${fixture.winner === "b" ? " is-winner" : ""}`}>
                         <Icon category="Characters" name={fixture.killerB} alt={fixture.killerB} size={40} />
-                        <span className="world-cup-fixture-killer-name">{fixture.killerB}</span>
+                        <span className="world-cup-fixture-killer-name">{tGameName(fixture.killerB)}</span>
                         <span className="world-cup-fixture-hooks">{t("worldCup.hooksCount", { count: hooksOf(matchB) ?? "-" })}</span>
                       </span>
                     </div>

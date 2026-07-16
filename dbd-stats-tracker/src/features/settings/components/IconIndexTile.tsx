@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useGameNames } from "../hooks/useGameNames";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
 import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons/rarity";
 import "../../../shared/styles/rarity.css";
@@ -17,6 +18,7 @@ interface IconIndexTileProps {
  *  from *both* folders) are easy to spot in a large grid. Killer addons also get their
  *  rarity-colored border, like the legacy prototype's selection slots. */
 export function IconIndexTile({ category, name, manualOwner = null }: IconIndexTileProps) {
+  const tGameName = useGameNames();
   const iconsFolderPath = useSettingsStore((state) => state.iconsFolderPath);
   const defaultIconsFolderPath = useSettingsStore((state) => state.defaultIconsFolderPath);
   const [primaryIndex, setPrimaryIndex] = useState(0);
@@ -45,7 +47,7 @@ export function IconIndexTile({ category, name, manualOwner = null }: IconIndexT
     .join(" ");
 
   return (
-    <div className="icon-index-tile" title={name}>
+    <div className="icon-index-tile" title={tGameName(name)}>
       <div className={boxClassName}>
         {src && (
           <img
@@ -58,7 +60,7 @@ export function IconIndexTile({ category, name, manualOwner = null }: IconIndexT
           />
         )}
       </div>
-      <span className="icon-index-tile-name">{name}</span>
+      <span className="icon-index-tile-name">{tGameName(name)}</span>
     </div>
   );
 }

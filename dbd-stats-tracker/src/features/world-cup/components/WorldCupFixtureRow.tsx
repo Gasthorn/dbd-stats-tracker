@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
 import type { WorldCupFixture } from "../types/world-cup.types";
 import type { WorldCupMatchInput } from "../stores/world-cup.store.types";
@@ -20,6 +20,7 @@ function hooksOf(match: Match | undefined): number | null {
 
 export function WorldCupFixtureRow({ fixture, matchesById, onRecordSide, onManualTiebreak }: WorldCupFixtureRowProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const [recordingSide, setRecordingSide] = useState<"a" | "b" | null>(null);
 
   const matchA = fixture.killerAMatchId ? matchesById[fixture.killerAMatchId] : undefined;
@@ -44,7 +45,7 @@ export function WorldCupFixtureRow({ fixture, matchesById, onRecordSide, onManua
     return (
       <div className={`world-cup-fixture-side${isWinner ? " is-winner" : ""}`}>
         <Icon category="Characters" name={killerName} alt={killerName} size={56} />
-        <span className="world-cup-fixture-killer-name">{killerName}</span>
+        <span className="world-cup-fixture-killer-name">{tGameName(killerName)}</span>
         {hasPlayed ? (
           <span className="world-cup-fixture-hooks">{t("worldCup.hooksCount", { count: hooks })}</span>
         ) : (
@@ -70,10 +71,10 @@ export function WorldCupFixtureRow({ fixture, matchesById, onRecordSide, onManua
         <div className="world-cup-fixture-tiebreak">
           <p>{t("worldCup.tiebreakPrompt")}</p>
           <button type="button" onClick={() => onManualTiebreak("a")}>
-            {t("worldCup.sideWins", { name: fixture.killerA })}
+            {t("worldCup.sideWins", { name: tGameName(fixture.killerA) })}
           </button>
           <button type="button" onClick={() => onManualTiebreak("b")}>
-            {t("worldCup.sideWins", { name: fixture.killerB })}
+            {t("worldCup.sideWins", { name: tGameName(fixture.killerB) })}
           </button>
         </div>
       )}

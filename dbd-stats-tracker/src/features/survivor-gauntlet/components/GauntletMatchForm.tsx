@@ -12,7 +12,7 @@ import { getKillerAddonRarity, rarityClassName } from "../../../shared/lib/icons
 import "../../../shared/styles/rarity.css";
 import { BuildManagerPanel } from "../../builds";
 import type { Build } from "../../builds";
-import { IconSelectionSlot } from "../../settings";
+import { IconSelectionSlot, useGameNames } from "../../settings";
 import type { EscapeResult, MatchRole } from "../../match-tracker/types/match.types";
 import { useGauntletStore } from "../stores/gauntlet.store";
 
@@ -60,6 +60,7 @@ export function GauntletMatchForm({
   onCancel,
 }: GauntletMatchFormProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const recordMatch = useGauntletStore((state) => state.recordMatch);
 
   const [opponentName, setOpponentName] = useState("");
@@ -221,7 +222,7 @@ export function GauntletMatchForm({
             <option value="">{t("common.select")}</option>
             {KILLERS.map((name) => (
               <option key={name} value={name}>
-                {name}
+                {tGameName(name)}
               </option>
             ))}
           </IconSelectionSlot>
@@ -245,12 +246,12 @@ export function GauntletMatchForm({
       </div>
       <datalist id="gauntlet-unique-perks-options">
         {uniquePerkNames.map((name) => (
-          <option key={name} value={name} />
+          <option key={name} value={tGameName(name)} />
         ))}
       </datalist>
       <datalist id="gauntlet-perks-options">
         {availablePerks.map((perk) => (
-          <option key={perk.name} value={perk.name} />
+          <option key={perk.name} value={tGameName(perk.name)} />
         ))}
       </datalist>
 
@@ -267,7 +268,7 @@ export function GauntletMatchForm({
             <option value="">{t("matchForm.itemPlaceholder")}</option>
             {SURVIVOR_ITEMS.map((item) => (
               <option key={item} value={item}>
-                {item}
+                {tGameName(item)}
               </option>
             ))}
           </IconSelectionSlot>
@@ -291,7 +292,7 @@ export function GauntletMatchForm({
           </div>
           <datalist id="gauntlet-survivor-addon-options">
             {survivorAddonOptions.map((addon) => (
-              <option key={addon} value={addon} />
+              <option key={addon} value={tGameName(addon)} />
             ))}
           </datalist>
         </>
@@ -319,7 +320,7 @@ export function GauntletMatchForm({
           />
           <datalist id="gauntlet-killer-addon-options">
             {killerAddonOptions.map((addon) => (
-              <option key={addon} value={addon} />
+              <option key={addon} value={tGameName(addon)} />
             ))}
           </datalist>
         </div>

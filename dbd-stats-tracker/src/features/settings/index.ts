@@ -10,3 +10,5 @@ export { IconSelectionSlot } from "./components/IconSelectionSlot";
 export { IconsFolderSetting } from "./components/IconsFolderSetting";
 export { IconsIndexPage } from "./components/IconsIndexPage";
 export { SettingsPage } from "./components/SettingsPage";
+export { useGameNames } from "./hooks/useGameNames";
+export type { GameNameLanguage } from "../../shared/i18n/gameNames";

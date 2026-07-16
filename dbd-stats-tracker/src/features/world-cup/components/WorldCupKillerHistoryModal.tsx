@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { i18n } from "../../../shared/i18n";
 import { KNOCKOUT_ROUND_LABEL_KEYS } from "../../../shared/lib/world-cup/knockout";
 import { groupLetter } from "../../../shared/lib/world-cup/groups";
-import { Icon } from "../../settings";
+import { Icon, useGameNames } from "../../settings";
 import type { Match } from "../../match-tracker/types/match.types";
 import { getKillerFixtures } from "../lib/deriveState";
 import type { WorldCupFixture, WorldCupGroup, WorldCupRound } from "../types/world-cup.types";
@@ -56,6 +56,7 @@ export function WorldCupKillerHistoryModal({
   onClose,
 }: WorldCupKillerHistoryModalProps) {
   const { t } = useTranslation();
+  const tGameName = useGameNames();
   const rows = useMemo(() => {
     return getKillerFixtures(killerName, fixtures)
       .map((fixture) => {
@@ -85,7 +86,7 @@ export function WorldCupKillerHistoryModal({
         <div className="world-cup-killer-modal-header">
           <Icon category="Characters" name={killerName} alt={killerName} size={56} />
           <div className="world-cup-killer-modal-title">
-            <h3>{killerName}</h3>
+            <h3>{tGameName(killerName)}</h3>
             <p className="world-cup-killer-modal-record">{t("worldCup.recordLine", { wins, draws, losses })}</p>
           </div>
           <button type="button" className="world-cup-killer-modal-close" onClick={onClose} aria-label={t("common.close")}>
@@ -103,7 +104,7 @@ export function WorldCupKillerHistoryModal({
                 <span className="world-cup-killer-modal-round">{roundLabel(fixture, groups)}</span>
                 <span className="world-cup-killer-modal-opponent">
                   <Icon category="Characters" name={opponent} alt={opponent} size={28} />
-                  vs {opponent}
+                  vs {tGameName(opponent)}
                 </span>
                 <span className="world-cup-killer-modal-score">
                   {hooksLabel(ownMatch)} / {hooksLabel(opponentMatch)}
