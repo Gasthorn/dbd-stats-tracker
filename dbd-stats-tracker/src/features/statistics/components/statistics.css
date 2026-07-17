@@ -178,6 +178,43 @@
   background-color: var(--stats-survivor);
 }
 
+/* Survivor outcome breakdown (door / hatch / hook / mori / DC) */
+
+.is-outcome-door {
+  background-color: var(--stats-survivor);
+}
+
+.is-outcome-hatch {
+  background-color: #2e8f8a;
+}
+
+.is-outcome-sacrificed {
+  background-color: var(--stats-killer);
+}
+
+.is-outcome-killed {
+  background-color: #7c4dbb;
+}
+
+/* Killer disconnect = free survivor win, so it gets a win-family color. */
+.is-outcome-disconnected {
+  background-color: #55a06f;
+}
+
+.outcome-legend {
+  flex-wrap: wrap;
+  row-gap: 0.4rem;
+}
+
+/* Solo vs SWF comparison */
+
+.top-stat-detail {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.8em;
+  color: var(--color-text-muted);
+}
+
 /* ---- Activity heatmap ---- */
 
 .heatmap-header {

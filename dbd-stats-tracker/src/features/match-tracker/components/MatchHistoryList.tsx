@@ -36,10 +36,14 @@ const ESCAPE_SUMMARY_KEYS: Record<NonNullable<Match["escapeResult"]>, string> = 
   disconnected: "matchForm.disconnected",
 };
 
-/** Survivor win = escaped; killer win = 3+ sacrifices. */
+/** Survivor win = escaped or killer disconnected; killer win = 3+ sacrifices. */
 function isWin(match: Match): boolean {
   if (match.role === "killer") return match.kills >= 3;
-  return match.escapeResult === "escaped_door" || match.escapeResult === "escaped_hatch";
+  return (
+    match.escapeResult === "escaped_door" ||
+    match.escapeResult === "escaped_hatch" ||
+    match.escapeResult === "disconnected"
+  );
 }
 
 function fixtureOutcome(winner: "a" | "b" | "draw" | null, side: "a" | "b"): MatchOutcome {

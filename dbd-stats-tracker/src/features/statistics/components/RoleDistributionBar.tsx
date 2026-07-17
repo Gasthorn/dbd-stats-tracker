@@ -35,10 +35,10 @@ export function RoleDistributionBar({ killerMatches, survivorMatches }: RoleDist
       </div>
       <ul className="role-distribution-legend">
         <li>
-          <span className="role-distribution-swatch is-killer" /> Tueur ({killerMatches})
+          <span className="role-distribution-swatch is-killer" /> {t("common.killer")} ({killerMatches})
         </li>
         <li>
-          <span className="role-distribution-swatch is-survivor" /> Survivant ({survivorMatches})
+          <span className="role-distribution-swatch is-survivor" /> {t("common.survivor")} ({survivorMatches})
         </li>
       </ul>
     </div>

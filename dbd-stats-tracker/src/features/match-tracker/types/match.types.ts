@@ -3,6 +3,10 @@ import type { ISODateString, UUID } from "../../../shared/types/common.types";
 export type MatchRole = "killer" | "survivor";
 export type MatchMode = "normal" | "hardcore" | "gauntlet" | "world_cup";
 
+/**
+ * How a survivor match ended. `disconnected` means the KILLER disconnected,
+ * which counts as a survivor win everywhere (streaks, escape rates, history).
+ */
 export type EscapeResult =
   | "escaped_door"
   | "escaped_hatch"

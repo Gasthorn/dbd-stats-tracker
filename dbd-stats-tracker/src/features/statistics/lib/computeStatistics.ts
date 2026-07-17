@@ -1,18 +1,28 @@
 import type { Build } from "../../builds/types/build.types";
 import type { KillerMatch, Match, MatchRole, SurvivorMatch } from "../../match-tracker/types/match.types";
+import type { Team } from "../../teams/types/team.types";
 import type {
   ActivityHeatmapDay,
   KeyedPerformanceStat,
   PerformanceSeries,
   StatisticsSummary,
+  SurvivorOutcomeCounts,
+  SwfComparison,
+  SwfSideStat,
   TopBuildStat,
   TopCharacterStat,
   WinStreakStat,
   WinStreaks,
 } from "../types/statistics.types";
 
+/** Survivor win: escaped by door or hatch, or the killer disconnected (a free win). */
 function isSurvivorEscaped(match: Match): boolean {
-  return match.role === "survivor" && (match.escapeResult === "escaped_door" || match.escapeResult === "escaped_hatch");
+  return (
+    match.role === "survivor" &&
+    (match.escapeResult === "escaped_door" ||
+      match.escapeResult === "escaped_hatch" ||
+      match.escapeResult === "disconnected")
+  );
 }
 
 function isKillerWin(match: Match): boolean {
@@ -249,6 +259,77 @@ export function computeBuildPerformance(
       : aggregateKillerStatsByKeys(matches, keysOf);
 
   return stats.map((stat) => ({ ...stat, key: buildNameByKey.get(stat.key) as string }));
+}
+
+/** How the player's survivor matches ended: door/hatch escapes, hook sacrifices, moris, DCs. */
+export function computeSurvivorOutcomes(matches: Match[]): SurvivorOutcomeCounts {
+  const counts: SurvivorOutcomeCounts = {
+    escapedDoor: 0,
+    escapedHatch: 0,
+    sacrificed: 0,
+    killed: 0,
+    disconnected: 0,
+    total: 0,
+  };
+
+  for (const match of matches) {
+    if (match.role !== "survivor") continue;
+    counts.total++;
+    switch (match.escapeResult) {
+      case "escaped_door":
+        counts.escapedDoor++;
+        break;
+      case "escaped_hatch":
+        counts.escapedHatch++;
+        break;
+      case "sacrificed":
+        counts.sacrificed++;
+        break;
+      case "killed":
+        counts.killed++;
+        break;
+      case "disconnected":
+        counts.disconnected++;
+        break;
+    }
+  }
+
+  return counts;
+}
+
+/**
+ * Solo vs SWF comparison for survivor matches: escape rate without a team vs with one, plus the
+ * record of each individual team. Matches referencing a team that no longer exists are grouped
+ * under `deletedTeamLabel`.
+ */
+export function computeSwfPerformance(
+  matches: Match[],
+  teams: readonly Team[],
+  deletedTeamLabel: string,
+): SwfComparison {
+  const nameById = new Map(teams.map((team) => [team.id, team.name]));
+
+  const solo = { matches: 0, escapes: 0 };
+  const withTeam = { matches: 0, escapes: 0 };
+
+  for (const match of matches) {
+    if (match.role !== "survivor") continue;
+    const side = match.teamId ? withTeam : solo;
+    side.matches++;
+    if (isSurvivorEscaped(match)) side.escapes++;
+  }
+
+  const toSide = (agg: { matches: number; escapes: number }): SwfSideStat => ({
+    matches: agg.matches,
+    escapes: agg.escapes,
+    ratePercent: agg.matches > 0 ? Math.round((agg.escapes / agg.matches) * 1000) / 10 : 0,
+  });
+
+  const perTeam = aggregateSurvivorStatsByKeys(matches, (match) =>
+    match.teamId ? [nameById.get(match.teamId) ?? deletedTeamLabel] : [],
+  );
+
+  return { solo: toSide(solo), team: toSide(withTeam), perTeam };
 }
 
 /** The trailing run of wins (up to the most recent match) and the longest run ever, in chronological order. */

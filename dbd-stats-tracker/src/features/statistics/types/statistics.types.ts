@@ -48,6 +48,30 @@ export interface KeyedPerformanceStat {
   ratePercent: number;
 }
 
+/** How the player's survivor matches ended, by outcome (door/hatch escape, hook, mori, DC). */
+export interface SurvivorOutcomeCounts {
+  escapedDoor: number;
+  escapedHatch: number;
+  sacrificed: number;
+  killed: number;
+  disconnected: number;
+  total: number;
+}
+
+/** One side (solo or with an SWF team) of the solo-vs-team survivor comparison. */
+export interface SwfSideStat {
+  matches: number;
+  escapes: number;
+  ratePercent: number;
+}
+
+export interface SwfComparison {
+  solo: SwfSideStat;
+  team: SwfSideStat;
+  /** Per-team record, keyed by team name (deleted teams grouped under the provided fallback label). */
+  perTeam: KeyedPerformanceStat[];
+}
+
 /** `current` is the trailing run of wins up to the most recent match; `best` is the longest ever. */
 export interface WinStreakStat {
   current: number;

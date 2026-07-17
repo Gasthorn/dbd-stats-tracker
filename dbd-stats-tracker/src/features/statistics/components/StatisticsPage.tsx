@@ -5,6 +5,7 @@ import { getDateLocale } from "../../../shared/i18n";
 import { KILLERS } from "../../../shared/data/characters";
 import { KILLER_PERKS, SURVIVOR_PERKS } from "../../../shared/data/perks";
 import { useBuildsStore } from "../../builds";
+import { useTeamsStore } from "../../teams/stores/teams.store";
 import {
   computeActivityHeatmap,
   computeBuildPerformance,
@@ -12,6 +13,8 @@ import {
   computePerformanceSeries,
   computePerkPerformance,
   computeSummary,
+  computeSurvivorOutcomes,
+  computeSwfPerformance,
   computeWinStreaks,
 } from "../lib/computeStatistics";
 import { useStatisticsStore } from "../stores/statistics.store";
@@ -20,6 +23,7 @@ import { EntityPerformanceLookup } from "./EntityPerformanceLookup";
 import { EntityPerformanceTable } from "./EntityPerformanceTable";
 import { PerformanceBarChart } from "./PerformanceBarChart";
 import { RoleDistributionBar } from "./RoleDistributionBar";
+import { SurvivorOutcomeBar } from "./SurvivorOutcomeBar";
 import { TopBuildCard } from "./TopBuildCard";
 import { TopCharacterCard } from "./TopCharacterCard";
 import { WinStreakCard } from "./WinStreakCard";
@@ -44,9 +48,14 @@ export function StatisticsPage() {
   const buildsStatus = useBuildsStore((state) => state.status);
   const fetchBuilds = useBuildsStore((state) => state.fetchBuilds);
 
+  const teams = useTeamsStore((state) => state.teams);
+  const teamsStatus = useTeamsStore((state) => state.status);
+  const fetchTeams = useTeamsStore((state) => state.fetchTeams);
+
   useEffect(() => {
     fetchAll();
     if (buildsStatus === "idle") fetchBuilds();
+    if (teamsStatus === "idle") fetchTeams();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchAll]);
 
@@ -58,6 +67,11 @@ export function StatisticsPage() {
   const performance = useMemo(() => computePerformanceSeries(matches), [matches]);
   const winStreaks = useMemo(() => computeWinStreaks(matches), [matches]);
   const opponentStats = useMemo(() => computeOpponentPerformance(matches), [matches]);
+  const survivorOutcomes = useMemo(() => computeSurvivorOutcomes(matches), [matches]);
+  const swfComparison = useMemo(
+    () => computeSwfPerformance(matches, teams, t("stats.deletedTeam")),
+    [matches, teams, t],
+  );
 
   const survivorPerkStats = useMemo(() => computePerkPerformance(matches, "survivor"), [matches]);
   const killerPerkStats = useMemo(() => computePerkPerformance(matches, "killer"), [matches]);
@@ -125,6 +139,44 @@ export function StatisticsPage() {
             <RoleDistributionBar
               killerMatches={summary.killerMatchCount}
               survivorMatches={summary.survivorMatchCount}
+            />
+          </div>
+
+          <div className="stats-zone">
+            <h2>{t("stats.outcomesTitle")}</h2>
+            <SurvivorOutcomeBar outcomes={survivorOutcomes} />
+          </div>
+
+          <div className="stats-zone stats-zone-wide">
+            <h2>{t("stats.swfTitle")}</h2>
+            <div className="top-stats-row">
+              <div className="top-stat-card">
+                <p>{t("stats.soloEscapeRate")}</p>
+                <b className="top-stat-value is-survivor">
+                  {swfComparison.solo.matches > 0 ? `${swfComparison.solo.ratePercent} %` : "—"}
+                </b>
+                <span className="top-stat-detail">
+                  {t("stats.swfMatches", { count: swfComparison.solo.matches })}
+                </span>
+              </div>
+              <div className="top-stat-card">
+                <p>{t("stats.swfEscapeRate")}</p>
+                <b className="top-stat-value is-global">
+                  {swfComparison.team.matches > 0 ? `${swfComparison.team.ratePercent} %` : "—"}
+                </b>
+                <span className="top-stat-detail">
+                  {t("stats.swfMatches", { count: swfComparison.team.matches })}
+                </span>
+              </div>
+            </div>
+            <EntityPerformanceTable
+              title={t("stats.mostPlayedTeams")}
+              entityColumnLabel={t("stats.teamColumn")}
+              secondaryColumnLabel={t("stats.escapes")}
+              rateColumnLabel={t("stats.escapeRate")}
+              stats={swfComparison.perTeam}
+              seriesClassName="is-survivor"
+              emptyMessage={t("stats.noTeamMatches")}
             />
           </div>
 
