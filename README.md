@@ -9,7 +9,7 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 * Enregistrement détaillé des parties en Tueur ou Survivant.
 * Saisie complète : personnage, build (perks/équipement), points de sang, générateurs, sacrifices, évasions, etc.
 * Sélection aléatoire du personnage en un clic (comme pour les perks en Chaos Shuffle).
-* Distinction du sort du survivant : sacrifié (crochet) ou tué (mori).
+* Distinction du sort du survivant : évadé (porte/trappe), sacrifié (crochet), tué (mori) ou déconnexion du tueur (comptée comme victoire).
 * Association d'une équipe SWF à une partie survivant.
 * Interface inspirée de Dead by Daylight avec portraits de personnages et emplacements de perks fidèles à l'expérience du jeu.
 
@@ -53,8 +53,11 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 
 * Heatmap d'activité des sessions de jeu.
 * Graphiques de performance (taux de réussite tueur/survivant) et répartition des rôles.
-* Analyse des personnages et builds favoris.
+* **Sort en survivant** : répartition des issues de vos parties (évadé porte/trappe, sacrifié au crochet, tué au mori, déconnexion du tueur).
+* **Solo vs Équipe (SWF)** : comparaison du taux d'évasion en solo et en équipe, avec la performance détaillée de chaque équipe.
+* Analyse des personnages et builds favoris, performance par perk et par tueur affronté.
 * Historique complet des parties, modifiable et filtrable.
+* Une déconnexion du tueur compte comme une victoire du survivant dans toutes les statistiques.
 
 ### 🛠️ Gestion des Builds
 
