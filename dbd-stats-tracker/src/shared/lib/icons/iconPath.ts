@@ -78,7 +78,7 @@ const CHARACTER_FOLDER_MAP: Record<string, string> = {
   "Rebecca Chambers": "Orion",
   "The First": "Poutine",
   "Dustin Henderson": "Poutine",
-  Eleven: "Poutine",
+  "Eleven": "Poutine",
   "The Demogorgon": "Qatar",
   "Steve Harrington": "Qatar",
   "Nancy Wheeler": "Qatar",
@@ -94,6 +94,8 @@ const CHARACTER_FOLDER_MAP: Record<string, string> = {
   "Shane Wiigwaas": "Sushi",
   "The Oni": "Sweden",
   "Yui Kimura": "Sweden",
+  "The Judgment": "Udon",
+  "Aurora Stardotter": "Udon",
   "The Deathslinger": "Ukraine",
   "Zarina Kassir": "Ukraine",
   "The Singularity": "Umbra",
@@ -126,7 +128,7 @@ function normalizeForPerks(str: string): string {
     .join("");
 }
 
-const UI_PREFIX_ALL_FOLDERS = ["Maple", "Poutine", "Quiche", "Sushi"];
+const UI_PREFIX_ALL_FOLDERS = ["Maple", "Poutine", "Quiche", "Sushi", "Udon"];
 const UI_PREFIX_PERKS_AND_ADDONS_FOLDERS = ["Gelato", "Icecream", "Ketchup"];
 const UI_PREFIX_PERKS_ONLY_FOLDERS = ["Jerky", "Lasagna"];
 
@@ -227,6 +229,8 @@ const PERK_SPECIAL_PREFIX_OWNERS = [
   "Alan Wake",
   "The Slasher",
   "Shane Wiigwaas",
+  "Aurora Stardotter",
+  "The Judgment",
 ];
 
 const SURVIVOR_ADDON_FILE_MAPPING: Record<string, string> = {
@@ -428,6 +432,8 @@ const KILLER_ADDON_FILE_MAPPING: Record<string, string> = {
   "Mysterious Elixir": "IridescentElixir",
   // The First
   "Mid-Century Radio": "Mid-CenturyRadio",
+  // The Judgment
+  "Magnetised Manacles": "MagnetizedManacles",
 };
 
 // NB: legacy source declares "Begrimed Chains" twice (Hillbilly, then
@@ -457,7 +463,10 @@ export function getIconRelativePath(
   }
 
   if (category === "Characters") {
-    const fileNamePart = name === "The Good Guy" ? "The Yerkes" : name;
+    const fileNamePart = 
+    name === "The Good Guy" ? "The Yerkes" : 
+    name === "Aurora Stardotter" ? "Aurora" :
+    name;
     const { path, prefix } = getFolderInfo(name, category);
     const baseCharPath = `CharPortraits/${path}`;
 
