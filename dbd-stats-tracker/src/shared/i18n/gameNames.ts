@@ -53,6 +53,7 @@ const KILLERS_FR: Record<string, string> = {
   "The Krasue": "La Krasue",
   "The First": "Le Premier",
   "The Slasher": "Le Slasher",
+  "The Judgment": "Le Jugement",
 };
 
 const KILLERS_DE: Record<string, string> = {
@@ -99,6 +100,7 @@ const KILLERS_DE: Record<string, string> = {
   "The Krasue": "Die Krasue",
   "The First": "Der Erste",
   "The Slasher": "Der Slasher",
+  "The Judgment": "Das Gericht"
 };
 
 const KILLERS_IT: Record<string, string> = {
@@ -145,6 +147,7 @@ const KILLERS_IT: Record<string, string> = {
   "The Krasue": "La Krasue",
   "The First": "Il Primo",
   "The Slasher": "Lo Slasher",
+  "The Judgment": "Il Giudizio",
 };
 
 const KILLERS_ES: Record<string, string> = {
@@ -191,6 +194,7 @@ const KILLERS_ES: Record<string, string> = {
   "The Krasue": "La Krasue",
   "The First": "El Primero",
   "The Slasher": "El Slasher",
+  "The Judgment": "El Juicio",
 };
 
 // Perk display names (FR) - official names from deadbydaylight.wiki.gg
