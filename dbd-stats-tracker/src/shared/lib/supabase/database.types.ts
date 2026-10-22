@@ -9,7 +9,7 @@
  * shapes in the service layer.
  */
 export type MatchRoleEnum = "killer" | "survivor";
-export type MatchModeEnum = "normal" | "hardcore" | "gauntlet" | "world_cup";
+export type MatchModeEnum = "normal" | "hardcore" | "gauntlet" | "world_cup" | "entity_quest";
 export type EscapeResultEnum =
   | "escaped_door"
   | "escaped_hatch"
@@ -26,6 +26,8 @@ export type WorldCupRoundEnum =
   | "final";
 export type WorldCupKnockoutRoundEnum = Exclude<WorldCupRoundEnum, "group">;
 export type FriendshipStatusEnum = "pending" | "accepted";
+export type EntityQuestDifficultyEnum = "easy" | "medium" | "impossible";
+export type EntityQuestStatusEnum = "in_progress" | "won" | "lost";
 
 export type UserRow = {
   id: string;
@@ -69,6 +71,28 @@ export type GauntletProgressRow = {
 export type GauntletProgressInsert = Pick<GauntletProgressRow, "user_id" | "role"> &
   Partial<Omit<GauntletProgressRow, "id" | "user_id" | "role">>;
 export type GauntletProgressUpdate = Partial<GauntletProgressInsert>;
+
+export type EntityQuestRunRow = {
+  id: string;
+  user_id: string;
+  role: MatchRoleEnum;
+  difficulty: EntityQuestDifficultyEnum;
+  status: EntityQuestStatusEnum;
+  lives: number;
+  max_lives: number;
+  shards: number;
+  /** Opaque run state document, (de)serialized by the entity-quest service. */
+  state: unknown;
+  started_at: string;
+  ended_at: string | null;
+  updated_at: string;
+};
+export type EntityQuestRunInsert = Pick<
+  EntityQuestRunRow,
+  "user_id" | "role" | "difficulty" | "lives" | "max_lives" | "state"
+> &
+  Partial<Omit<EntityQuestRunRow, "id" | "user_id" | "role" | "difficulty" | "lives" | "max_lives" | "state">>;
+export type EntityQuestRunUpdate = Partial<EntityQuestRunInsert>;
 
 export type BuildRow = {
   id: string;
@@ -251,6 +275,20 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "gauntlet_progress_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      entity_quest_runs: {
+        Row: EntityQuestRunRow;
+        Insert: EntityQuestRunInsert;
+        Update: EntityQuestRunUpdate;
+        Relationships: [
+          {
+            foreignKeyName: "entity_quest_runs_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "users";

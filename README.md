@@ -1,6 +1,6 @@
 # DbD Stats Tracker
 
-Une application de bureau moderne et immersive pour **Dead by Daylight**, conçue pour permettre aux joueurs de suivre leurs performances, gérer leurs builds et relever des défis communautaires populaires tels que le **Hardcore Mode**, le **Survivor Gauntlet** et la **World Cup des Tueurs**.
+Une application de bureau moderne et immersive pour **Dead by Daylight**, conçue pour permettre aux joueurs de suivre leurs performances, gérer leurs builds et relever des défis communautaires populaires tels que le **Hardcore Mode**, le **Survivor Gauntlet**, la **World Cup des Tueurs** et la **Quête de l'Entité**.
 
 ## 🚀 Fonctionnalités principales
 
@@ -48,6 +48,13 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 * Phase de poules jouée journée par journée (un tueur, un match par journée), départagée au nombre de crochets.
 * Qualification des 32 meilleurs tueurs (toutes poules confondues) pour une phase à élimination directe à seeding serpent, jusqu'à la finale.
 * Le tirage du World Cup suivant se base automatiquement sur le classement final du précédent.
+
+#### Quête de l'Entité (roguelike)
+
+* Adaptation de [Crown Quest](https://chrop.co.uk/Crown-Quest/Crown-Quest) (défi roguelike Mario Kart World) : une run de 13 étages sur une carte à embranchements (épreuves, épreuves difficiles, événements, boutiques, coffre de quête légendaire, épreuve finale).
+* Tueur ou survivant, 3 difficultés (5 / 3 / 1 vie) ; on ne joue qu'avec ce qui a été débloqué pendant la run (tueurs + perks, ou perks + équipement), à partir d'un combo de départ tiré au sort.
+* Chaque épreuve est une vraie partie enregistrée (mode « Quête de l'Entité » dans l'historique) dont le résultat valide la mission tirée avec la carte : kills ou évasion, générateurs (à réparer en survivant, à défendre en tueur) ou points de sang, avec des seuils selon l'étage et la difficulté.
+* Déblocages et boutique pilotés par une tier list de rareté (commun → légendaire) éditable dans `src/shared/lib/entity-quest/rarity.ts`.
 
 ### 📈 Statistiques & Historique
 
@@ -109,7 +116,7 @@ Les mises à jour sont publiées via GitHub Releases : un tag `v*` déclenche un
 ## 📁 Structure du projet
 
 * `/dbd-stats-tracker` : application Tauri.
-  * `/src` : interface utilisateur et logique métier, organisées par feature (auth, match-tracker, builds, hardcore-mode, hardcore-teams, survivor-gauntlet, world-cup, statistics, teams, friends, settings...).
+  * `/src` : interface utilisateur et logique métier, organisées par feature (auth, match-tracker, builds, hardcore-mode, hardcore-teams, survivor-gauntlet, world-cup, entity-quest, statistics, teams, friends, settings...).
   * `/src/shared/i18n` : ressources de traduction de l'interface (`locales/`) et dictionnaires des noms du jeu (`gameNames.ts`).
   * `/src-tauri` : backend Tauri (Rust), configuration de l'app et ressources embarquées dans le build (dont le dossier d'icônes par défaut).
   * `/supabase/migrations` : schéma et migrations de la base de données.

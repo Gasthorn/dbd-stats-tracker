@@ -12,6 +12,7 @@ const MODE_LABEL_KEYS: Record<MatchMode, string> = {
   hardcore: "history.modeHardcore",
   gauntlet: "history.modeGauntlet",
   world_cup: "history.modeWorldCup",
+  entity_quest: "history.modeEntityQuest",
 };
 
 type MatchOutcome = "win" | "loss" | "draw" | "pending";

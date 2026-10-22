@@ -10,6 +10,7 @@ import { GauntletPage } from "./features/survivor-gauntlet";
 import { StatisticsPage } from "./features/statistics";
 import { TeamsPage } from "./features/teams";
 import { WorldCupPage } from "./features/world-cup";
+import { EntityQuestPage } from "./features/entity-quest";
 import { UpdateBanner } from "./features/updater";
 import { HomePage } from "./components/HomePage";
 import "./App.css";
@@ -35,6 +36,7 @@ export type DashboardView =
   | "hardcore"
   | "gauntlet"
   | "world-cup"
+  | "entity-quest"
   | "characters"
   | "icons-index"
   | "settings";
@@ -51,6 +53,7 @@ const TAB_GROUPS: { view: DashboardView; labelKey: string }[][] = [
     { view: "hardcore", labelKey: "nav.hardcore" },
     { view: "gauntlet", labelKey: "nav.gauntlet" },
     { view: "world-cup", labelKey: "nav.worldCup" },
+    { view: "entity-quest", labelKey: "nav.entityQuest" },
   ],
   [
     { view: "teams", labelKey: "nav.teams" },
@@ -133,6 +136,7 @@ function Dashboard() {
         {view === "hardcore" && <HardcorePage />}
         {view === "gauntlet" && <GauntletPage />}
         {view === "world-cup" && <WorldCupPage />}
+        {view === "entity-quest" && <EntityQuestPage />}
         {view === "home" && <HomePage onNavigate={setView} />}
       </main>
     </>

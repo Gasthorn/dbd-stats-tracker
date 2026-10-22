@@ -10,6 +10,7 @@ const MODULES: { view: DashboardView; key: string }[] = [
   { view: "hardcore", key: "hardcore" },
   { view: "gauntlet", key: "gauntlet" },
   { view: "world-cup", key: "worldCup" },
+  { view: "entity-quest", key: "entityQuest" },
   { view: "teams", key: "teams" },
   { view: "friends", key: "friends" },
   { view: "characters", key: "characters" },

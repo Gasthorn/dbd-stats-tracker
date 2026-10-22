@@ -1,7 +1,7 @@
 import type { ISODateString, UUID } from "../../../shared/types/common.types";
 
 export type MatchRole = "killer" | "survivor";
-export type MatchMode = "normal" | "hardcore" | "gauntlet" | "world_cup";
+export type MatchMode = "normal" | "hardcore" | "gauntlet" | "world_cup" | "entity_quest";
 
 /**
  * How a survivor match ended. `disconnected` means the KILLER disconnected,
