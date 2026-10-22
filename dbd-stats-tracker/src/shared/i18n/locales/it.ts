@@ -259,6 +259,8 @@ export const it: typeof fr = {
     perksTitle: "Perk",
     mostPlayedPerks: "Perk più giocati",
     perkColumn: "Perk",
+    matchesColumn: "Partite",
+    noMatchOnDay: "{{day}}: nessuna partita",
     specificPerk: "Perk specifico",
     choosePerk: "Scegli un perk",
     noPerksAvailable: "Nessun perk disponibile.",

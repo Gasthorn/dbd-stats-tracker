@@ -39,7 +39,7 @@ export function PerformanceBarChart({ title, labels, values, seriesClassName }: 
               <div
                 key={label}
                 className="performance-chart-bar-slot"
-                title={value === null ? `${formatDayLabel(label)} : pas de partie` : `${formatDayLabel(label)} : ${value}%`}
+                title={value === null ? t("stats.noMatchOnDay", { day: formatDayLabel(label) }) : `${formatDayLabel(label)} : ${value}%`}
               >
                 {value !== null && (
                   <div

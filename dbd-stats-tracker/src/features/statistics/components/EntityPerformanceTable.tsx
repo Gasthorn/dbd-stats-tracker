@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { IconCategory } from "../../../shared/lib/icons/iconPath";
 import { Icon, useGameNames } from "../../settings";
 import type { KeyedPerformanceStat } from "../types/statistics.types";
@@ -29,6 +30,7 @@ export function EntityPerformanceTable({
   diamondIcon = false,
   emptyMessage,
 }: EntityPerformanceTableProps) {
+  const { t } = useTranslation();
   const tGameName = useGameNames();
   const [topN, setTopN] = useState<(typeof TOP_N_OPTIONS)[number]>(3);
 
@@ -57,7 +59,7 @@ export function EntityPerformanceTable({
           <thead>
             <tr>
               <th>{entityColumnLabel}</th>
-              <th>Matchs</th>
+              <th>{t("stats.matchesColumn")}</th>
               <th>{secondaryColumnLabel}</th>
               <th>{rateColumnLabel}</th>
             </tr>

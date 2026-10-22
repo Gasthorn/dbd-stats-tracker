@@ -263,6 +263,8 @@ export const fr = {
     perksTitle: "Perks",
     mostPlayedPerks: "Perks les plus joués",
     perkColumn: "Perk",
+    matchesColumn: "Matchs",
+    noMatchOnDay: "{{day}} : pas de partie",
     specificPerk: "Perk en particulier",
     choosePerk: "Choisir un perk",
     noPerksAvailable: "Aucun perk disponible.",
