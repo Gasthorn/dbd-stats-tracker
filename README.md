@@ -53,8 +53,9 @@ Une application de bureau moderne et immersive pour **Dead by Daylight**, conçu
 
 * Adaptation de [Crown Quest](https://chrop.co.uk/Crown-Quest/Crown-Quest) (défi roguelike Mario Kart World) : une run de 13 étages sur une carte à embranchements (épreuves, épreuves difficiles, événements, boutiques, coffre de quête légendaire, épreuve finale).
 * Tueur ou survivant, 3 difficultés (5 / 3 / 1 vie) ; on ne joue qu'avec ce qui a été débloqué pendant la run (tueurs + perks, ou perks + équipement), à partir d'un combo de départ tiré au sort.
-* Chaque épreuve est une vraie partie enregistrée (mode « Quête de l'Entité » dans l'historique) dont le résultat valide la mission tirée avec la carte : kills ou évasion, générateurs (à réparer en survivant, à défendre en tueur) ou points de sang, avec des seuils selon l'étage et la difficulté.
+* Chaque épreuve est une vraie partie enregistrée (mode « Quête de l'Entité » dans l'historique) dont le résultat valide la mission tirée avec la carte : kills ou évasion, générateurs (à réparer en survivant, à défendre en tueur), points de sang, crochets (tueur), décrochages ou soins (survivant), avec des seuils selon l'étage et la difficulté ; une même ligne de la carte évite de répéter un type de case ou une mission.
 * Déblocages et boutique pilotés par une tier list de rareté (commun → légendaire) éditable dans `src/shared/lib/entity-quest/rarity.ts`.
+* Chaque perk gagnée se choisit parmi 3 de même rareté (un nouveau tueur parmi 2) ; les déblocages et la boutique privilégient les perks (75 % des récompenses).
 
 ### 📈 Statistiques & Historique
 

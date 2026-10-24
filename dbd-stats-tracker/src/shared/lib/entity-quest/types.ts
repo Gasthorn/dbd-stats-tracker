@@ -33,8 +33,10 @@ export type QuestNodeType = "trial" | "hard_trial" | "event" | "shop" | "chest" 
  * What a trial asks for. "standard": kills (killer) or an escape level (survivor).
  * "generators": hold generators down (killer) or repair them (survivor).
  * "bloodpoints": earn a bloodpoint total.
+ * "hooks" (killer only): land a number of hooks.
+ * "unhooks" / "heals" (survivor only): unhook / fully heal a number of teammates.
  */
-export type QuestMission = "standard" | "generators" | "bloodpoints";
+export type QuestMission = "standard" | "generators" | "bloodpoints" | "hooks" | "unhooks" | "heals";
 
 export interface QuestMapNode {
   id: string;
@@ -67,6 +69,11 @@ export interface QuestChestState {
   questOptions: string[];
 }
 
+/** An unlock waiting for the player to pick one of its options (all same kind and rarity). */
+export interface QuestPendingChoice {
+  options: Collectible[];
+}
+
 export interface QuestRunState {
   version: 1;
   map: QuestMap;
@@ -83,12 +90,15 @@ export interface QuestRunState {
   chest: QuestChestState | null;
   /** Ids of the matches recorded during this run. */
   matchIds: string[];
+  /** Unlock awaiting a pick; absent on runs created before choices existed. */
+  pendingChoice?: QuestPendingChoice | null;
 }
 
 export type QuestObjective =
   | { role: "killer"; kind: "kills"; minKills: number }
   /** At most this many generators completed by the end of the match. */
   | { role: "killer"; kind: "generators"; maxGens: number }
+  | { role: "killer"; kind: "hooks"; minHooks: number }
   /**
    * 1: at least `minGens` generators done, or escape through the hatch.
    * 2: escape (hatch or exit gates).
@@ -96,6 +106,8 @@ export type QuestObjective =
    */
   | { role: "survivor"; kind: "escape"; level: 1 | 2 | 3; minGens: number }
   | { role: "survivor"; kind: "generators"; minGens: number }
+  | { role: "survivor"; kind: "unhooks"; minUnhooks: number }
+  | { role: "survivor"; kind: "heals"; minHeals: number }
   | { role: QuestRole; kind: "bloodpoints"; minBloodpoints: number };
 
 interface BaseMatchResult {
@@ -104,10 +116,12 @@ interface BaseMatchResult {
 }
 
 export type QuestMatchResult =
-  | (BaseMatchResult & { role: "killer"; kills: number })
+  | (BaseMatchResult & { role: "killer"; kills: number; hooks: number })
   | (BaseMatchResult & {
       role: "survivor";
       escapeResult: "escaped_door" | "escaped_hatch" | "sacrificed" | "killed" | "disconnected";
+      unhooks: number;
+      heals: number;
     });
 
 export type QuestEventOutcome =

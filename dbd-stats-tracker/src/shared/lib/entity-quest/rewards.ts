@@ -13,7 +13,9 @@ import {
   SHOP_RARITY_BONUS,
   SHOP_RARITY_COSTS,
   SHOP_REROLL_BASE_COST,
-  SHOP_SLOTS,
+  SHOP_SLOTS_BY_KIND,
+  UNLOCK_CHOICES,
+  UNLOCK_KIND_WEIGHTS,
   type RarityWeights,
 } from "./constants";
 import { generateMap } from "./map";
@@ -98,10 +100,19 @@ function pickNearRarity(ctx: RollContext, kind: CollectibleKind, rarity: QuestRa
   return null;
 }
 
-/** A trial/event reward: 50/50 between the role's two collectible kinds, falling back to the other kind if one is exhausted. */
+/** The role's two kinds, the first drawn by UNLOCK_KIND_WEIGHTS, the other kept as a fallback. */
+function rollKindOrder(ctx: RollContext): CollectibleKind[] {
+  const weights = Object.fromEntries(
+    ROLE_KINDS[ctx.role].map((kind) => [kind, UNLOCK_KIND_WEIGHTS[ctx.role][kind] ?? 0]),
+  ) as Record<CollectibleKind, number>;
+  const first = weightedChoice(ctx.rng, weights);
+  return [first, ...ROLE_KINDS[ctx.role].filter((kind) => kind !== first)];
+}
+
+/** A trial/event reward: kind drawn by UNLOCK_KIND_WEIGHTS, falling back to the other kind if one is exhausted. */
 export function rollUnlock(ctx: RollContext, floor: number, hard: boolean): Collectible | null {
   const rarity = weightedChoice(ctx.rng, getRarityWeights(floor, hard));
-  const kinds = shuffle(ctx.rng, ROLE_KINDS[ctx.role]);
+  const kinds = rollKindOrder(ctx);
   for (const kind of kinds) {
     const unlock = pickNearRarity(ctx, kind, rarity);
     if (unlock) return unlock;
@@ -111,7 +122,7 @@ export function rollUnlock(ctx: RollContext, floor: number, hard: boolean): Coll
 
 /** Reward for a completed legendary quest: the best rarity still available. */
 export function rollLegendaryUnlock(ctx: RollContext): Collectible | null {
-  const kinds = shuffle(ctx.rng, ROLE_KINDS[ctx.role]);
+  const kinds = rollKindOrder(ctx);
   for (const rarity of [...RARITY_ORDER].reverse()) {
     for (const kind of kinds) {
       const unlock = pickOfRarity(ctx, kind, rarity);
@@ -119,6 +130,22 @@ export function rollLegendaryUnlock(ctx: RollContext): Collectible | null {
     }
   }
   return null;
+}
+
+/**
+ * Options offered for an unlock: the rolled item plus others of the same kind and rarity, up to
+ * UNLOCK_CHOICES for that kind (fewer if the rarity tier is nearly exhausted). A single option
+ * means there is nothing to choose and the unlock is granted directly.
+ */
+export function buildUnlockChoices(ctx: RollContext, unlock: Collectible): Collectible[] {
+  const count = UNLOCK_CHOICES[unlock.kind] ?? 1;
+  const others = remainingPool(ctx.pools, ctx.collection, unlock.kind).filter(
+    (name) => name !== unlock.name && getQuestRarity(unlock.kind, name) === unlock.rarity,
+  );
+  const extra = shuffle(ctx.rng, others)
+    .slice(0, count - 1)
+    .map((name) => toCollectible(unlock.kind, name));
+  return shuffle(ctx.rng, [unlock, ...extra]);
 }
 
 /**
@@ -189,16 +216,28 @@ export function getShopRarityWeights(floor: number): RarityWeights {
   ) as RarityWeights;
 }
 
-/** 6 offers alternating between the role's two kinds, at most 3 of a rarity, prices ±15% around the rarity's base. */
+/** Slot kinds for a shop, interleaved so the per-rarity cap doesn't skew toward the first kind. */
+function shopSlotKinds(role: QuestRole): CollectibleKind[] {
+  const remaining = { ...SHOP_SLOTS_BY_KIND[role] };
+  const slots: CollectibleKind[] = [];
+  while (ROLE_KINDS[role].some((kind) => (remaining[kind] ?? 0) > 0)) {
+    for (const kind of ROLE_KINDS[role]) {
+      if ((remaining[kind] ?? 0) > 0) {
+        slots.push(kind);
+        remaining[kind] = (remaining[kind] ?? 0) - 1;
+      }
+    }
+  }
+  return slots;
+}
+
+/** Offers per SHOP_SLOTS_BY_KIND, at most 3 of a rarity, prices ±15% around the rarity's base. */
 export function buildShopOffers(ctx: RollContext, nodeId: string, floor: number): QuestShopState {
   const weights = getShopRarityWeights(floor);
   const rarityCount: Partial<Record<QuestRarity, number>> = {};
   const offered = new Set<string>();
   const offers: ShopOffer[] = [];
-  const [firstKind, secondKind] = ROLE_KINDS[ctx.role];
-
-  for (let slot = 0; slot < SHOP_SLOTS; slot++) {
-    const kind = slot % 2 === 0 ? firstKind : secondKind;
+  for (const kind of shopSlotKinds(ctx.role)) {
     const allowed = { ...weights };
     for (const tier of RARITY_ORDER) {
       if ((rarityCount[tier] ?? 0) >= SHOP_MAX_PER_RARITY) allowed[tier] = 0;
@@ -245,7 +284,7 @@ export function createInitialRunState(rng: Rng, role: QuestRole, pools: QuestPoo
   const startingCombo = rollStartingCombo(rng, role, pools);
   return {
     version: 1,
-    map: generateMap(rng),
+    map: generateMap(rng, role),
     visitedNodeIds: [],
     currentNodeId: null,
     collection: [...startingCombo],

@@ -175,42 +175,91 @@
   }
 }
 
+/*
+ * Map, styled after the Bloodweb: a veined blood-red backdrop, hexagonal nodes and organic
+ * links that light up along the path taken.
+ */
 .quest-map-scroll {
-  max-height: 70vh;
+  max-height: 72vh;
   overflow-y: auto;
   background:
-    radial-gradient(ellipse at center, rgba(169, 29, 29, 0.08), transparent 70%),
-    var(--color-bg-inset);
-  border: 1px solid var(--color-border);
+    radial-gradient(ellipse 70% 45% at 50% 40%, rgba(140, 14, 14, 0.45), transparent 75%),
+    radial-gradient(ellipse 55% 40% at 10% 90%, rgba(100, 8, 8, 0.45), transparent 75%),
+    radial-gradient(ellipse 50% 35% at 90% 10%, rgba(100, 8, 8, 0.4), transparent 75%),
+    radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.7) 100%),
+    #1a0505;
+  border: 1px solid #4a0d0d;
   border-radius: var(--radius-md);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85);
 }
 
 .quest-map {
   position: relative;
-  margin: 0 1.5rem;
+  margin: 0 1.75rem;
 }
 
 .quest-map-links {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   pointer-events: none;
+  overflow: visible;
 }
 
-.quest-map-links line {
-  stroke: var(--color-border-strong);
-  stroke-width: 2;
-  stroke-dasharray: 4 5;
+/*
+ * Each link is a vein: a dark wall stroke under a lighter blood core, so it reads clearly on
+ * the red backdrop whatever its state.
+ */
+.quest-vein path {
+  fill: none;
+  stroke-linecap: round;
 }
 
-.quest-map-links line.is-travelled {
-  stroke: var(--color-accent);
-  stroke-dasharray: none;
+.quest-vein-wall {
+  stroke: #0a0101;
+  stroke-width: 7;
+  opacity: 0.85;
+}
+
+.quest-vein-core {
+  stroke: #b3261e;
   stroke-width: 3;
 }
 
-.quest-map-links line.is-open {
-  stroke: var(--color-gold);
-  stroke-dasharray: 6 4;
+.quest-vein.is-travelled .quest-vein-wall {
+  stroke: rgba(255, 40, 30, 0.35);
+  stroke-width: 11;
+  opacity: 1;
+}
+
+.quest-vein.is-travelled .quest-vein-core {
+  stroke: #ff3b2f;
+  stroke-width: 4;
+}
+
+/* Paths open from the current node: blood flowing toward the next choices. */
+.quest-vein.is-open .quest-vein-wall {
+  stroke: rgba(255, 120, 60, 0.3);
+  stroke-width: 10;
+  opacity: 1;
+}
+
+.quest-vein.is-open .quest-vein-core {
+  stroke: #ffb347;
+  stroke-width: 3.5;
+  stroke-dasharray: 10 7;
+  animation: quest-vein-flow 1.1s linear infinite;
+}
+
+/* Branches that can no longer be taken. */
+.quest-vein.is-dead {
+  opacity: 0.3;
+}
+
+@keyframes quest-vein-flow {
+  to {
+    stroke-dashoffset: -34;
+  }
 }
 
 .quest-map-row {
@@ -219,119 +268,263 @@
 
 .quest-map-floor-label {
   position: absolute;
-  left: -1.25rem;
+  left: -1.4rem;
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.75em;
-  color: var(--color-text-dim);
+  font-weight: bold;
+  color: #8a2a2a;
 }
 
-.quest-node {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 1.2em;
-  line-height: 1;
+/* ---- Hex nodes ---- */
+
+/* Rim/glyph color per node type, shared with the legend. */
+.quest-node-trial {
+  --node-color: #ff4b3e;
+}
+.quest-node-hard_trial {
+  --node-color: #ff8a1f;
+}
+.quest-node-event {
+  --node-color: #5cb8ff;
+}
+.quest-node-shop {
+  --node-color: #c98bff;
+}
+.quest-node-chest {
+  --node-color: #ffd43b;
+}
+.quest-node-boss {
+  --node-color: #ffcf40;
+}
+
+.quest-node-hex,
+.quest-node-core {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--color-border-strong);
-  background: var(--color-bg-elevated);
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+}
+
+/* Outer hex = the rim. */
+.quest-node-hex {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--node-color) 85%, #fff), color-mix(in srgb, var(--node-color) 55%, #000));
+}
+
+/* Inner hex = dark socket with a tint of the type color, like an unlit Bloodweb node. */
+.quest-node-core {
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  color: var(--node-color);
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--node-color) 28%, #1a0505), #0d0202 75%);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--node-color) 70%, transparent);
+}
+
+/* The button itself only positions the hex and carries its glow (drop-shadow follows the clipped shape). */
+.quest-map .quest-node,
+.quest-map .quest-node:disabled,
+.quest-map .quest-node:hover:not(:disabled) {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 58px;
+  height: 52px;
+  padding: 0;
+  font-size: 1.45em;
+  line-height: 1;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  cursor: default;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.9));
   transition:
     transform 0.15s ease,
-    box-shadow 0.15s ease;
+    filter 0.15s ease,
+    opacity 0.15s ease;
 }
 
-.quest-node-hard_trial {
-  color: var(--color-accent-hover);
+.quest-map .quest-node-boss,
+.quest-map .quest-node-boss:disabled {
+  width: 78px;
+  height: 70px;
+  font-size: 2em;
 }
 
-.quest-node-shop {
-  color: #b77cff;
+.quest-map .quest-node-boss .quest-node-core {
+  background: radial-gradient(circle at 50% 40%, #7a0b0b, #1a0202 80%);
 }
 
-.quest-node-chest {
-  color: var(--color-gold);
+/* Upcoming floors. */
+.quest-map .quest-node.is-locked {
+  opacity: 0.85;
 }
 
-.quest-node-boss {
-  width: 60px;
-  height: 60px;
-  font-size: 1.6em;
-  color: var(--color-gold);
-  border-color: var(--color-accent);
+/* Branches left behind. */
+.quest-map .quest-node.is-skipped {
+  opacity: 0.3;
+  filter: grayscale(0.8);
 }
 
-.quest-node-mission {
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 3px;
-  border-radius: 9px;
-  font-size: 0.5em;
-  font-weight: bold;
-  line-height: 18px;
-  text-align: center;
+/* Cleared nodes: the socket fills with blood. */
+.quest-map .quest-node.is-visited .quest-node-core {
+  color: #ffd9d6;
+  background: radial-gradient(circle at 50% 40%, #b3140f, #4d0606 80%);
+}
+
+.quest-map .quest-node.is-visited .quest-node-hex {
+  background: #e3201b;
+}
+
+.quest-map .quest-node.is-current {
+  filter: drop-shadow(0 0 10px rgba(255, 40, 30, 0.95));
+}
+
+.quest-map .quest-node.is-current .quest-node-hex {
+  background: linear-gradient(160deg, #fff, #ff6b5e);
+}
+
+.quest-map .quest-node.is-current .quest-node-core {
   color: #fff;
-  background: var(--color-bg-button);
-  border: 1px solid var(--color-border-strong);
+  background: radial-gradient(circle at 50% 40%, #d11a12, #5a0707 80%);
 }
 
-.quest-node-mission.is-bloodpoints {
-  background: #7a1010;
-  border-color: var(--color-accent);
-}
-
-.quest-node-mission.is-generators {
-  background: #6b5310;
-  border-color: var(--color-gold);
-}
-
-.quest-node.is-available {
-  border-color: var(--color-gold);
-  box-shadow: 0 0 12px rgba(241, 196, 15, 0.45);
+.quest-map .quest-node.is-available {
   cursor: pointer;
   animation: quest-node-pulse 1.6s ease-in-out infinite;
 }
 
-.quest-node.is-available:hover:not(:disabled) {
-  transform: translate(-50%, -50%) scale(1.12);
+.quest-map .quest-node.is-available .quest-node-core {
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--node-color) 45%, #2a0707), #120303 80%);
 }
 
-.quest-node.is-current {
-  border-color: var(--color-accent);
-  background: var(--color-accent);
-  color: #fff;
-  box-shadow: 0 0 14px var(--color-accent-glow);
+.quest-map .quest-node.is-available:hover:not(:disabled) {
+  transform: translate(-50%, -50%) scale(1.15);
 }
 
-.quest-node.is-visited {
-  border-color: var(--color-accent);
-  opacity: 0.65;
-}
-
-.quest-node.is-locked {
-  opacity: 0.4;
-}
-
-.quest-node:disabled {
-  cursor: default;
+.quest-map .quest-node.is-available:disabled {
+  cursor: wait;
 }
 
 @keyframes quest-node-pulse {
   0%,
   100% {
-    box-shadow: 0 0 6px rgba(241, 196, 15, 0.3);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--node-color) 60%, transparent));
   }
   50% {
-    box-shadow: 0 0 16px rgba(241, 196, 15, 0.7);
+    filter: drop-shadow(0 0 14px var(--node-color));
   }
+}
+
+.quest-node-mission {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 18px;
+  text-align: center;
+  color: #fff;
+  text-shadow: none;
+  background: var(--color-bg-button);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.quest-node-mission.is-bloodpoints {
+  background: #a01818;
+  border-color: #ff6b6b;
+}
+
+.quest-node-mission.is-generators {
+  background: #8a6d12;
+  border-color: var(--color-gold);
+}
+
+.quest-node-mission.is-hooks {
+  background: #1f5d73;
+  border-color: #6fd3ff;
+}
+
+.quest-node-mission.is-unhooks {
+  background: #5b3a8a;
+  border-color: #c9a2ff;
+}
+
+.quest-node-mission.is-heals {
+  background: #1f7a3a;
+  border-color: #7dffa1;
+}
+
+.quest-node-mission.is-static {
+  position: static;
+  display: inline-block;
+}
+
+/* ---- Map legend ---- */
+
+.quest-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
+.quest-map-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.quest-legend-node {
+  display: inline-flex;
+  width: 28px;
+  height: 25px;
+  font-size: 0.85em;
+}
+
+/* ---- Unlock choice ---- */
+
+.quest-choice-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.quest-choice-option {
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  transition: transform 0.15s ease;
+}
+
+.quest-choice-option .quest-collectible {
+  min-width: 140px;
+  padding: 0.9rem 0.6rem;
+  font-size: 0.95em;
+}
+
+.quest-choice-option:hover:not(:disabled) {
+  background: none;
+  box-shadow: none;
+  transform: translateY(-4px);
+}
+
+.quest-choice-option:hover:not(:disabled) .quest-collectible {
+  box-shadow: 0 0 18px var(--quest-rarity-color);
 }
 
 /* ---- Collection ---- */

@@ -2,26 +2,43 @@ import {
   MAX_NODES_PER_FLOOR,
   MIN_NODES_PER_FLOOR,
   MISSION_WEIGHTS,
+  NODE_TYPE_WEIGHTS,
   QUEST_BOSS_FLOOR,
   QUEST_CHEST_FLOOR,
   QUEST_FLOORS,
+  SAME_FLOOR_MISSION_PENALTY,
+  SAME_FLOOR_TYPE_PENALTY,
 } from "./constants";
 import { randomInt, weightedChoice } from "./random";
-import type { QuestMap, QuestMapNode, QuestMission, QuestNodeType, QuestRunState, Rng } from "./types";
+import type { QuestMap, QuestMapNode, QuestMission, QuestNodeType, QuestRole, QuestRunState, Rng } from "./types";
 
-function rollNodeType(rng: Rng, floor: number): QuestNodeType {
-  if (floor === 0) return "trial";
-  if (floor === QUEST_CHEST_FLOOR) return "chest";
-  const roll = rng();
-  if (roll < 0.5) return "trial";
-  if (roll < 0.7) return "event";
-  if (roll < 0.85) return "hard_trial";
-  return "shop";
+/** Weights with every option already used on this floor damped by `penalty` per occurrence. */
+function dampRepeats<K extends string>(
+  weights: Partial<Record<K, number>>,
+  used: readonly K[],
+  penalty: number,
+): Record<K, number> {
+  const damped = { ...weights } as Record<K, number>;
+  for (const key of used) {
+    if (damped[key] !== undefined) damped[key] *= penalty;
+  }
+  return damped;
 }
 
-function rollMission(rng: Rng, floor: number, type: QuestNodeType): QuestMission | undefined {
+function rollNodeType(rng: Rng, floor: number, floorTypes: readonly QuestNodeType[]): QuestNodeType {
+  if (floor === 0) return "trial";
+  if (floor === QUEST_CHEST_FLOOR) return "chest";
+  return weightedChoice(rng, dampRepeats<QuestNodeType>(NODE_TYPE_WEIGHTS, floorTypes, SAME_FLOOR_TYPE_PENALTY));
+}
+
+function rollMission(
+  rng: Rng,
+  role: QuestRole,
+  type: QuestNodeType,
+  floorMissions: readonly QuestMission[],
+): QuestMission | undefined {
   if (type !== "trial" && type !== "hard_trial") return undefined;
-  return floor === 0 ? "standard" : weightedChoice(rng, MISSION_WEIGHTS);
+  return weightedChoice(rng, dampRepeats(MISSION_WEIGHTS[role], floorMissions, SAME_FLOOR_MISSION_PENALTY));
 }
 
 /** Horizontal position of a node in [0, 1], used to link nodes to their nearest neighbours above. */
@@ -40,17 +57,19 @@ function nearestIndex(position: number, count: number): number {
 /**
  * Slay-the-Spire-like map: 13 floors of 2-4 nodes, all trials on the first floor, chests on
  * floor 7, a single boss on top; trials get their mission (kills/escape, generators,
- * bloodpoints) here. Each node links to the nearest node(s) on the next floor, so paths
+ * bloodpoints, hooks) here. Types and missions avoid repeating within a floor. Each node links to the nearest node(s) on the next floor, so paths
  * rarely cross, and every node is guaranteed both reachable and leading somewhere.
  */
-export function generateMap(rng: Rng): QuestMap {
+export function generateMap(rng: Rng, role: QuestRole): QuestMap {
   const map: QuestMap = [];
   for (let floor = 0; floor < QUEST_FLOORS; floor++) {
     const count = floor === QUEST_BOSS_FLOOR ? 1 : randomInt(rng, MIN_NODES_PER_FLOOR, MAX_NODES_PER_FLOOR);
     const nodes: QuestMapNode[] = [];
     for (let index = 0; index < count; index++) {
-      const type = floor === QUEST_BOSS_FLOOR ? "boss" : rollNodeType(rng, floor);
-      const mission = rollMission(rng, floor, type);
+      const type =
+        floor === QUEST_BOSS_FLOOR ? "boss" : rollNodeType(rng, floor, nodes.map((node) => node.type));
+      const floorMissions = nodes.flatMap((node) => (node.mission ? [node.mission] : []));
+      const mission = rollMission(rng, role, type, floorMissions);
       nodes.push({
         id: `${floor}-${index}`,
         floor,

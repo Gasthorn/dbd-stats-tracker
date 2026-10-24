@@ -34,17 +34,21 @@ export function QuestOutcomeModal({ outcome, onClose }: QuestOutcomeModalProps) 
       break;
 
     case "event": {
-      const { event, variant } = outcome;
+      const { event, variant, choicePending } = outcome;
       title = t(`entityQuest.events.${event.type}.title`);
       const message =
         event.type === "shards_small" && event.alreadyHealthy
           ? t("entityQuest.events.shards_small.alreadyHealthy")
-          : t(`entityQuest.events.${event.type}.v${variant}`, {
+          : event.type === "unlock" && choicePending
+            ? t("entityQuest.events.unlock.choice")
+            : t(`entityQuest.events.${event.type}.v${variant}`, {
               name: "unlock" in event && event.unlock ? tGameName(event.unlock.name) : "",
               from: event.type === "reroll" ? tGameName(event.from.name) : "",
               to: event.type === "reroll" ? tGameName(event.to.name) : "",
             });
-      const unlock = event.type === "unlock" || event.type === "jackpot" ? event.unlock : event.type === "reroll" ? event.to : null;
+      // A pending choice means the rolled unlock is just one of the options: don't reveal it here.
+      const granted = choicePending ? null : event.type === "unlock" || event.type === "jackpot" ? event.unlock : null;
+      const unlock = event.type === "reroll" ? event.to : granted;
       const shards = "shards" in event ? event.shards : 0;
       body = (
         <>
@@ -56,6 +60,7 @@ export function QuestOutcomeModal({ outcome, onClose }: QuestOutcomeModalProps) 
               <CollectibleCard item={unlock} size={72} />
             </div>
           )}
+          {choicePending && <p className="quest-legendary-text">{t("entityQuest.results.choicePending")}</p>}
         </>
       );
       break;
@@ -67,7 +72,9 @@ export function QuestOutcomeModal({ outcome, onClose }: QuestOutcomeModalProps) 
         <>
           <p className="quest-reward-shards">{t("entityQuest.results.shardsWon", { count: outcome.shards })}</p>
           {outcome.questCompleted && <p className="quest-legendary-text">{t("entityQuest.results.questReward")}</p>}
-          {outcome.unlock ? (
+          {outcome.choicePending ? (
+            <p className="quest-legendary-text">{t("entityQuest.results.choicePending")}</p>
+          ) : outcome.unlock ? (
             <>
               <p>{t("entityQuest.results.newUnlock")}</p>
               <div className="quest-collectible-grid is-centered">

@@ -42,6 +42,8 @@ export interface KillerMatch extends BaseMatch {
   /** Hooks landed this match. Optional outside World Cup, where it's the deciding stat. */
   hooks: number | null;
   escapeResult: null;
+  unhooks?: null;
+  heals?: null;
   hardcorePips: number | null;
   hardcoreDied: boolean | null;
 }
@@ -54,6 +56,9 @@ export interface SurvivorMatch extends BaseMatch {
   kills: null;
   hooks: null;
   escapeResult: EscapeResult;
+  /** Teammates unhooked / fully healed. Only recorded where a mode asks for it (Entity Quest). */
+  unhooks?: number | null;
+  heals?: number | null;
   hardcorePips: number | null;
   hardcoreDied: boolean | null;
 }

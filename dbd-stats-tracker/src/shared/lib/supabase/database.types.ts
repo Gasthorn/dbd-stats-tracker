@@ -184,6 +184,9 @@ export type MatchRow = {
   bloodpoints: number;
   kills: number | null;
   hooks: number | null;
+  /** Survivor-only (Entity Quest missions); null when not recorded. */
+  unhooks: number | null;
+  heals: number | null;
   generators_completed: number;
   escape_result: EscapeResultEnum | null;
   hardcore_pips: number | null;

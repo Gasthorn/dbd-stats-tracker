@@ -6,6 +6,12 @@ export function objectiveLabel(t: TFunction, objective: QuestObjective): string 
   switch (objective.kind) {
     case "kills":
       return t("entityQuest.objective.killerKills", { count: objective.minKills });
+    case "hooks":
+      return t("entityQuest.objective.killerHooks", { count: objective.minHooks });
+    case "unhooks":
+      return t("entityQuest.objective.survivorUnhooks", { count: objective.minUnhooks });
+    case "heals":
+      return t("entityQuest.objective.survivorHeals", { count: objective.minHeals });
     case "generators":
       return objective.role === "killer"
         ? t("entityQuest.objective.killerGens", { count: objective.maxGens })

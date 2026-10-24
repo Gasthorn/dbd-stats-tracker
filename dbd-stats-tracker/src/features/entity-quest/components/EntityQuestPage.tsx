@@ -5,6 +5,7 @@ import { useCharactersStore } from "../../characters/stores/characters.store";
 import { useEntityQuestStore } from "../stores/entity-quest.store";
 import type { QuestRole } from "../types/entity-quest.types";
 import { QuestChestModal } from "./QuestChestModal";
+import { QuestChoiceModal } from "./QuestChoiceModal";
 import { QuestCollection } from "./QuestCollection";
 import { QuestEndScreen } from "./QuestEndScreen";
 import { QuestHistory } from "./QuestHistory";
@@ -40,6 +41,7 @@ export function EntityQuestPage() {
     rerollShop,
     leaveShop,
     pickQuest,
+    pickUnlock,
     abandonRun,
     clearFinishedRun,
     dismissOutcome,
@@ -151,6 +153,15 @@ export function EntityQuestPage() {
               questOptions={run.state.chest.questOptions}
               busy={busy}
               onPick={(questId) => act(() => pickQuest(role, questId))}
+            />
+          )}
+
+          {/* Shown once the result modal that announced it is dismissed. */}
+          {run.state.pendingChoice && !outcome && (
+            <QuestChoiceModal
+              options={run.state.pendingChoice.options}
+              busy={busy}
+              onPick={(name) => act(() => pickUnlock(role, name))}
             />
           )}
 

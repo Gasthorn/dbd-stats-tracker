@@ -11,8 +11,15 @@ import type { EntityQuestRun } from "../types/entity-quest.types";
 /** What just happened, shown once in a result modal and then dismissed. Not persisted. Run ends use the end screen instead. */
 export type EntityQuestOutcome =
   | { kind: "start"; combo: Collectible[] }
-  | { kind: "event"; event: QuestEventOutcome; variant: number }
-  | { kind: "trial_success"; shards: number; unlock: Collectible | null; questCompleted: boolean }
+  /** `choicePending`: the unlock became a pick among several options, shown right after this modal. */
+  | { kind: "event"; event: QuestEventOutcome; variant: number; choicePending: boolean }
+  | {
+      kind: "trial_success";
+      shards: number;
+      unlock: Collectible | null;
+      questCompleted: boolean;
+      choicePending: boolean;
+    }
   | { kind: "trial_failed"; livesLeft: number };
 
 /** Distributes Omit over the KillerMatch | SurvivorMatch union so each branch keeps its own shape. */
@@ -49,6 +56,8 @@ export interface EntityQuestActions {
   rerollShop: (role: QuestRole) => Promise<void>;
   leaveShop: (role: QuestRole) => Promise<void>;
   pickQuest: (role: QuestRole, questId: string) => Promise<void>;
+  /** Resolves the run's pending unlock choice with the named option. */
+  pickUnlock: (role: QuestRole, name: string) => Promise<void>;
   abandonRun: (role: QuestRole) => Promise<void>;
   /** Leaves the end screen of a finished run, back to the setup screen. */
   clearFinishedRun: (role: QuestRole) => void;

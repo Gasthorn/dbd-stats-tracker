@@ -14,6 +14,8 @@ import { objectiveLabel } from "./objectiveLabel";
 import { QuestModal } from "./QuestModal";
 
 const KILLS_OPTIONS = [0, 1, 2, 3, 4];
+const HOOKS_OPTIONS = Array.from({ length: 13 }, (_, hooks) => hooks);
+const ASSIST_OPTIONS = Array.from({ length: 11 }, (_, count) => count);
 type SurvivorOutcome = "died" | "escaped_hatch" | "escaped_door";
 const OUTCOME_OPTIONS: { value: SurvivorOutcome; labelKey: string }[] = [
   { value: "died", labelKey: "entityQuest.form.outcomeDied" },
@@ -54,6 +56,9 @@ export function QuestTrialModal({ run, node, ownedSurvivors, onClose }: QuestTri
   const [bloodpoints, setBloodpoints] = useState("");
   const [generatorsCompleted, setGeneratorsCompleted] = useState("0");
   const [kills, setKills] = useState("0");
+  const [hooks, setHooks] = useState("0");
+  const [unhooks, setUnhooks] = useState("0");
+  const [heals, setHeals] = useState("0");
   const [outcome, setOutcome] = useState<SurvivorOutcome>("died");
   const [questCompleted, setQuestCompleted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,7 +126,7 @@ export function QuestTrialModal({ run, node, ownedSurvivors, onClose }: QuestTri
                 equipment: cleanedAddons,
                 bloodpoints: Number(bloodpoints) || 0,
                 kills: Number(kills),
-                hooks: null,
+                hooks: Number(hooks),
                 generatorsCompleted: Number(generatorsCompleted),
                 escapeResult: null,
                 hardcoreRunId: null,
@@ -141,6 +146,8 @@ export function QuestTrialModal({ run, node, ownedSurvivors, onClose }: QuestTri
                 hooks: null,
                 generatorsCompleted: Number(generatorsCompleted),
                 escapeResult,
+                unhooks: Number(unhooks),
+                heals: Number(heals),
                 hardcoreRunId: null,
                 hardcoreTeamId: null,
                 hardcorePips: null,
@@ -294,6 +301,15 @@ export function QuestTrialModal({ run, node, ownedSurvivors, onClose }: QuestTri
                 </option>
               ))}
             </select>
+
+            <label htmlFor="quest-hooks">{t("entityQuest.form.hooks")}</label>
+            <select id="quest-hooks" value={hooks} onChange={(e) => setHooks(e.target.value)}>
+              {HOOKS_OPTIONS.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
           </>
         ) : (
           <>
@@ -302,6 +318,24 @@ export function QuestTrialModal({ run, node, ownedSurvivors, onClose }: QuestTri
               {OUTCOME_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {t(option.labelKey)}
+                </option>
+              ))}
+            </select>
+
+            <label htmlFor="quest-unhooks">{t("entityQuest.form.unhooks")}</label>
+            <select id="quest-unhooks" value={unhooks} onChange={(e) => setUnhooks(e.target.value)}>
+              {ASSIST_OPTIONS.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+
+            <label htmlFor="quest-heals">{t("entityQuest.form.heals")}</label>
+            <select id="quest-heals" value={heals} onChange={(e) => setHeals(e.target.value)}>
+              {ASSIST_OPTIONS.map((value) => (
+                <option key={value} value={value}>
+                  {value}
                 </option>
               ))}
             </select>

@@ -5,6 +5,7 @@ import {
   EVENT_MESSAGE_VARIANTS,
   buildQuestPools,
   buildShopOffers,
+  buildUnlockChoices,
   computeTrialShards,
   createInitialRunState,
   findNode,
@@ -17,7 +18,13 @@ import {
   rollUnlock,
   SHOP_REROLL_COST_STEP,
 } from "../../../shared/lib/entity-quest";
-import type { QuestMatchResult, QuestPools, QuestRole, QuestRunState } from "../../../shared/lib/entity-quest/types";
+import type {
+  Collectible,
+  QuestMatchResult,
+  QuestPools,
+  QuestRole,
+  QuestRunState,
+} from "../../../shared/lib/entity-quest/types";
 import { useAuthStore } from "../../auth/stores/auth.store";
 import { useCharactersStore } from "../../characters/stores/characters.store";
 import { useMatchTrackerStore } from "../../match-tracker/stores/match-tracker.store";
@@ -48,11 +55,32 @@ function completeNode(state: QuestRunState, nodeId: string): QuestRunState {
   return { ...state, visitedNodeIds: [...state.visitedNodeIds, nodeId], currentNodeId: nodeId };
 }
 
+/**
+ * Hands an unlock to the run: kinds with UNLOCK_CHOICES become a pending pick among same-rarity
+ * options (the run is blocked until the player chooses); everything else joins the collection.
+ */
+function grantUnlock(
+  state: QuestRunState,
+  unlock: Collectible | null,
+  role: QuestRole,
+): { state: QuestRunState; choicePending: boolean } {
+  if (!unlock) return { state, choicePending: false };
+  const options = buildUnlockChoices({ rng, role, pools: poolsFor(role), collection: state.collection }, unlock);
+  if (options.length > 1) return { state: { ...state, pendingChoice: { options } }, choicePending: true };
+  return { state: { ...state, collection: [...state.collection, unlock] }, choicePending: false };
+}
+
 function toQuestResult(match: CreateMatchInput): QuestMatchResult {
   const base = { generatorsCompleted: match.generatorsCompleted, bloodpoints: match.bloodpoints };
   return match.role === "killer"
-    ? { ...base, role: "killer", kills: match.kills }
-    : { ...base, role: "survivor", escapeResult: match.escapeResult };
+    ? { ...base, role: "killer", kills: match.kills, hooks: match.hooks ?? 0 }
+    : {
+        ...base,
+        role: "survivor",
+        escapeResult: match.escapeResult,
+        unhooks: match.unhooks ?? 0,
+        heals: match.heals ?? 0,
+      };
 }
 
 export const useEntityQuestStore = create<EntityQuestStore>((set, get) => {
@@ -128,6 +156,7 @@ export const useEntityQuestStore = create<EntityQuestStore>((set, get) => {
       guarded(async () => {
         const run = activeRun(role);
         const { state } = run;
+        if (state.pendingChoice) return;
         const node = getAvailableNodes(state).find((candidate) => candidate.id === nodeId);
         if (!node) return;
 
@@ -149,32 +178,38 @@ export const useEntityQuestStore = create<EntityQuestStore>((set, get) => {
               lives: run.lives,
               maxLives: run.maxLives,
             });
-            let collection = state.collection;
+            let next: QuestRunState = state;
+            let choicePending = false;
             let shards = run.shards;
             let lives = run.lives;
             switch (event.type) {
               case "unlock":
-                collection = [...collection, event.unlock];
+                ({ state: next, choicePending } = grantUnlock(next, event.unlock, role));
                 break;
               case "shards_small":
               case "shards_large":
                 shards += event.shards;
                 break;
               case "reroll":
-                collection = collection.map((item) => (item.name === event.from.name ? event.to : item));
+                next = {
+                  ...next,
+                  collection: next.collection.map((item) => (item.name === event.from.name ? event.to : item)),
+                };
                 break;
               case "heal":
                 lives = Math.min(run.maxLives, lives + 1);
                 break;
               case "jackpot":
                 shards += event.shards;
-                if (event.unlock) collection = [...collection, event.unlock];
+                ({ state: next, choicePending } = grantUnlock(next, event.unlock, role));
                 break;
               case "nothing":
                 break;
             }
-            await persist(role, { id: run.id, shards, lives, state: completeNode({ ...state, collection }, node.id) });
-            set({ outcome: { kind: "event", event, variant: Math.floor(rng() * EVENT_MESSAGE_VARIANTS) } });
+            await persist(role, { id: run.id, shards, lives, state: completeNode(next, node.id) });
+            set({
+              outcome: { kind: "event", event, variant: Math.floor(rng() * EVENT_MESSAGE_VARIANTS), choicePending },
+            });
             return;
           }
 
@@ -252,19 +287,25 @@ export const useEntityQuestStore = create<EntityQuestStore>((set, get) => {
         const unlock = questDone ? rollLegendaryUnlock(ctx) : rollUnlock(ctx, node.floor, node.type === "hard_trial");
         const shards = computeTrialShards(run.difficulty, node, result);
 
+        const granted = grantUnlock(
+          { ...stateWithMatch, activeQuestId: questDone ? null : stateWithMatch.activeQuestId },
+          unlock,
+          role,
+        );
         await persist(role, {
           id: run.id,
           shards: run.shards + shards,
-          state: completeNode(
-            {
-              ...stateWithMatch,
-              collection: unlock ? [...stateWithMatch.collection, unlock] : stateWithMatch.collection,
-              activeQuestId: questDone ? null : stateWithMatch.activeQuestId,
-            },
-            node.id,
-          ),
+          state: completeNode(granted.state, node.id),
         });
-        set({ outcome: { kind: "trial_success", shards, unlock, questCompleted: questDone } });
+        set({
+          outcome: {
+            kind: "trial_success",
+            shards,
+            unlock,
+            questCompleted: questDone,
+            choicePending: granted.choicePending,
+          },
+        });
       });
     },
 
@@ -309,6 +350,17 @@ export const useEntityQuestStore = create<EntityQuestStore>((set, get) => {
         const shop = run.state.shop;
         if (!shop) return;
         await persist(role, { id: run.id, state: completeNode({ ...run.state, shop: null }, shop.nodeId) });
+      }),
+
+    pickUnlock: (role, name) =>
+      guarded(async () => {
+        const run = activeRun(role);
+        const choice = run.state.pendingChoice?.options.find((option) => option.name === name);
+        if (!choice) return;
+        await persist(role, {
+          id: run.id,
+          state: { ...run.state, collection: [...run.state.collection, choice], pendingChoice: null },
+        });
       }),
 
     pickQuest: (role, questId) =>

@@ -45,6 +45,8 @@ function toMatch(row: MatchRow): Match {
     kills: null,
     hooks: null,
     escapeResult: row.escape_result as Exclude<MatchRow["escape_result"], null>,
+    unhooks: row.unhooks ?? null,
+    heals: row.heals ?? null,
     hardcorePips: row.hardcore_pips,
     hardcoreDied: row.hardcore_died,
   };
@@ -67,6 +69,9 @@ function toInsertRow(userId: string, input: CreateMatchInput) {
     hooks: input.role === "killer" ? input.hooks : null,
     generators_completed: input.generatorsCompleted,
     escape_result: input.role === "survivor" ? input.escapeResult : null,
+    // Only sent when recorded, so modes that don't track them keep working on older schemas.
+    ...(input.role === "survivor" && input.unhooks != null ? { unhooks: input.unhooks } : {}),
+    ...(input.role === "survivor" && input.heals != null ? { heals: input.heals } : {}),
     hardcore_pips: input.hardcorePips,
     hardcore_died: input.hardcoreDied,
     ignore_challenge: input.ignoreChallenge,
@@ -98,6 +103,8 @@ function toUpdateRow(input: UpdateMatchInput) {
     ...(rest.role === "survivor" && rest.escapeResult !== undefined
       ? { escape_result: rest.escapeResult }
       : {}),
+    ...(rest.role === "survivor" && rest.unhooks !== undefined ? { unhooks: rest.unhooks } : {}),
+    ...(rest.role === "survivor" && rest.heals !== undefined ? { heals: rest.heals } : {}),
     ...(rest.hardcorePips !== undefined ? { hardcore_pips: rest.hardcorePips } : {}),
     ...(rest.hardcoreDied !== undefined ? { hardcore_died: rest.hardcoreDied } : {}),
     ...(rest.ignoreChallenge !== undefined ? { ignore_challenge: rest.ignoreChallenge } : {}),
