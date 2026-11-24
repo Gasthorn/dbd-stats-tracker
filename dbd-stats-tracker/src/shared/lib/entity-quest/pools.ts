@@ -19,18 +19,24 @@ export function getAddonItem(name: string): string | null {
 }
 
 /**
+ * Characters kept out of the Entity Quest, along with their perks, until their rarity tier
+ * (match impact) has been decided in rarity.ts. Remove a name once it has been tiered.
+ */
+const QUEST_EXCLUDED_CHARACTERS: ReadonlySet<string> = new Set(["The Terrifier", "Sienna Shaw"]);
+
+/**
  * Everything collectible in a run, restricted to what the player owns in-game: killers they
  * own, and perks whose owner they own (or "Base Kit" teachables) - same rule as the Gauntlet.
  */
 export function buildQuestPools(role: QuestRole, ownedCharacters: readonly string[]): QuestPools {
-  const owned = new Set(ownedCharacters);
+  const owned = new Set(ownedCharacters.filter((name) => !QUEST_EXCLUDED_CHARACTERS.has(name)));
   const perkCatalog = role === "killer" ? KILLER_PERKS : SURVIVOR_PERKS;
   const perks = perkCatalog
     .filter((perk) => perk.owner === "Base Kit" || owned.has(perk.owner))
     .map((perk) => perk.name);
 
   if (role === "killer") {
-    return { character: [...ownedCharacters], perk: perks, equipment: [] };
+    return { character: [...owned], perk: perks, equipment: [] };
   }
   const addons = SURVIVOR_ADDONS.flatMap((group) => group.addons);
   return { character: [], perk: perks, equipment: [...SURVIVOR_ITEMS, ...addons] };

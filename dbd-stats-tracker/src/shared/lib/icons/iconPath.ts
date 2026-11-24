@@ -96,6 +96,8 @@ const CHARACTER_FOLDER_MAP: Record<string, string> = {
   "Yui Kimura": "Sweden",
   "The Judgment": "Udon",
   "Aurora Stardotter": "Udon",
+  "The Terrifier": "Waffle",
+  "Sienna Shaw": "Waffle",
   "The Deathslinger": "Ukraine",
   "Zarina Kassir": "Ukraine",
   "The Singularity": "Umbra",
@@ -128,7 +130,7 @@ function normalizeForPerks(str: string): string {
     .join("");
 }
 
-const UI_PREFIX_ALL_FOLDERS = ["Maple", "Poutine", "Quiche", "Sushi", "Udon"];
+const UI_PREFIX_ALL_FOLDERS = ["Maple", "Poutine", "Quiche", "Sushi", "Udon", "Waffle"];
 const UI_PREFIX_PERKS_AND_ADDONS_FOLDERS = ["Gelato", "Icecream", "Ketchup"];
 const UI_PREFIX_PERKS_ONLY_FOLDERS = ["Jerky", "Lasagna"];
 
@@ -231,6 +233,8 @@ const PERK_SPECIAL_PREFIX_OWNERS = [
   "Shane Wiigwaas",
   "Aurora Stardotter",
   "The Judgment",
+  "The Terrifier",
+  "Sienna Shaw",
 ];
 
 const SURVIVOR_ADDON_FILE_MAPPING: Record<string, string> = {
@@ -434,6 +438,8 @@ const KILLER_ADDON_FILE_MAPPING: Record<string, string> = {
   "Mid-Century Radio": "Mid-CenturyRadio",
   // The Judgment
   "Magnetised Manacles": "MagnetizedManacles",
+  // The Terrifier
+  "Brooke's Pustule": "BrooksPustule",
 };
 
 // NB: legacy source declares "Begrimed Chains" twice (Hillbilly, then

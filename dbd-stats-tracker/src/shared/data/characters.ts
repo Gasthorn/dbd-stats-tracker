@@ -48,6 +48,7 @@ export const KILLERS: readonly string[] = [
   "The First",
   "The Slasher",
   "The Judgment",
+  "The Terrifier",
 ];
 
 export const SURVIVORS: readonly string[] = [
@@ -105,6 +106,7 @@ export const SURVIVORS: readonly string[] = [
   "Kwon Tae Young",
   "Shane Wiigwaas",
   "Aurora Stardotter",
+  "Sienna Shaw",
 ];
 
 /** Killers available to every player without any DLC. */
